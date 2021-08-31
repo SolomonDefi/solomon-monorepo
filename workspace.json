@@ -1,7 +1,59 @@
 {
   "version": 2,
-  "projects": {},
+  "projects": {
+    "blockchain-mailer": {
+      "root": "apps/blockchain-mailer",
+      "sourceRoot": "apps/blockchain-mailer/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/blockchain-mailer",
+            "main": "apps/blockchain-mailer/src/main.ts",
+            "tsConfig": "apps/blockchain-mailer/tsconfig.app.json",
+            "assets": ["apps/blockchain-mailer/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/blockchain-mailer/src/environments/environment.ts",
+                  "with": "apps/blockchain-mailer/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "blockchain-mailer:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/blockchain-mailer/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/blockchain-mailer"],
+          "options": {
+            "jestConfig": "apps/blockchain-mailer/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
   "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  }
+    "defaultCollection": "@nrwl/node"
+  },
+  "defaultProject": "blockchain-mailer"
 }
