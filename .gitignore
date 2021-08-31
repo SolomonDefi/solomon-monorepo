@@ -37,3 +37,8 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Package locks
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
