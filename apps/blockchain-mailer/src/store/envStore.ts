@@ -4,6 +4,10 @@ class EnvStore {
         return process.env.NODE_ENV === 'development';
     }
 
+    get isTest() {
+        return process.env.NODE_ENV === 'test';
+    }
+
     get ethereumNodeUrl() {
         return process.env.ETHEREUM_NODE_URL;
     }
