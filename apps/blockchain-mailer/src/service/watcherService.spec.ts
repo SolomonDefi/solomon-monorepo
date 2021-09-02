@@ -1,8 +1,9 @@
 import watcherService from './watcherService';
 
-describe("watcherService", ()=> {
+describe('watcherService', () => {
 
-    test("constructor()", async ()=> {
-        expect(watcherService).toBeDefined()
-    })
+  test('constructor()', async () => {
+    expect(watcherService).toBeDefined()
+  })
+
 })

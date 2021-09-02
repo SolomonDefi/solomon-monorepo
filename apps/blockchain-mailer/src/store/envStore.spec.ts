@@ -1,8 +1,9 @@
 import envStore from './envStore';
 
-describe("mailService", ()=> {
+describe('mailService', () => {
 
-    test("constructor()", async ()=> {
-        expect(envStore).toBeDefined()
-    })
+  test('constructor()', async () => {
+    expect(envStore).toBeDefined()
+  })
+
 })
