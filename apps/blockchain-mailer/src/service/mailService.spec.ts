@@ -1,8 +1,9 @@
 import mailService from './mailService';
 
-describe("mailService", ()=> {
+describe('mailService', () => {
 
-    test("constructor()", async ()=> {
-        expect(mailService).toBeDefined()
-    })
+  test('constructor()', async () => {
+    expect(mailService).toBeDefined()
+  })
+
 })
