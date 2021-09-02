@@ -4,7 +4,7 @@ import envStore from '../store/envStore';
 
 class MailService {
 
-    mailer: Transporter = null
+    mailer: Transporter = null as any
 
     send = async (to: string | string[], subject: string, html: string, text: string) => {
         let info = await this.mailer.sendMail({
