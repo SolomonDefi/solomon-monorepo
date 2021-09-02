@@ -1,9 +1,9 @@
-import BlockchainWatcher from './app/BlockchainWatcher';
-import { emailsFromAddress } from './app/ContractWrap';
 import envStore from './store/envStore';
 import mailService from './service/mailService';
+import ContractWatcher from './klass/ContractWatcher';
+import watcherService from './service/watcherService';
 
-const newContractWatcher = {
+const newContractWatcher = new ContractWatcher({
     address: envStore.factoryAddress,
     topics: [
         'ChargebackCreated(address)',
@@ -11,14 +11,14 @@ const newContractWatcher = {
         'EscrowCreated(address)'
     ],
     callback: (async (log: any, event: any) => {
-        const { email1, email2 } = emailsFromAddress(event.arg1); // TODO
+        // TODO -- TESTING ONLY, REPLACE WITH REAL METHOD
+        const email1 = 'solomondefi@gmail.com'
+        const email2 = 'solomondefi@gmail.com'
+
         await mailService.sendContractEmail(email1, email2);
     })
-};
+})
 
-const blockchainWatch = new BlockchainWatcher({
-    providerUrl: envStore.ethereumNodeUrl,
-    watchers: [newContractWatcher]
-});
-
-blockchainWatch.start();
+watcherService.addWatcher(newContractWatcher)
+watcherService.setProvider(envStore.ethereumNodeUrl)
+watcherService.start()

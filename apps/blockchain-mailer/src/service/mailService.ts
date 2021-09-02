@@ -1,4 +1,4 @@
-import MailgunTransport from '../app/util/MailgunTransport';
+import MailgunTransport from '../util/MailgunTransport';
 import nodemailer, { Transporter } from 'nodemailer';
 
 class MailService {
