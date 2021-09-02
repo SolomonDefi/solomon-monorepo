@@ -1,10 +1,10 @@
 import BlockchainWatcher from './app/BlockchainWatcher';
 import { sendContractEmail } from './app/Mailer';
 import { emailsFromAddress } from './app/ContractWrap';
-import { ethereumNodeUrl, factoryAddress } from './app/Config';
+import envStore from './store/envStore';
 
 const newContractWatcher = {
-  address: factoryAddress,
+  address: envStore.factoryAddress,
   topics: [
     'ChargebackCreated(address)',
     'PreorderCreated(address)',
@@ -17,7 +17,7 @@ const newContractWatcher = {
 };
 
 const blockchainWatch = new BlockchainWatcher({
-  providerUrl: ethereumNodeUrl,
+  providerUrl: envStore.ethereumNodeUrl,
   watchers: [newContractWatcher],
 })
 
