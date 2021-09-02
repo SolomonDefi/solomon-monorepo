@@ -18,13 +18,13 @@ class EnvStore {
 
     get mailgunApiKey() {
         return this.isDev
-            ? "key-1234123412341234"
-            : ""
+            ? 'key-1234123412341234'
+            : ''
     }
 
     // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
     get mailgunDomain() {
-        return ""
+        return ''
     }
 }
 
