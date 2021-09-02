@@ -6,10 +6,6 @@ class MailService {
 
     mailer: Transporter = null
 
-    constructor() {
-
-    }
-
     send = async (to: string | string[], subject: string, html: string, text: string) => {
         let info = await this.mailer.sendMail({
             from: 'solomondefi@gmail.com',
@@ -37,6 +33,10 @@ class MailService {
         })
 
         this.mailer = nodemailer.createTransport(transport.getPlugin())
+    }
+
+    constructor() {
+
     }
 }
 
