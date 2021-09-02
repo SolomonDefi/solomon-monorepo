@@ -6,23 +6,23 @@ class WatcherService {
     watchers: ContractWatcher[] = []
     provider: any = null
 
-    removeWatcher = (id: string)=> {
+    removeWatcher(id: string) {
         this.watchers = this.watchers.filter(w => w.id !== id)
     }
 
-    addWatcher = (watcher: any)=> {
+    addWatcher(watcher: any) {
         this.watchers.push(watcher)
     }
 
-    setWatchers = (watchers: any[])=> {
+    setWatchers(watchers: any[]) {
         this.watchers = watchers
     }
 
-    setProvider = (providerUrl: string)=> {
+    setProvider(providerUrl: string) {
         this.provider = new ethers.providers.JsonRpcProvider(providerUrl)
     }
 
-    start = ()=> {
+    start() {
 
         if (this.watchers.length === 0) {
             throw new Error('Abort! At least one watcher must be set up')
