@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-pnpx --no-install ts-node ./tools/checkCommitMsg.ts $1
+pnpx --no-install ts-node ./tools/scripts/checkCommitMsg.ts $1
