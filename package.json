@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
@@ -25,6 +26,7 @@
     "@typescript-eslint/parser": "~4.28.3",
     "eslint": "7.22.0",
     "eslint-config-prettier": "8.1.0",
+    "husky": "^7.0.0",
     "jest": "27.0.3",
     "nx-vue3-vite": "^0.7.1",
     "prettier": "^2.3.1",
