@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "strict": true
   },
-    "references": [
+  "references": [
     {
       "path": "./tsconfig.app.json"
     },

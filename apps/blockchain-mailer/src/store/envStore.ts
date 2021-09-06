@@ -1,5 +1,4 @@
 class EnvStore {
-
   get isDev() {
     return process.env.NODE_ENV === 'development'
   }
@@ -17,9 +16,7 @@ class EnvStore {
   }
 
   get mailgunApiKey() {
-    return this.isDev
-      ? 'key-1234123412341234'
-      : ''
+    return this.isDev ? 'key-1234123412341234' : ''
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
