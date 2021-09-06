@@ -1,7 +1,8 @@
 # Getting Started
 
-This site contains documentation and links pertaining to all Solomon code repositories. Choose a link on the left to get started with
-project documentation, or check out helpful links below, organized by project type:
+This site contains documentation and links pertaining to all Solomon code repositories. Before contributing, make sure to review the [guidelines](/guide/contributing) relevant to the project, the [commit message format](/guide/commit-format), and read through the [code of conduct](/guide/code-of-conduct) Choose a link on the left to get started with project documentation, or check out helpful links below, organized by project type:
+
+TODO -- update for Monorepo
 
 ## Plugin
 

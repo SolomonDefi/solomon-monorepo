@@ -1,68 +1,111 @@
 # Contributing
 
-The Solomon ecosystem consists of several repositories hosted with Git/Github. Depending on the technology, there are different ways a
-community member can contribute. The Guidelines section below notes some common things to keep in mind, and the Links section lists the
-contribution guideliness for specific projects.
+The Solomon ecosystem consists of several repositories hosted with Git/Github. Depending on the technology, there are different ways a community member can contribute. The Guidelines section below notes some common things to keep in mind, and the Links section lists the contribution guideliness for specific projects.
 
-## Guidelines
+## General Guidelines
+
+These are general contribution guidelines for all projects, regardless of language or libraries used. See the [Language Specific](#language-specific-guidelines) section for more fine-grained guidelines.
+
+- Consider what you are going to code before jumping straight in. Is there already code that covers what you are going to do? What is the simplest way to code the feature without compromising maintainability?
+- Add unit tests if you're implementing or changing a feature.
+- Review and update documentation relevant to your changes, including these developer docs, project READMEs, and inline code comments.
+- Create and keep up to date [an OpenAPI Specification](https://swagger.io/specification/) file in the form of `openapi.yaml` in the project root all web services/APIs.
+- Remove debug statements
+- Set up your editor or IDE to automatically lint and format on save. Code that does not pass CI lint/format/test checks will be automatically rejected.
+
+### Pull Requests
+
+Pull requests (PRs) represent a feature branch currently in progress, or ready to merge to `main`
+There may be multiple PRs per issue, but each PR should only cover a single issue (with some exceptions).
+
+Follow these steps to ensure a smooth process:
+
+- Link to the corresponding issue in the description (e.g. `#117`)
+  - If the PR will close the issue, include e.g. `Close #117` on it's own line
+  - If the PR is for a hotfix, mention it in the description
+- Verify that status/CI checks are passing
+- Squash trivial commits and edit poorly worded messages with [interactive rebase](https://thoughtbot.com/blog/git-interactive-rebase-squash-amend-rewriting-history#interactive-rebase)
+
+### Commits
+
+- Follow the commit message guidelines below
+  - Use the present tense ("fix bug", not "fixed bug")
+  - Use the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood) ("update packages", not "updates packages")
+- No merge commits, PRs must be rebased on `main` before merging
+  - If there are conflicts, this must be done locally. A force push is necessary (`git push --force-with-lease`)
+- One task/subtask per commit
+- Push often, but avoid pushing broken code
+
+### Dependencies
+
+Dependencies should be discussed before they're added, and evaluated on a few points:
+
+- Is it mature and/or actively developed?
+- Is it cross platform?
+- Does it pull in many sub-dependencies?
+- How does it affect the build size/runtime speed?
+
+## Licenses and Attribution
+
+Non permissively licensed code should be avoided, as well as copy pasting from arbitrary online sources.
+
+If a library is not included in the standard package manager (NPM, PyPI, Cargo, etc) and is non-trivial to reproduce, exceptions can be made, but should be discussed in an issue first.
+
+## Language Specific Guidelines
+
+This section contains detailed guidelines for specific languages and frameworks.
+
+### Solidity
+
+### Typescript
+
+### Vue3
+
+### CSS/PostCSS
+
+#### CSS media queries
+
+Media queries should be placed at the end of the style block/file, within the scope of the top level class.
+
+Good:
+
+```
+.top-level-content {
+  .stuff {
+    width: 50%;
+  }
+  @media (max-width: $mobile-width) {
+    .stuff {
+      width: 100%;
+    }
+}
+```
+
+Bad:
+
+```
+.top-level-content {
+  .stuff {
+    width: 50%;
+    @media (max-width: $mobile-width) {
+      width: 100%;
+    }
+  }
+}
+```
+
+We only use max-width media queries, so mobile style is a union of mobile/tablet/desktop, tablet style is a union of tablet/desktop, and desktop is default.
+
+#### CSS vendor prefixes
+
+The PostCSS `autoprefixer` plugin is included, so CSS vendor extensions should never be necessary.
+
+### Python
+
+- Lint: `pylint`
+  - Configuration: `.pylintrc`
+- Format: [`black`](https://github.com/psf/black)
+
+### Rust
 
 TBD
-
-## Links
-
-- Plugin
-- Smart Contracts
-- Evidence Uploader
-- Link Shortener
-- Mailer
-
-## Code of Conduct
-
-### Our Pledge
-
-In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to make participation in our project and our community a harassment-free experience for everyone.
-
-### Our Standards
-
-We expect all contributors, maintainers, and community members to engage in productive and positive discussion, for example:
-
-- Using welcoming and inclusive language
-- Being respectful of differing viewpoints and experiences
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
-- Showing empathy towards other community members
-
-Examples of unacceptable behavior include:
-
-- Use of sexualized language or imagery and unwelcome sexual attention or advances
-- Trolling, insulting/derogatory comments, and personal or political attacks
-- Public or private harassment
-- Publishing others' private information, such as a physical or electronic address
-- Other conduct which could reasonably be considered inappropriate in a professional setting
-
-### Our Responsibilities
-
-Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.
-
-Project maintainers have the right and responsibility to remove, edit, or reject any contributions that are not aligned to this Code of
-Conduct, or to ban temporarily or permanently any contributor for other behaviors that they deem inappropriate.
-
-### Scope
-
-This Code of Conduct applies both within project spaces and in public spaces when an individual is representing the project or its
-community. Examples of representing a project or community include using an official project e-mail address, posting via an official social
-media account, or acting as an appointed representative at an online or offline event. Representation of a project may be further defined
-and clarified by project maintainers.
-
-### Enforcement
-
-Instances of unacceptable behavior may be reported by contacting the project team at `contact@solomondefi.com`. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
-
-Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as
-determined by other members of the project's leadership.
-
-### Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 1.4, available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
-
-For answers to common questions about this code of conduct, see https://www.contributor-covenant.org/faq
