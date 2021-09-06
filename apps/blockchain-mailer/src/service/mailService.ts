@@ -3,7 +3,6 @@ import MailgunTransport from '../util/MailgunTransport';
 import envStore from '../store/envStore';
 
 class MailService {
-
   mailer: Transporter = null as any
 
   async send(to: string | string[], subject: string, html: string, text: string) {
@@ -12,7 +11,7 @@ class MailService {
       to: to,
       subject: subject,
       html: html,
-      text: text
+      text: text,
     })
 
     return info
@@ -28,16 +27,14 @@ class MailService {
     const transport = new MailgunTransport({
       auth: {
         api_key: envStore.mailgunApiKey,
-        domain: envStore.mailgunDomain
-      }
+        domain: envStore.mailgunDomain,
+      },
     })
 
     this.mailer = nodemailer.createTransport(transport.getPlugin())
   }
 
-  constructor() {
-
-  }
+  constructor() {}
 }
 
 export default new MailService()

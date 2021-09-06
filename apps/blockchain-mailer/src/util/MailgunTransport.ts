@@ -28,7 +28,7 @@ const whitelist = [
   ['o:tracking-opens'],
   ['o:require-tls'],
   ['o:skip-verification'],
-  ['X-Mailgun-Variables']
+  ['X-Mailgun-Variables'],
 ]
 
 export default class MailgunTransport {
@@ -49,10 +49,9 @@ export default class MailgunTransport {
     this.messages = mailgun.client({
       username: 'api',
       key: options.auth.api_key || options.auth.apiKey,
-      url
+      url,
     }).messages
     this.options = options
-
   }
 
   getPlugin() {
@@ -63,7 +62,7 @@ export default class MailgunTransport {
       version: packageData.version,
       send: this.send(mailgunSend),
       messages: this.messages,
-      options: this.options
+      options: this.options,
     }
   }
 
@@ -96,8 +95,8 @@ export default class MailgunTransport {
             ? item.name + ' <' + item.address + '>'
             : item.address
           : typeof item === 'string'
-            ? item
-            : null
+          ? item
+          : null,
       )
       return textAddresses.filter(Boolean).join()
     }
@@ -119,7 +118,7 @@ export default class MailgunTransport {
         const addresses = this.makeAllTextAddresses(data)
         const extendedMail = {
           ...data,
-          ...addresses
+          ...addresses,
         }
         const whitelistedMail = self.applyKeyWhitelist(extendedMail)
         const result = await mailgunSend(whitelistedMail)
