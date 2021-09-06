@@ -29,6 +29,9 @@
   "projects": {
     "blockchain-mailer": {
       "tags": []
+    },
+    "docs": {
+      "tags": ["scope:web", "type:docs"]
     }
   }
 }

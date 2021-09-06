@@ -3,12 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test"
   },
   "private": true,
   "devDependencies": {
+    "@angular-devkit/schematics": "^12.2.4",
     "@nrwl/cli": "12.8.0",
     "@nrwl/eslint-plugin-nx": "12.8.0",
     "@nrwl/jest": "12.8.0",
@@ -24,10 +26,11 @@
     "eslint": "7.22.0",
     "eslint-config-prettier": "8.1.0",
     "jest": "27.0.3",
-    "nx-vue3-vite": "^0.5.8",
+    "nx-vue3-vite": "^0.7.1",
     "prettier": "^2.3.1",
     "ts-jest": "27.0.3",
-    "typescript": "~4.3.5"
+    "typescript": "~4.3.5",
+    "vitepress": "^0.17.0"
   },
   "dependencies": {
     "dotenv": "^10.0.0",

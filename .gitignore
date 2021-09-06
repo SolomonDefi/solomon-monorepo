@@ -38,6 +38,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Local test script
+test.sh
+
 # Package locks
 package-lock.json
 pnpm-lock.yaml
