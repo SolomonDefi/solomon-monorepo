@@ -1,6 +1,6 @@
-# Documentation
+# Solomon Defi Documentation
 
-developer documentation.
+Solomon developer documentation.
 
 Generated with [nx-vue3-vite](https://github.com/samatechtw/nx-vue3-vite)
 
@@ -9,11 +9,11 @@ Generated with [nx-vue3-vite](https://github.com/samatechtw/nx-vue3-vite)
 Run a local development server:
 
 ```
-npx nx vue3-vite:docs-dev docs
+npx nx serve developer-docs
 ```
 
 Build for production:
 
 ```
-npx nx vue3-vite:docs-build docs
+npx nx build developer-docs
 ```

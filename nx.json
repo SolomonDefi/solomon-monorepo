@@ -30,7 +30,7 @@
     "blockchain-mailer": {
       "tags": []
     },
-    "docs": {
+    "developer-docs": {
       "tags": ["scope:web", "type:docs"]
     }
   }

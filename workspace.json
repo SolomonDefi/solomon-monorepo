@@ -51,15 +51,15 @@
         }
       }
     },
-    "docs": {
-      "root": "apps/docs",
+    "developer-docs": {
+      "root": "apps/developer-docs",
       "projectType": "application",
-      "sourceRoot": "apps/docs/src",
+      "sourceRoot": "apps/developer-docs/src",
       "targets": {
         "build": {
           "executor": "nx-vue3-vite:build-docs",
           "options": {
-            "dist": "dist/apps/docs"
+            "dist": "dist/apps/developer-docs"
           }
         },
         "serve": {
@@ -68,7 +68,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/docs/**/*.{js,jsx,ts,tsx,vue}"]
+            "lintFilePatterns": ["apps/developer-docs/**/*.{js,jsx,ts,tsx,vue}"]
           }
         }
       }
