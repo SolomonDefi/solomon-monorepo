@@ -1,4 +1,10 @@
 # Add files here to ignore them from prettier formatting
 
 /dist
-/coverage
+**/artifacts
+**/coverage
+node_modules
+*-lock.*
+cache
+logs
+log
