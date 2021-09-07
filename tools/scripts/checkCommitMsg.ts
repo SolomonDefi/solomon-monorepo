@@ -14,12 +14,23 @@ let summary = msg.replace(scope, ` `)
   .replace(/ /g, ``)
 let isValid = true
 
+const projectNames = [
+  'web',
+  'api',
+  'blockchain',
+  'docs',
+  'root',
+]
+
 if(!/:.+:/.test(scope)) {
   console.log(`Scope ${scope} is not valid`)
   isValid = false
 }
 
-if(!/\[.+]:$/.test(project)) {
+let projectName: string = (/\[.+]:$/.exec(project) || [''])[0]
+  .replace(/[\[\]:]/g,'')
+
+if(projectNames.indexOf(projectName) === -1) {
   console.log(`Project ${project} is not valid`)
   isValid = false
 }
