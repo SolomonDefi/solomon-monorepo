@@ -35,3 +35,15 @@ pnpx nx build <app-name>
 ```bash
 pnpx nx test <app-name>
 ```
+## Contribute
+
+### Commit message
+The commit message format is: `<scope> [<project>]: <short-summary> #<issue-number>`
+
+* `scope`: Follow the [gitmoji](https://gitmoji.dev/) rule 
+* `project`: One of `web`, `api`, `blockchain`, `docs` and `root`
+* `short-summary`: Short summary about this commit
+* `issue-number`: The related issue number
+
+Every part of them are required, will be checked before commit by [husky](https://github.com/typicode/husky). 
+You can check the validator [here](/tools/scripts/checkCommitMsg.ts).
