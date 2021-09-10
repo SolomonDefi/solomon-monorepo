@@ -7,7 +7,7 @@ class EnvStore {
     return process.env.NODE_ENV === 'test'
   }
 
-  get ethereumNodeUrl(): string {
+  get ethChainUrl(): string {
     return process.env.ETHEREUM_NODE_URL || ''
   }
 
