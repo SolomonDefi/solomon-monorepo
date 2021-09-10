@@ -3,12 +3,36 @@ class EnvStore {
     return process.env.NODE_ENV === 'development'
   }
 
+  get isStaging(): boolean {
+    return process.env.NODE_ENV === 'staging'
+  }
+
+  get isProduction(): boolean {
+    return process.env.NODE_ENV === 'production'
+  }
+
   get isTest(): boolean {
     return process.env.NODE_ENV === 'test'
   }
 
+  get infuraId(): string {
+    return ''
+  }
+
   get ethChainUrl(): string {
-    return process.env.ETHEREUM_NODE_URL || ''
+    if(this.isDev) {
+      return 'http://localhost:8545'
+    }
+
+    if(this.isStaging) {
+      return `https://ropsten.infura.io/v3/${this.infuraId}`
+    }
+
+    if(this.isProduction) {
+      return `https://infura.io/v3/${this.infuraId}`
+    }
+
+    return ''
   }
 
   get factoryAddress(): string {
@@ -16,7 +40,7 @@ class EnvStore {
   }
 
   get mailgunApiKey(): string {
-    return this.isDev ? 'key-1234123412341234' : ''
+    return ''
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
