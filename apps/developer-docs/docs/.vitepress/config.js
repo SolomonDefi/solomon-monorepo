@@ -3,7 +3,7 @@ const base = '/docs/';
 module.exports = {
   title: 'Solomon Documentation',
   description: 'Solomon Plugin and Smart Contract Documentation',
-  repo: 'solomondefi/monorepo',
+  repo: 'solomondefi/solomon-monorepo',
   base,
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: `${base}favicon.png` }],
