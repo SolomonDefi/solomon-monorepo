@@ -1,13 +1,14 @@
 import {MikroORM} from "@mikro-orm/core";
 import path from "path";
 import {FooEntity} from "../Entity/FooEntity";
+import envStore from "../store/envStore";
 
 export class DbService {
 
   orm: MikroORM = null as any
 
   get sqlitePath(): string {
-    return path.resolve(__dirname, '..', '..', 'blockchain-mailer-storage.db')
+    return path.resolve(__dirname, '..', '..', `blockchain-mailer-storage.${envStore.envName}.db`)
   }
 
   async setLastScannedBlockAddress() {
