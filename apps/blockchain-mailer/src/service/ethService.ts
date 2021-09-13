@@ -11,17 +11,20 @@ export class EthService {
 
   async onChargebackCreated() {
     // TODO: Process event
-    await mailService.sendContractEmail("", "")
+    await mailService.sendChargebackCreatedEmail("A")
+    await mailService.sendChargebackCreatedEmail("B")
   }
 
   async onPreorderCreated() {
     // TODO: Process event
-    await mailService.sendContractEmail("", "")
+    await mailService.sendPreorderCreatedEmail("A")
+    await mailService.sendPreorderCreatedEmail("B")
   }
 
   async onEscrowCreated() {
     // TODO: Process event
-    await mailService.sendContractEmail("", "")
+    await mailService.sendEscrowCreatedEmail("A")
+    await mailService.sendEscrowCreatedEmail("B")
   }
 
   async init() {

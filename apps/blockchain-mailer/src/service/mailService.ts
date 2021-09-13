@@ -1,4 +1,4 @@
-import nodemailer, { Transporter } from 'nodemailer';
+import nodemailer, {Transporter} from 'nodemailer';
 import MailgunTransport from '../util/MailgunTransport';
 import envStore from '../store/envStore';
 
@@ -17,10 +17,19 @@ class MailService {
     return info
   }
 
-  // Notify both parties to an escrow contract that the contract has been deployed
-  async sendContractEmail(party1: string, party2: string) {
+  async sendChargebackCreatedEmail(to: string) {
     // TODO
-    await this.send([party1, party2], 'Escrow contract created', '', '')
+    await this.send(to, 'ChargebackCreated', '', '')
+  }
+
+  async sendPreorderCreatedEmail(to: string) {
+    // TODO
+    await this.send(to, 'PreorderCreated', '', '')
+  }
+
+  async sendEscrowCreatedEmail(to: string) {
+    // TODO
+    await this.send(to, 'EscrowCreated', '', '')
   }
 
   async init() {
