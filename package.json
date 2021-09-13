@@ -38,11 +38,16 @@
     "vitepress": "^0.17.0"
   },
   "dependencies": {
+    "@mikro-orm/core": "^4.5.9",
+    "@mikro-orm/sqlite": "^4.5.9",
+    "@types/fs-extra": "^9.0.12",
     "dotenv": "^10.0.0",
     "ethers": "^5.4.6",
     "form-data": "^4.0.0",
+    "fs-extra": "^10.0.0",
     "mailgun.js": "^3.5.7",
     "nodemailer": "^6.6.3",
+    "reflect-metadata": "^0.1.13",
     "tslib": "^2.0.0"
   }
 }
