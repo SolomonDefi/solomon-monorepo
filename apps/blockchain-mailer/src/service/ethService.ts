@@ -27,6 +27,30 @@ export class EthService {
     await mailService.sendEscrowCreatedEmail("B")
   }
 
+  async getChargebackCreatedLogs() {
+    // TODO: replace with typed method
+    let eventFilter = this.contract.filters['ChargebackCreated']()
+    let events = this.contract.queryFilter(eventFilter)
+
+    return events
+  }
+
+  async getPreorderCreatedLogs() {
+  // TODO: replace with typed method
+    let eventFilter = this.contract.filters['PreorderCreated']()
+    let events = this.contract.queryFilter(eventFilter)
+
+    return events
+  }
+
+  async getEscrowCreatedLogs() {
+    // TODO: replace with typed method
+    let eventFilter = this.contract.filters['EscrowCreated']()
+    let events = this.contract.queryFilter(eventFilter)
+
+    return events
+  }
+
   async init() {
     this.contract.connect(this.provider)
     this.contract.on("ChargebackCreated", this.onChargebackCreated)
