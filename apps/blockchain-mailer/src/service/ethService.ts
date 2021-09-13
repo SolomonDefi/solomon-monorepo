@@ -2,7 +2,7 @@ import {ethers} from "ethers";
 import envStore from "../store/envStore";
 import mailService from "./mailService";
 
-class EthService {
+export class EthService {
 
   provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
 
