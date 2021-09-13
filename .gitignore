@@ -45,3 +45,6 @@ test.sh
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# sqlite file
+**/*.db
