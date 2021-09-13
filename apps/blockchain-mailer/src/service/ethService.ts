@@ -4,10 +4,8 @@ import mailService from "./mailService";
 
 export class EthService {
 
-  provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
-
-  // TODO: Replace with contract factory from TypeContract
-  contract = new ethers.Contract('', '', this.provider)
+  provider = null as any
+  contract = null as any
 
   async onChargebackCreated() {
     // TODO: Process event
@@ -52,6 +50,10 @@ export class EthService {
   }
 
   async init() {
+    this.provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
+    // TODO: Replace with contract factory from TypeContract
+    this.contract = new ethers.Contract('', '', this.provider)
+
     this.contract.connect(this.provider)
     this.contract.on("ChargebackCreated", this.onChargebackCreated)
     this.contract.on("PreorderCreated", this.onPreorderCreated)
