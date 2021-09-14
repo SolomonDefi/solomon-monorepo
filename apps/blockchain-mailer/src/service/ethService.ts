@@ -30,6 +30,8 @@ export class EthService {
     let eventFilter = this.contract.filters['ChargebackCreated']()
     let events = this.contract.queryFilter(eventFilter)
 
+    // TODO: save last event block hash
+
     return events
   }
 
@@ -38,6 +40,8 @@ export class EthService {
     let eventFilter = this.contract.filters['PreorderCreated']()
     let events = this.contract.queryFilter(eventFilter)
 
+    // TODO: save last event block hash
+
     return events
   }
 
@@ -45,6 +49,8 @@ export class EthService {
     // TODO: replace with typed method
     let eventFilter = this.contract.filters['EscrowCreated']()
     let events = this.contract.queryFilter(eventFilter)
+
+    // TODO: save last event block hash
 
     return events
   }
