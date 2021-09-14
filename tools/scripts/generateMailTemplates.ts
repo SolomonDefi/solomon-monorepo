@@ -1,9 +1,9 @@
 import { readdir, readFile, writeFile } from "fs-extra";
-import mjml2html from "mjml";
-import path from "path";
+import * as path from "path";
+import mjml2html = require("mjml");
 
 let run = async ()=> {
-  let templateDirPath = path.resolve(__dirname, '..', 'template')
+  let templateDirPath = path.resolve(__dirname, '..', '..', 'apps', 'blockchain-mailer', 'template')
   let templateNames = await readdir(templateDirPath)
 
   for(let templateName of templateNames) {
@@ -19,6 +19,7 @@ let run = async ()=> {
     let mjmlParseResults = mjml2html(template)
 
     await writeFile(htmlPath, mjmlParseResults.html)
+    console.log(`${htmlName} generated`)
   }
 }
 
