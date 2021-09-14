@@ -10,7 +10,7 @@ const template = readFileAsync(path.join(TEMPLATE_DIR, 'default-template.hbs'))
 const commitTemplate = readFileAsync(path.join(TEMPLATE_DIR, 'commit-template.hbs'))
 
 module.exports = {
-    branches: ["master"],
+    branches: ["main"],
     plugins: [
         [
             'semantic-release-gitmoji', {
