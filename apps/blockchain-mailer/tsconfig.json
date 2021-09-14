@@ -3,7 +3,6 @@
   "files": [],
   "include": [],
   "compilerOptions": {
-    "module": "CommonJS",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "resolveJsonModule": true,
