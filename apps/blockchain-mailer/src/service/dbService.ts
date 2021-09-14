@@ -27,11 +27,14 @@ export class DbService {
   }
 
   async getLastScanned() {
-    let lastLog = this.scanLogRepository.findOne({}, {}, {
-      lastScanned: QueryOrderNumeric.DESC,
+    let lastLog = await this.scanLogRepository.find({}, {
+      orderBy: {
+        lastScanned: QueryOrderNumeric.DESC,
+      },
+      limit: 1,
     })
 
-    return lastLog
+    return lastLog[0]
   }
 
   async resetForTest() {

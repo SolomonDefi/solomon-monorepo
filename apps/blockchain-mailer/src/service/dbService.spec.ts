@@ -33,4 +33,25 @@ describe("dbService", ()=> {
     expect(r2.length).toEqual(3)
     expect(hashArr).toEqual(['block1', 'block2', 'block3'])
   })
+
+  test("getLastScanned()", async ()=> {
+    let log1 = dbService.scanLogRepository.create({
+      blockHash: 'block1',
+      lastScanned: 1,
+    })
+    let log2 = dbService.scanLogRepository.create({
+      blockHash: 'block2',
+      lastScanned: 2,
+    })
+    let log3 = dbService.scanLogRepository.create({
+      blockHash: 'block3',
+      lastScanned: 3,
+    })
+
+    await dbService.scanLogRepository.persistAndFlush([log1, log2, log3])
+
+    let r1 = await dbService.getLastScanned()
+
+    expect(r1?.id).toEqual(log3.id)
+  })
 })
