@@ -1,16 +1,20 @@
-import {MikroORM} from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/core";
 import path from "path";
 import envStore from "../store/envStore";
-import {ScanLogEntity} from "../Entity/ScanLogEntity";
-import {QueryOrderNumeric} from "@mikro-orm/core/enums";
-import {pathExists, remove} from "fs-extra";
+import { ScanLogEntity } from "../Entity/ScanLogEntity";
+import { QueryOrderNumeric } from "@mikro-orm/core/enums";
+import { pathExists, remove } from "fs-extra";
 
 export class DbService {
-
   orm: MikroORM = null as any
 
   get sqlitePath(): string {
-    return path.resolve(__dirname, '..', '..', `blockchain-mailer-storage.${envStore.envName}.db`)
+    return path.resolve(
+      __dirname,
+      '..',
+      '..',
+      `blockchain-mailer-storage.${envStore.envName}.db`,
+    )
   }
 
   get scanLogRepository() {
@@ -27,12 +31,15 @@ export class DbService {
   }
 
   async getLastScanned() {
-    let lastLog = await this.scanLogRepository.find({}, {
-      orderBy: {
-        lastScanned: QueryOrderNumeric.DESC,
+    let lastLog = await this.scanLogRepository.find(
+      {},
+      {
+        orderBy: {
+          lastScanned: QueryOrderNumeric.DESC,
+        },
+        limit: 1,
       },
-      limit: 1,
-    })
+    )
 
     return lastLog[0]
   }
@@ -45,16 +52,14 @@ export class DbService {
   async init() {
     let isDbExist = await pathExists(this.sqlitePath)
     let orm = await MikroORM.init({
-      entities: [
-        ScanLogEntity,
-      ],
+      entities: [ScanLogEntity],
       dbName: this.sqlitePath,
       type: 'sqlite',
     })
 
     this.orm = orm
 
-    if(!isDbExist) {
+    if (!isDbExist) {
       let generator = await this.orm.getSchemaGenerator()
 
       await generator.dropSchema()

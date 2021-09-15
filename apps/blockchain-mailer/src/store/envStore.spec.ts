@@ -1,4 +1,4 @@
-import envStore from './envStore';
+import envStore from "./envStore";
 
 describe('mailService', () => {
   test('constructor()', async () => {

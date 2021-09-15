@@ -1,6 +1,6 @@
-import nodemailer, {Transporter} from 'nodemailer';
-import MailgunTransport from '../util/MailgunTransport';
-import envStore from '../store/envStore';
+import nodemailer, { Transporter } from "nodemailer";
+import MailgunTransport from "../util/MailgunTransport";
+import envStore from "../store/envStore";
 
 class MailService {
   mailer: Transporter = null as any

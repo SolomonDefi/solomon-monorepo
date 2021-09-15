@@ -1,5 +1,4 @@
 class EnvStore {
-
   get isTest(): boolean {
     return process.env.NODE_ENV === 'test'
   }
@@ -25,15 +24,15 @@ class EnvStore {
   }
 
   get ethChainUrl(): string {
-    if(this.isDev) {
+    if (this.isDev) {
       return 'http://localhost:8545'
     }
 
-    if(this.isStage) {
+    if (this.isStage) {
       return `https://ropsten.infura.io/v3/${this.infuraId}`
     }
 
-    if(this.isProd) {
+    if (this.isProd) {
       return `https://infura.io/v3/${this.infuraId}`
     }
 

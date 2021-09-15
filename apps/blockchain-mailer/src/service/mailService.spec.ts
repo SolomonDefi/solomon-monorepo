@@ -1,4 +1,4 @@
-import mailService from './mailService';
+import mailService from "./mailService";
 
 describe('mailService', () => {
   test('constructor()', async () => {
