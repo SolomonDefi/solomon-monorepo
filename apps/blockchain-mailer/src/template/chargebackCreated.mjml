@@ -1,0 +1,14 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="100px" src="{{logo_url}}"/>
+        <mj-divider border-color="#2a2a2a"/>
+        <mj-text font-size="20px" color="#2a2a2a" font-family="helvetica">Chargeback request submitted</mj-text>
+        <mj-text font-size="16px" color="#2a2a2a" font-family="helvetica">Your chargeback request has been committed to the blockchain, you now have {{hours}} hours to submit evidence before arbitrators make a final decision.</mj-text>
+        <mj-text font-size="16px" color="#2a2a2a" font-family="helvetica">Use this form to submit evidence: {{evidence_url}}</mj-text>
+        <mj-text font-size="16px" color="#2a2a2a" font-family="helvetica">You will receive a notification when evidence is successfully submitted, and when arbitration completes.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
