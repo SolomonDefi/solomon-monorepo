@@ -21,7 +21,7 @@ class MailService {
   }
 
   async getTemplateHtml(htmlName: string): Promise<HandlebarsTemplateDelegate> {
-    let htmlPath = path.resolve('..', 'template', 'chargebackCreated.html')
+    let htmlPath = path.resolve('..', 'template', htmlName)
     let rawHtml = await readFile(htmlPath, 'utf-8')
     let templateHtml = Handlebars.compile(rawHtml)
 
