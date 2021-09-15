@@ -1,6 +1,9 @@
-import nodemailer, { Transporter } from "nodemailer";
+import nodemailer, {Transporter} from "nodemailer";
 import MailgunTransport from "../util/MailgunTransport";
 import envStore from "../store/envStore";
+import {readFile} from "fs-extra";
+import path from "path";
+import Handlebars from "handlebars";
 
 class MailService {
   mailer: Transporter = null as any
@@ -17,19 +20,45 @@ class MailService {
     return info
   }
 
+  async getTemplateHtml(htmlName: string): Promise<HandlebarsTemplateDelegate> {
+    let htmlPath = path.resolve('..', 'template', 'chargebackCreated.html')
+    let rawHtml = await readFile(htmlPath, 'utf-8')
+    let templateHtml = Handlebars.compile(rawHtml)
+
+    return templateHtml
+  }
+
   async sendChargebackCreatedEmail(to: string) {
-    // TODO
-    await this.send(to, 'ChargebackCreated', '', '')
+    let subject = 'Chargeback created'
+    let templateHtml = await this.getTemplateHtml('chargebackCreated.html')
+    let finalHtml = templateHtml({
+      // TODO
+    })
+    let text = ''
+
+    await this.send(to, subject, finalHtml, text)
   }
 
   async sendPreorderCreatedEmail(to: string) {
-    // TODO
-    await this.send(to, 'PreorderCreated', '', '')
+    let subject = 'Preorder created'
+    let templateHtml = await this.getTemplateHtml('preorderCreated.html')
+    let finalHtml = templateHtml({
+      // TODO
+    })
+    let text = ''
+
+    await this.send(to, subject, finalHtml, text)
   }
 
   async sendEscrowCreatedEmail(to: string) {
-    // TODO
-    await this.send(to, 'EscrowCreated', '', '')
+    let subject = 'Escrow created'
+    let templateHtml = await this.getTemplateHtml('escrowCreated.html')
+    let finalHtml = templateHtml({
+      // TODO
+    })
+    let text = ''
+
+    await this.send(to, subject, finalHtml, text)
   }
 
   async init() {
