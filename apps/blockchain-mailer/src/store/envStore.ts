@@ -8,7 +8,7 @@ class EnvStore {
     return process.env.NODE_ENV === 'development'
   }
 
-  get isStag(): boolean {
+  get isStage(): boolean {
     return process.env.NODE_ENV === 'staging'
   }
 
@@ -17,23 +17,7 @@ class EnvStore {
   }
 
   get envName() {
-    if(this.isTest) {
-      return 'test'
-    }
-
-    if(this.isDev) {
-      return 'dev'
-    }
-
-    if(this.isStag) {
-      return 'stag'
-    }
-
-    if(this.isProd) {
-      return 'prod'
-    }
-
-    return 'unknown'
+    return process.env.NODE_ENV || 'unknown'
   }
 
   get infuraId(): string {
@@ -45,7 +29,7 @@ class EnvStore {
       return 'http://localhost:8545'
     }
 
-    if(this.isStag) {
+    if(this.isStage) {
       return `https://ropsten.infura.io/v3/${this.infuraId}`
     }
 
