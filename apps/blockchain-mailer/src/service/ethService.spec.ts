@@ -1,8 +1,7 @@
-import ethService, {EthService} from "./ethService";
+import ethService, { EthService } from "./ethService";
 
-
-describe("ethService", ()=> {
-  test("constructor()", async ()=> {
+describe('ethService', () => {
+  test('constructor()', async () => {
     expect(ethService).toBeInstanceOf(EthService)
   })
 })
