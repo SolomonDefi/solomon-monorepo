@@ -1,9 +1,10 @@
-import nodemailer, {Transporter} from "nodemailer";
-import MailgunTransport from "../util/MailgunTransport";
-import envStore from "../store/envStore";
-import {readFile} from "fs-extra";
-import path from "path";
-import Handlebars from "handlebars";
+import nodemailer, { Transporter } from 'nodemailer'
+import MailgunTransport from '../util/MailgunTransport'
+import envStore from '../store/envStore'
+import { readFile } from 'fs-extra'
+import path from 'path'
+import Handlebars from 'handlebars'
+import pathStore from '../../../../pathStore'
 
 class MailService {
   mailer: Transporter = null as any
@@ -21,7 +22,7 @@ class MailService {
   }
 
   async getTemplateHtml(htmlName: string): Promise<HandlebarsTemplateDelegate> {
-    let htmlPath = path.resolve('..', 'template', htmlName)
+    let htmlPath = path.resolve(pathStore.mailer, 'src', 'template', htmlName)
     let rawHtml = await readFile(htmlPath, 'utf-8')
     let templateHtml = Handlebars.compile(rawHtml)
 
