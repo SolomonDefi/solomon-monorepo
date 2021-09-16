@@ -1,10 +1,8 @@
 <mjml>
-  <mj-head>
-    <mj-preview>
-      <!-- TODO Add mail preview -->
-    </mj-preview>
-  </mj-head>
   <mj-body>
-
+    <mj-text>
+      <p id="foo">{{foo}}</p>
+    </mj-text>
+    <mj-image src="{{bar}}" />
   </mj-body>
 </mjml>

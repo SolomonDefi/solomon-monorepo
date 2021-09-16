@@ -1,22 +1,29 @@
-import mailService from "./mailService";
-import {exec} from "child_process";
-import path from "path";
-import pathStore from "../../../../pathStore";
-import {promisify} from "util";
-import {existsSync} from "fs";
+import mailService from './mailService'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import { JSDOM } from 'jsdom'
 
 describe('mailService', () => {
+  jest.setTimeout(60 * 1000)
+
   test('constructor()', async () => {
     expect(mailService).toBeDefined()
   })
 
-  test("getTemplateHtml()", async ()=> {
-    let scriptPath = path.resolve(pathStore.scripts, 'generateMailTemplates.ts')
+  test('getTemplateHtml()', async () => {
+    await promisify(exec)('pnpx mailer:generate-template')
 
-    await promisify(exec)(`pnpx ts-node ${scriptPath}`)
+    let templateHtml = await mailService.getTemplateHtml('_test.html')
+    let finalHtml = templateHtml({
+      foo: 'foo',
+      bar: 'bar',
+    })
 
-    let htmlPath = path.resolve(pathStore.mailer, 'src', 'template', '_test.html')
+    let dom = new JSDOM(finalHtml)
+    let r1 = dom.window.document.querySelector('#foo')?.textContent
+    let r2 = dom.window.document.querySelector('img')?.getAttribute('src')
 
-    expect(existsSync(htmlPath)).toEqual(true)
+    expect(r1).toEqual('foo')
+    expect(r2).toEqual('bar')
   })
 })
