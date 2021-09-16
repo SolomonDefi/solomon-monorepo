@@ -2,9 +2,16 @@ import mailService from './mailService'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { JSDOM } from 'jsdom'
+import path from 'path'
+import pathStore from '../../../../pathStore'
 
 describe('mailService', () => {
   jest.setTimeout(60 * 1000)
+
+  beforeAll(async () => {
+    let scriptPath = path.resolve(pathStore.scripts, 'generateMailTemplates.ts')
+    await promisify(exec)(`pnpx ts-node ${scriptPath}`)
+  })
 
   test('constructor()', async () => {
     expect(mailService).toBeDefined()
@@ -13,8 +20,6 @@ describe('mailService', () => {
   test('send()', async () => {})
 
   test('getTemplateHtml()', async () => {
-    await promisify(exec)('pnpx mailer:generate-template')
-
     let templateHtml = await mailService.getTemplateHtml('_test.html')
     let finalHtml = templateHtml({
       foo: 'foo',
