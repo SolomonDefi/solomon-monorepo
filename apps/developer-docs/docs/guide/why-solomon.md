@@ -8,12 +8,12 @@ will allow any merchant to easily accept cryptocurrency and inspire consumer con
 We call this model “decentralized ecommerce”, or DeCom for short. By combining the virtues of decentralized finance with the protections
 demanded by consumers, Solomon will finally bring cryptocurrency payments into the mainstream.
 
-![Decom chart](../images/decom.png "Decom chart")
+![Decom chart](../images/decom.png 'Decom chart')
 
 ## Problems for Consumers
 
 It is telling that the biggest problem with cryptocurrency in regards to ecommerce is the fact that nearly everyone has heard of it yet
-hardly anyone *uses* it.
+hardly anyone _uses_ it.
 
 The advantages of cryptocurrency over credit cards are known and many: accessibility, low fees, fast transactions, unparalleled security,
 globalization, and more.
@@ -90,7 +90,7 @@ Due to their demonstrated financial investment, stakers will be trusted to elect
 only high-quality, trusted jurors in order to protect their investment, and to elect as many qualified individuals as possible to make the
 system robust and stable.
 
-![Jurors chart](../images/jurors.png "Jurors chart")
+![Jurors chart](../images/jurors.png 'Jurors chart')
 
 ## Summary
 

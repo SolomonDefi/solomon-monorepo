@@ -3,7 +3,6 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-
   release:
     runs-on: ${{ matrix.os }}
 
@@ -27,4 +26,3 @@ jobs:
       - run: pnpm install
       - run: pnpm test
       - run: pnpx semantic-release
-

@@ -1,23 +1,14 @@
 <template>
-  <a
-    class="nav-bar-title"
-    :href="localePath"
-    :aria-label="`${title}, back to home`"
-  >
-    <img
-      v-if="theme.logo"
-      class="logo"
-      :src="withBase(theme.logo)"
-      alt="Logo"
-    />
+  <a class="nav-bar-title" :href="localePath" :aria-label="`${title}, back to home`">
+    <img v-if="theme.logo" class="logo" :src="withBase(theme.logo)" alt="Logo" />
     {{ site.navTitle }}
   </a>
 </template>
 
 <script lang="ts" setup>
-import { withBase, useData } from 'vitepress';
+import { withBase, useData } from 'vitepress'
 
-const { localePath, theme, title, site } = useData();
+const { localePath, theme, title, site } = useData()
 </script>
 
 <style scoped>
