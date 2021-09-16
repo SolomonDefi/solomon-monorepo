@@ -51,6 +51,27 @@
         }
       }
     },
+    "blockchain-mailer-feature-templates": {
+      "root": "libs/blockchain-mailer/feature-templates",
+      "sourceRoot": "libs/blockchain-mailer/feature-templates/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/blockchain-mailer/feature-templates/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/blockchain-mailer/feature-templates"],
+          "options": {
+            "jestConfig": "libs/blockchain-mailer/feature-templates/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "developer-docs": {
       "root": "apps/developer-docs",
       "projectType": "application",
@@ -69,6 +90,27 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/developer-docs/**/*.{js,jsx,ts,tsx,vue}"]
+          }
+        }
+      }
+    },
+    "shared-util-path-store": {
+      "root": "libs/shared/util-path-store",
+      "sourceRoot": "libs/shared/util-path-store/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/util-path-store/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/util-path-store"],
+          "options": {
+            "jestConfig": "libs/shared/util-path-store/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }

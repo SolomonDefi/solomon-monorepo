@@ -4,7 +4,7 @@ import envStore from '../store/envStore'
 import { readFile } from 'fs-extra'
 import path from 'path'
 import Handlebars from 'handlebars'
-import pathStore from '../../../../pathStore'
+import pathStore from '@solomon/shared/util-path-store'
 
 class MailService {
   mailer: Transporter = null as any

@@ -14,7 +14,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@solomon/blockchain-mailer/feature-templates": [
+        "libs/blockchain-mailer/feature-templates/src/index.ts"
+      ],
+      "@solomon/apps/blockchain-mailer": ["apps/blockchain-mailer/src"],
+      "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
+      "@solomon/shared/util-path-store": ["libs/shared/util-path-store/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
