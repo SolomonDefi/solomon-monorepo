@@ -28,10 +28,16 @@
   },
   "projects": {
     "blockchain-mailer": {
-      "tags": []
+      "tags": ["scope:service", "type:app"]
+    },
+    "blockchain-mailer-feature-templates": {
+      "tags": ["scope:service", "type:feature"]
     },
     "developer-docs": {
       "tags": ["scope:web", "type:docs"]
+    },
+    "shared-util-path-store": {
+      "tags": ["scope:shared", "type:util"]
     }
   }
 }

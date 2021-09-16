@@ -2,7 +2,7 @@ import * as path from 'path'
 
 class PathStore {
   get root() {
-    return __dirname
+    return path.resolve(__dirname, '..', '..', '..', '..', '..')
   }
 
   get mailer() {

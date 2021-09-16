@@ -1,16 +1,12 @@
 import mailService from './mailService'
-import { exec } from 'child_process'
-import { promisify } from 'util'
 import { JSDOM } from 'jsdom'
-import path from 'path'
-import pathStore from '../../../../pathStore'
+import generateMailTemplates from '@solomon/blockchain-mailer/feature-templates'
 
 describe('mailService', () => {
   jest.setTimeout(60 * 1000)
 
   beforeAll(async () => {
-    let scriptPath = path.resolve(pathStore.scripts, 'generateMailTemplates.ts')
-    await promisify(exec)(`pnpx ts-node ${scriptPath}`)
+    await generateMailTemplates()
   })
 
   test('constructor()', async () => {
