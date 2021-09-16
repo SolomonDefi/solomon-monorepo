@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as path from 'path'
 
 class PathStore {
   get root() {

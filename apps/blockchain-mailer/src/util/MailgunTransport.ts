@@ -1,6 +1,6 @@
-import Mailgun from "mailgun.js";
-import formData from "form-data";
-import packageData from "../../../../package.json";
+import Mailgun from 'mailgun.js'
+import formData from 'form-data'
+import packageData from '../../../../package.json'
 
 const whitelist = [
   ['replyTo', 'h:Reply-To'],

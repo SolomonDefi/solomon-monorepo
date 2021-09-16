@@ -4,7 +4,5 @@
       <!-- TODO Add mail preview -->
     </mj-preview>
   </mj-head>
-  <mj-body>
-
-  </mj-body>
+  <mj-body> </mj-body>
 </mjml>

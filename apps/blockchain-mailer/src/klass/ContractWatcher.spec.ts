@@ -1,4 +1,4 @@
-import ContractWatcher from "./ContractWatcher";
+import ContractWatcher from './ContractWatcher'
 
 describe('ContractWatcher', () => {
   test('constructor()', async () => {

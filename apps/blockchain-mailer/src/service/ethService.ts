@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
-import envStore from "../store/envStore";
-import mailService from "./mailService";
+import { ethers } from 'ethers'
+import envStore from '../store/envStore'
+import mailService from './mailService'
 
 export class EthService {
   provider = null as any

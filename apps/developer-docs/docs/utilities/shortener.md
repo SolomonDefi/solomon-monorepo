@@ -5,6 +5,7 @@ Repository: https://github.com/solomondefi/link-shortener
 The link shortener is a simple utility to generate short links, and redirect requests to the shortened URL.
 
 It has a few extra features:
+
 - Token authentication for creating URLs
 - Preferred short codes with fallback to random generation
 

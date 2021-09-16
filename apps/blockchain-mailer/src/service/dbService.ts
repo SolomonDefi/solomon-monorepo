@@ -1,9 +1,9 @@
-import { MikroORM } from "@mikro-orm/core";
-import path from "path";
-import envStore from "../store/envStore";
-import { ScanLogEntity } from "../Entity/ScanLogEntity";
-import { QueryOrderNumeric } from "@mikro-orm/core/enums";
-import { pathExists, remove } from "fs-extra";
+import { MikroORM } from '@mikro-orm/core'
+import path from 'path'
+import envStore from '../store/envStore'
+import { ScanLogEntity } from '../Entity/ScanLogEntity'
+import { QueryOrderNumeric } from '@mikro-orm/core/enums'
+import { pathExists, remove } from 'fs-extra'
 
 export class DbService {
   orm: MikroORM = null as any

@@ -15,10 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import NavBarTitle from './NavBarTitle.vue';
-import NavLinks from 'vitepress/dist/client/theme-default/components/NavLinks.vue';
-import ToggleSideBarButton from 'vitepress/dist/client/theme-default/components/ToggleSideBarButton.vue';
-defineEmits(['toggle']);
+import NavBarTitle from './NavBarTitle.vue'
+import NavLinks from 'vitepress/dist/client/theme-default/components/NavLinks.vue'
+import ToggleSideBarButton from 'vitepress/dist/client/theme-default/components/ToggleSideBarButton.vue'
+defineEmits(['toggle'])
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
-import dbService, { DbService } from "./dbService";
-import * as fse from "fs-extra";
+import dbService, { DbService } from './dbService'
+import * as fse from 'fs-extra'
 
 describe('dbService', () => {
   beforeEach(async () => {
