@@ -80,6 +80,7 @@
         "build": {
           "executor": "nx-vue3-vite:build-docs",
           "options": {
+            "docs": "apps/developer-docs/docs",
             "dist": "dist/apps/developer-docs"
           }
         },
