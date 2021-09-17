@@ -2,6 +2,7 @@ name: Generate Doc
 
 on:
   pull_request:
+    types: [closed]
     branches:
       - master
     paths:
@@ -9,6 +10,8 @@ on:
 
 jobs:
   release:
+    name: Deploy docs
+
     runs-on: ${{ matrix.os }}
 
     strategy:
