@@ -3,7 +3,7 @@ import pkgDir = require('pkg-dir')
 
 class PathStore {
   get root(): string {
-    return pkgDir.sync()
+    return pkgDir.sync() || ''
   }
 
   get mailer() {
