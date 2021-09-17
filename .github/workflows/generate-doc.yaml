@@ -1,0 +1,30 @@
+name: Generate Doc
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'apps/developer-docs/**'
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.0.2
+
+      - run: pnpm install
+      - run: echo "todo:build document"
+      - run: echo "todo:publish to GH page"
