@@ -1,8 +1,9 @@
 import * as path from 'path'
+import pkgDir = require('pkg-dir')
 
 class PathStore {
-  get root() {
-    return path.resolve(__dirname, '..', '..', '..', '..', '..')
+  get root(): string {
+    return pkgDir.sync()
   }
 
   get mailer() {
