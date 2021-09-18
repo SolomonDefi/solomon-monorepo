@@ -2,28 +2,45 @@
 
 This site contains documentation and links pertaining to all Solomon code repositories. Before contributing, make sure to review the [guidelines](/guide/contributing) relevant to the project, the [commit message format](/guide/commit-format), and read through the [code of conduct](/guide/code-of-conduct) Choose a link on the left to get started with project documentation, or check out helpful links below, organized by project type:
 
-TODO -- update for Monorepo
+Solomon uses a monorepo for all apps and libraries that make up the ecosytem:
 
-## Plugin
+## Monorepo Root
 
-- Repositories
-  - https://github.com/solomondefi/plugin
-  - https://github.com/solomondefi/plugin-demo
+- https://github.com/SolomonDefi/solomon-monorepo
+
+### Plugin
+
+- App
+  - TBD (monorepo migration in progress)
+- Libs
+  - TBD (monorepo migration in progress)
 - Plugin Demo: https://plugin-demo.solomondefi.com/
 
-## Contracts
+### Contracts
 
-- Repositories
-  - https://github.com/solomondefi/slm-contracts
-  - https://github.com/solomondefi/slm-token
-  - https://github.com/solomondefi/presale-vesting
+- App
+  - TBD (monorepo migration in progress)
+- Libs
+  - TBD (monorepo migration in progress)
 
-## Utilities
+**Non-monorepo**
 
-- Repositories
-  - https://github.com/solomondefi/blockchain-mailer
-  - https://github.com/solomondefi/link-shortener
-  - https://github.com/solomondefi/evidence-uploader
+- https://github.com/solomondefi/presale-vesting
+  - The presale is over, so the repository will not be migrated to the monorepo
+
+### Utilities
+
+- Blockchain Mailer App
+  - https://github.com/SolomonDefi/solomon-monorepo/tree/main/apps/blockchain-mailer
+- Link shortener
+  - TBD (monorepo migration in progress)
+- Evidence Uploader
+  - TBD (monorepo migration in progress)
+
+### Docs
+
+- App
+  - https://github.com/SolomonDefi/solomon-monorepo/tree/main/apps/developer-docs
 
 ## Sites
 
