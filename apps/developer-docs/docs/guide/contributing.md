@@ -21,7 +21,7 @@ There may be multiple PRs per issue, but each PR should only cover a single issu
 Follow these steps to ensure a smooth process:
 
 - Link to the corresponding issue in the description (e.g. `#117`)
-  - If the PR will close the issue, include e.g. `Close #117` on it's own line
+  - If the PR will close the issue, include e.g. `Close #117` on its own line
   - If the PR is for a hotfix, mention it in the description
 - Verify that status/CI checks are passing
 - Squash trivial commits and edit poorly worded messages with [interactive rebase](https://thoughtbot.com/blog/git-interactive-rebase-squash-amend-rewriting-history#interactive-rebase)

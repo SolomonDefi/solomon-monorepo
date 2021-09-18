@@ -8,7 +8,7 @@ Solomon's core technology is built around Ethereum, which is still the gold stan
 
 ## Frontend
 
-Aside from blockchain contracts guaranteeing buyer protection for online transactions, Solomon's core strength is it's extensible frontend plugin. Using popular, modern, and light frameworks and development practices is key for growing a developer community and having the best chance of avoiding future tech stack obsolescence.
+Aside from blockchain contracts guaranteeing buyer protection for online transactions, Solomon's core strength is its extensible frontend plugin. Using popular, modern, and light frameworks and development practices is key for growing a developer community and having the best chance of avoiding future tech stack obsolescence.
 
 ### Vue3
 
@@ -40,4 +40,4 @@ We often use Python when speed and safety are less important than ecosystem and 
 
 ### Rust
 
-Solomon uses Rust when possible to take advantage of it's speed and safety.
+Solomon uses Rust when possible to take advantage of its speed and safety.
