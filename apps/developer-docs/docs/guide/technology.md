@@ -4,7 +4,7 @@ Solomon takes advantage an accessible and modern tech stack in order to iterate 
 
 ## Ethereum
 
-Solomon's core technology is built around Ethereum, which is still the gold standard for smart contract development, with the best documentation and mature development practices. Solidity is the most widely used language for the Ethereum virtual machine.
+Solomon's core technology is built around Ethereum, which is still the gold standard for smart contract development, with great documentation and mature development practices. Solidity is the most widely used language for the Ethereum virtual machine.
 
 ## Frontend
 
@@ -12,9 +12,9 @@ Aside from blockchain contracts guaranteeing buyer protection for online transac
 
 ### Vue3
 
-[Vue3](https://github.com/vuejs/vue-next) is a significant upgrade over Vue2, which is one of the most popular javascript frameworks. It enables more convenient typescript integration, a composition API for better code organization and reuse, native Postcss integration, and numerous speed/build size improvements.
+[Vue3](https://github.com/vuejs/vue-next) is a significant upgrade over Vue2, which is one of the most popular javascript frameworks. It enables more convenient Typescript integration, a composition API for better code organization and reuse, native Postcss integration, and numerous speed/build size improvements.
 
-Solomon's plugin is built as a Vue3 component, although we provide builds that work natively in the browser and other populate frameworks.
+Solomon's plugin developed as a Vue3 component, although we provide builds that work natively in the browser and other populate frameworks.
 
 ### Vite
 
