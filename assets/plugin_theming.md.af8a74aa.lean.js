@@ -1,0 +1,1 @@
+import{o as e,c as t,d as a}from"./app.5e88432e.js";const r='{"title":"Theming","description":"","frontmatter":{},"headers":[{"level":2,"title":"Default Theme","slug":"default-theme"}],"relativePath":"plugin/theming.md","lastUpdated":1631952569468}',i={},s=[a('',4)];i.render=function(a,r,i,h,n,l){return e(),t("div",null,s)};export{r as __pageData,i as default};

@@ -1,0 +1,1 @@
+import{o as e,c as o,d as i}from"./app.5e88432e.js";const t='{"title":"Blockchain Emailer","description":"","frontmatter":{},"relativePath":"utilities/mailer.md","lastUpdated":1631952569468}',a={},n=[i('',9)];a.render=function(i,t,a,r,s,l){return e(),o("div",null,n)};export{t as __pageData,a as default};
