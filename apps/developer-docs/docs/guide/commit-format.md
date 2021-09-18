@@ -4,12 +4,8 @@ This specification is inspired by [Angular's Commit Message Guidelines](https://
 
 Each commit message consists of a header, a body, and a footer.
 
-```sh
-<header> # required, must conform to the "Commit Message Header" format below
-<BLANK LINE>
-[<body>] # (optional) must conform to the "Commit Message Body" format below
-<BLANK LINE>
-[<footer>] # (optional) supplemental info, must conform to the "Commit Message Footer" format below
+```
+<scope> [<project>]: <short-summary> #<issue-number>
 ```
 
 Any line of the commit message cannot be longer than 100 characters.
