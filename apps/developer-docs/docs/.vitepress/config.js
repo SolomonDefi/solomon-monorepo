@@ -1,4 +1,4 @@
-const base = '/docs/'
+const base = '/'
 
 module.exports = {
   title: 'Solomon Documentation',
