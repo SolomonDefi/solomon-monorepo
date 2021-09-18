@@ -1,4 +1,4 @@
-name: Generate Doc
+name: Publish Developer Docs
 
 on:
   pull_request:
@@ -10,6 +10,7 @@ on:
 
 jobs:
   release:
+    if: github.event.pull_request.merged == true
     name: Deploy docs
 
     runs-on: ${{ matrix.os }}
@@ -29,5 +30,10 @@ jobs:
           version: 6.0.2
 
       - run: pnpm install
-      - run: echo "todo:build document"
-      - run: echo "todo:publish to GH page"
+      - run: pnpx nx build developer-docs
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: dist/apps/developer-docs
