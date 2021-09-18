@@ -3,8 +3,6 @@ name: Publish Developer Docs
 on:
   pull_request:
     types: [closed]
-    branches:
-      - main
     paths:
       - 'apps/developer-docs/**'
 
