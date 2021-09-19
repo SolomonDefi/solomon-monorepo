@@ -20,77 +20,69 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { toRefs, computed } from 'vue'
 import { uidSingleton } from './uid'
 
-export default {
-  emits: ['update:modelValue', 'handle-enter'],
-  props: {
-    modelValue: {
-      type: [Number, String],
-      default: null,
-    },
-    placeholder: {
-      type: String,
-      default: null,
-    },
-    title: {
-      type: String,
-      default: null,
-    },
-    inputType: {
-      type: String,
-      default: 'text',
-    },
-    rows: {
-      type: Number,
-      default: null,
-    },
-    autocomplete: {
-      type: String,
-      default: 'off',
-    },
-    inputClass: {
-      type: String,
-      default: null,
-    },
-    maxLength: {
-      type: Number,
-      default: undefined,
-    },
+defineEmits(['update:modelValue', 'handle-enter'])
+const props = defineProps({
+  modelValue: {
+    type: [Number, String],
+    default: null,
   },
-  setup(props) {
-    const { inputClass, rows, placeholder, inputType, maxLength } = toRefs(props)
-    const uid = uidSingleton.next()
+  placeholder: {
+    type: String,
+    default: null,
+  },
+  title: {
+    type: String,
+    default: null,
+  },
+  inputType: {
+    type: String,
+    default: 'text',
+  },
+  rows: {
+    type: Number,
+    default: null,
+  },
+  autocomplete: {
+    type: String,
+    default: 'off',
+  },
+  inputClass: {
+    type: String,
+    default: null,
+  },
+  maxLength: {
+    type: Number,
+    default: undefined,
+  },
+})
+const { inputClass, rows, placeholder, inputType, maxLength } = toRefs(props)
+const uid = uidSingleton.next()
 
-    const commonProps = computed(() => {
-      const props = {
-        class: {
-          'slm-input': true,
-          'slm-textarea': !!rows.value,
-          [inputClass.value]: inputClass.value,
-        },
-        maxlength: maxLength.value,
-        // eslint-disable-next-line
-        name: `input${uid}`,
-        placeholder: placeholder.value,
-      }
-      if (!rows) {
-        props.type = inputType.value
-      }
-      return props
-    })
-    return {
-      commonProps,
-      uid,
-    }
-  },
-}
+const commonProps = computed(() => {
+  const props = {
+    class: {
+      'slm-input': true,
+      'slm-textarea': !!rows.value,
+      [inputClass.value]: inputClass.value,
+    },
+    maxlength: maxLength.value,
+    // eslint-disable-next-line
+    name: `input${uid}`,
+    placeholder: placeholder.value,
+  }
+  if (!rows) {
+    props.type = inputType.value
+  }
+  return props
+})
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 $bg: $grey2;
 

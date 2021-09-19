@@ -15,7 +15,7 @@
 </template>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .header-wrap {
   display: flex;

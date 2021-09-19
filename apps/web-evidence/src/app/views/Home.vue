@@ -32,22 +32,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { ref } from 'vue'
 
-export default {
-  name: 'home',
-  setup() {
-    const type = ref('buyer')
-    return {
-      type,
-    }
-  },
-}
+const type = ref('buyer')
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .home {
   .types {

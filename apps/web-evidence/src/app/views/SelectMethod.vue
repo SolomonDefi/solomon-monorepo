@@ -40,36 +40,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 
-export default {
-  name: 'select-method',
-  setup() {
-    const { t } = useI18n()
-    const router = useRouter()
-    const route = useRoute()
-    const method = ref('upload-external')
+const router = useRouter()
+const route = useRoute()
+const method = ref('upload-external')
 
-    const goMethod = () => {
-      router.push({ name: method.value, params: { type: route.params.type } })
-    }
-    const select = (newMethod) => {
-      method.value = newMethod
-    }
-    return {
-      method,
-      select,
-      goMethod,
-    }
-  },
+const goMethod = () => {
+  router.push({ name: method.value, params: { type: route.params.type } })
+}
+const select = (newMethod) => {
+  method.value = newMethod
 }
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .select-method {
   .methods {

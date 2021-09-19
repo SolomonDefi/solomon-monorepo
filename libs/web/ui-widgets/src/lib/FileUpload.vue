@@ -32,63 +32,52 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { ref } from 'vue'
 
-export default {
-  emits: ['file-select'],
-  props: {
-    id: {
-      type: String,
-      default: 'file-upload',
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false,
-    },
-    currentFile: {
-      type: String,
-      default: null,
-    },
+const emit = defineEmits(['file-select'])
+defineProps({
+  id: {
+    type: String,
+    default: 'file-upload',
   },
-  setup(_, { emit }) {
-    const dragging = ref(false)
+  isDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  currentFile: {
+    type: String,
+    default: null,
+  },
+})
+const dragging = ref(false)
 
-    const handleFileSelect = (e) => {
-      if (e.type === 'input') {
-        const file = e.target.files[0]
-        emit('file-select', file)
-      } else if (e.type === 'drop') {
-        const file = e.dataTransfer.files[0]
-        emit('file-select', file)
-      }
-      dragging.value = false
-    }
-    const dragStart = (e) => {
-      e.preventDefault()
-      dragging.value = true
-    }
-    const dragEnd = (e) => {
-      e.preventDefault()
-      dragging.value = false
-    }
-    const dropFile = (e) => {
-      e.preventDefault()
-      handleFileSelect(e)
-    }
-    return {
-      dragging,
-      handleFileSelect,
-      dragStart,
-      dragEnd,
-      dropFile,
-    }
-  },
+const handleFileSelect = (e) => {
+  if (e.type === 'input') {
+    const file = e.target.files[0]
+    emit('file-select', file)
+  } else if (e.type === 'drop') {
+    const file = e.dataTransfer.files[0]
+    emit('file-select', file)
+  }
+  dragging.value = false
+}
+const dragStart = (e) => {
+  e.preventDefault()
+  dragging.value = true
+}
+const dragEnd = (e) => {
+  e.preventDefault()
+  dragging.value = false
+}
+const dropFile = (e) => {
+  e.preventDefault()
+  handleFileSelect(e)
 }
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .file-upload-wrap {
   border: 1px dashed $grey2;

@@ -26,13 +26,11 @@
   </svg>
 </template>
 
-<script>
-export default {
-  props: {
-    color: {
-      type: String,
-      default: 'white',
-    },
+<script lang="ts" setup>
+defineProps({
+  color: {
+    type: String,
+    default: 'white',
   },
-}
+})
 </script>

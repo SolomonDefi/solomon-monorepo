@@ -30,41 +30,31 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const validateUrl = (url) =>
+  // eslint-disable-next-line max-len
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(
     url,
   )
 
-export default {
-  name: 'external-link',
-  setup() {
-    const { t } = useI18n()
-    const link = ref('')
-    const error = ref(null)
-    const shorten = ref(false)
-    const upload = () => {
-      if (!validateUrl(link.value)) {
-        error.value = t('upload.invalid_url')
-      } else {
-        error.value = t('upload.unavailable')
-      }
-    }
-    return {
-      link,
-      error,
-      upload,
-      shorten,
-    }
-  },
+const { t } = useI18n()
+const link = ref('')
+const error = ref(null)
+const shorten = ref(false)
+const upload = () => {
+  if (!validateUrl(link.value)) {
+    error.value = t('upload.invalid_url')
+  } else {
+    error.value = t('upload.unavailable')
+  }
 }
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .external-link {
   .button {

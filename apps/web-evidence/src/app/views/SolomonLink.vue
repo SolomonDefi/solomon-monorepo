@@ -8,7 +8,7 @@
       <div class="section">
         {{ $t('upload.solomon_text2') }}
       </div>
-      <FileUpload @file-select="fileSelect" :currentFile="fileName" />
+      <FileUpload :currentFile="fileName" @file-select="fileSelect" />
       <ErrorMessage :errorMessage="uploadError" />
       <div class="buttons">
         <div
@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -40,46 +40,34 @@ function validateFile(requirements, file) {
   return null
 }
 
-export default {
-  name: 'upload-solomon',
-  setup() {
-    const { t } = useI18n()
-    const link = ref('')
-    const uploadError = ref(null)
-    const file = ref(null)
+const { t } = useI18n()
+const link = ref('')
+const uploadError = ref(null)
+const file = ref(null)
 
-    const fileSelect = (f) => {
-      const requirements = {
-        ext: ['jpg', 'txt', 'jpeg', 'png', 'pdf', 'mp4', 'zip'],
-        size: 20000000,
-      }
-      const error = validateFile(requirements, f)
-      if (error) {
-        uploadError.value = t(error)
-      } else {
-        file.value = f
-      }
-    }
-    const upload = () => {
-      if (file.value) {
-        uploadError.value = t('errors.FILE_REQUIRED')
-      } else {
-        uploadError.value = t('upload.unavailable')
-      }
-    }
-    return {
-      link,
-      uploadError,
-      fileSelect,
-      upload,
-      fileName: computed(() => (file.value ? file.value.name : null)),
-    }
-  },
+const fileSelect = (f) => {
+  const requirements = {
+    ext: ['jpg', 'txt', 'jpeg', 'png', 'pdf', 'mp4', 'zip'],
+    size: 20000000,
+  }
+  const error = validateFile(requirements, f)
+  if (error) {
+    uploadError.value = t(error)
+  } else {
+    file.value = f
+  }
+}
+const upload = () => {
+  if (file.value) {
+    uploadError.value = t('errors.FILE_REQUIRED')
+  } else {
+    uploadError.value = t('upload.unavailable')
+  }
 }
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .solomon-link {
   .button {

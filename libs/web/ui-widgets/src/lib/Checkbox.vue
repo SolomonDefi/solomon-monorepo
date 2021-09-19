@@ -6,51 +6,43 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { computed, toRefs } from 'vue'
 
-export default {
-  emits: ['checked'],
-  props: {
-    checked: Boolean,
-    label: {
-      type: String,
-      default: '',
-    },
-    // Optional override of checkbox class
-    checkedClass: {
-      type: String,
-      default: null,
-      validator: (value) => ['partial', 'checked', '', null].indexOf(value) !== -1,
-    },
-    disabled: {
-      type: Boolean,
-    },
+const emit = defineEmits(['checked'])
+const props = defineProps({
+  checked: Boolean,
+  label: {
+    type: String,
+    default: '',
   },
-  setup(props, { emit }) {
-    const { checkedClass, disabled, checked } = toRefs(props)
+  // Optional override of checkbox class
+  checkedClass: {
+    type: String,
+    default: null,
+    validator: (value) => ['partial', 'checked', '', null].indexOf(value) !== -1,
+  },
+  disabled: {
+    type: Boolean,
+  },
+})
+const { checkedClass, disabled, checked } = toRefs(props)
 
-    const internalCheckedClass = computed(() => {
-      if (checkedClass.value === null) {
-        return checked.value ? 'checked' : ''
-      }
-      return checkedClass
-    })
-    const handleCheck = (event, checked) => {
-      if (!disabled.value && event.target.nodeName !== 'A') {
-        emit('checked', checked)
-      }
-    }
-    return {
-      internalCheckedClass,
-      handleCheck,
-    }
-  },
+const internalCheckedClass = computed(() => {
+  if (checkedClass.value === null) {
+    return checked.value ? 'checked' : ''
+  }
+  return checkedClass
+})
+const handleCheck = (event, checked) => {
+  if (!disabled.value && event.target.nodeName !== 'A') {
+    emit('checked', checked)
+  }
 }
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .slm-checkbox {
   display: flex;
