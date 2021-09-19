@@ -5,6 +5,8 @@
     "firsttris.vscode-jest-runner",
     "dbaeumer.vscode-eslint",
     "johnsoncodehk.volar",
-    "samatech.postcss-vue"
+    "samatech.postcss-vue",
+    "ms-python.vscode-pylance",
+    "ms-python.python"
   ]
 }

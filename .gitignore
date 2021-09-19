@@ -32,10 +32,14 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+*.zip
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# Env
+*.env
 
 # Local test script
 test.sh
@@ -47,3 +51,10 @@ yarn.lock
 
 # sqlite file
 **/*.db
+
+# Python
+log
+__pycache__
+*.pyc
+.venv
+*~
