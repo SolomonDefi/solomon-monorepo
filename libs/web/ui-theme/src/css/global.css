@@ -1,56 +1,20 @@
-$blue: #277cea;
-$dark1: #2a292b;
-$dark3: #495057;
-$grey1: #f5f6f8;
-$grey2: #d5d5d5;
-$text-light: #707073;
-$text-light2: #838d8f;
-$red: #f46a6a;
+@import './defines.css';
 
-$overlay: rgba(0, 0, 0, 0.6);
-
-@define-mixin flex-center {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
 }
 
-@define-mixin flex-center-col {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
-@define-mixin overlay {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-}
-
-@define-mixin title $size {
-  font-family: 'Montserrat', 'Avenir', Helvetica;
-  font-weight: 700;
-  font-size: $size;
-}
-
-@define-mixin semibold $size {
-  font-family: 'Montserrat', 'Avenir', Helvetica;
-  font-weight: 600;
-  font-size: $size;
-}
-
-@define-mixin medium $size {
-  font-family: 'Montserrat', 'Avenir', Helvetica;
-  font-weight: 500;
-  font-size: $size;
-}
-
-@define-mixin text $size {
-  font-family: 'Montserrat', Garamond, serif;
-  font-weight: 400;
-  font-size: $size;
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -11,20 +11,17 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'error-message',
-  props: {
-    errorMessage: {
-      type: String,
-      default: null,
-    },
+<script lang="ts" setup>
+defineProps({
+  errorMessage: {
+    type: String,
+    default: null,
   },
-}
+})
 </script>
 
 <style lang="postcss">
-@import '@theme/css/global.css';
+@import '@theme/css/defines.css';
 
 .error-message-wrap {
   width: 100%;
