@@ -182,6 +182,30 @@
           }
         }
       }
+    },
+    "api-evidence": {
+      "root": "apps/api-evidence",
+      "projectType": "application",
+      "sourceRoot": "apps/api-evidence/src",
+      "targets": {
+        "serve": {
+          "executor": "nx-python-fastapi:serve",
+          "options": {
+            "host": "localhost",
+            "port": 3000
+          }
+        },
+        "test": {
+          "executor": "nx-python-fastapi:test",
+          "outputs": ["coverage/apps/api-evidence"]
+        },
+        "lint": {
+          "executor": "nx-python-fastapi:lint"
+        },
+        "format": {
+          "executor": "nx-python-fastapi:format"
+        }
+      }
     }
   },
   "cli": {

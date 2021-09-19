@@ -53,6 +53,7 @@
     "husky": "^7.0.0",
     "jest": "27.0.3",
     "jsdom": "^17.0.0",
+    "nx-python-fastapi": "^0.1.0",
     "nx-vue3-vite": "^0.9.5",
     "postcss": "^8.3.6",
     "prettier": "^2.3.1",

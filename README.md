@@ -44,6 +44,7 @@ pnpx nx test <app-name>
 
 - Frontend: `apps/web-evidence`
 - Backend: `apps/api-evidence`
+  - [Setup instructions](./apps/api-evidence)
 
 The purpose of the uploader is to provide a simple interface for uploading evidence links to the blockchain during escrow disputes. Links must exist for the duration of the dispute (generally a maximum of 2 months). There are several methods for uploading evidence, and it is straightforward to add more.
 

@@ -47,6 +47,9 @@
     },
     "web-evidence": {
       "tags": ["scope:web", "type:app"]
+    },
+    "api-evidence": {
+      "tags": ["scope:api", "type:app"]
     }
   }
 }
