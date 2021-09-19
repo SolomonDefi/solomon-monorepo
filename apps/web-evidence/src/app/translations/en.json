@@ -1,0 +1,46 @@
+{
+  "next": "Next",
+  "back": "Back",
+  "submit": "Submit",
+  "header": {
+    "title": "Solomon Evidence",
+    "docs": "Docs"
+  },
+  "home": {
+    "title": "Solomon Dispute Evidence Uploader",
+    "intro": "This site provides methods for uploading evidence in a purchase/escrow dispute. Intended only for transactions made through the Solomon payment network.",
+    "wallet": "A <a href=\"https://metamask.io/\" target=\"_blank\">Metamask</a> account is required to submit links.",
+    "type": "Please select whether you are the buyer or the merchant. Not required for escrow transactions.",
+    "buyer": "Buyer",
+    "merchant": "Merchant",
+    "enter": "Enter the transaction ID or contract address. These may be found in the original purchase receipt, or the dispute email notification.",
+    "placeholder": "ID or Address"
+  },
+  "select": {
+    "title": "Select a method for providing evidence.",
+    "external": "External Link",
+    "external_text": "A publicly visible link to your evidence. It should point to a standard document (e.g. image, PDF, zip file), and must remain available for the duration of the dispute.",
+    "solomon": "Solomon Upload",
+    "solomon_text": "Upload evidence to our servers. We'll make sure it's available for the duration of the dispute.",
+    "unavailable": "Sorry, this upload method is currently unavailable."
+  },
+  "upload": {
+    "title": "External Link Evidence Upload",
+    "text1": "Use an existing link as evidence",
+    "text2": "The evidence link must be publicly visible. It should point to a standard document (e.g. image, PDF, zip file), and must remain available for the duration of the dispute.",
+    "placeholder": "Link",
+    "invalid_url": "Please enter a valid URL that starts with http:// or https://",
+    "unavailable": "Evidence upload is not available yet.",
+    "shorten": "Use link shortener to save gas",
+    "solomon": "Solomon Evidence Upload",
+    "solomon_text1": "Upload an evidence file to Solomon's temporary storage. The file will last 30 days.",
+    "solomon_text2": "Accepted file types: jpg, png, txt, pdf, gif, mp4, zip. Maximum file size: 20MB",
+    "drag_drop": "Drag and Drop to Upload",
+    "browse_file": "Or browse to choose a file"
+  },
+  "errors": {
+    "FILE_SIZE_BIG": "File too large",
+    "FILE_TYPE": "File type not supported",
+    "FILE_REQUIRED": "Please choose a file to upload"
+  }
+}

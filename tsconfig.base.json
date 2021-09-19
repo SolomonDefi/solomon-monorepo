@@ -7,6 +7,8 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "importHelpers": true,
     "target": "es2020",
     "module": "esnext",
@@ -15,11 +17,13 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ismedia/web/ui-theme": ["libs/web/ui-theme/src"],
+      "@ismedia/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"],
+      "@solomon/apps/blockchain-mailer": ["apps/blockchain-mailer/src"],
+      "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-mailer/feature-templates": [
         "libs/blockchain-mailer/feature-templates/src/index.ts"
       ],
-      "@solomon/apps/blockchain-mailer": ["apps/blockchain-mailer/src"],
-      "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/shared/util-path-store": ["libs/shared/util-path-store/src/index.ts"]
     }
   },
