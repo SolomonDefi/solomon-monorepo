@@ -41,7 +41,7 @@ function validateFile(requirements, file) {
 }
 
 const { t } = useI18n()
-const link = ref('')
+// const link = ref('')
 const uploadError = ref(null)
 const file = ref(null)
 
