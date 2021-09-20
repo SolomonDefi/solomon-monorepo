@@ -1,0 +1,167 @@
+name: PR Commit
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-format:
+    name: Check Format
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up NodeJS (v14)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.0.2
+      - name: Install modules
+        run: pnpm i
+      - name: Check code format
+        run: pnpx nx format:check --base=origin/main
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up NodeJS (v14)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.0.2
+      - name: Install modules
+        run: pnpm i
+      - name: Lint source code
+        run: pnpx nx affected:lint --base=origin/main --parallel
+  # TODO
+  #      - name: Lint commits
+  #        run: pnpx commitlint --verbose --from=origin/main
+
+  # TODO
+  # build-docker-db-api:
+  #   name: DB API Image
+  #   runs-on: ubuntu-20.04
+  #   env:
+  #     APP_NAME: db-api
+  #   steps:
+  #     - name: Get last commit short SHA
+  #       id: slug
+  #       run: echo "::set-output name=sha7::$(echo ${{github.event.pull_request.head.sha}} | cut -c1-7)"
+  #     - name: Checkout code into workspace directory
+  #       uses: actions/checkout@v2
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v1
+  #     - name: Build docker image
+  #       id: docker_build
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         context: ${{env.WORKSPACE_ROOT}}
+  #         push: false
+  #         file: ${{env.WORKSPACE_ROOT}}/apps/${{env.APP_NAME}}/Dockerfile
+  #         tags: ${{env.APP_NAME}}-${{github.head_ref}}-${{steps.slug.outputs.sha7}}
+
+  build-apps:
+    name: Build Apps
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up NodeJS (v14)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.0.2
+      - name: Install modules
+        run: pnpm i
+      - name: Build apps
+        run: pnpx nx affected:build --base=origin/main --parallel
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up NodeJS (v14)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.0.2
+      - name: Install modules
+        run: pnpm i
+      - name: Run unit tests
+        run: pnpx nx affected:test --base=origin/main --parallel
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up NodeJS (v14)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.0.2
+      - name: Install npm modules
+        run: pnpm i
+      - name: Run E2E tests
+        run: pnpx nx affected:e2e --base=origin/main
