@@ -21,6 +21,7 @@ requests = "^2.26.0"
 python-multipart = "^0.0.5"
 eth-account = "^0.5.5"
 alembic = "^1.7.3"
+boto3 = "^1.18.44"
 
 [tool.poetry.dev-dependencies]
 pylint = "*"
@@ -36,6 +37,7 @@ show_column_numbers = true
 disallow_untyped_defs = true
 no_warn_no_return = true
 plugins = ["sqlmypy"]
+exclude = "migrations"
 
 [tool.black]
 include = '\.py$'

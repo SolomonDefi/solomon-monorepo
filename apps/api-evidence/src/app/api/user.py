@@ -126,7 +126,7 @@ def read_user_by_id(
     user = crud.user.get(db, id=user_id)
     if user == current_user:
         return user
-    if not crud.user.is_superuser(current_user):
+    if not current_user.is_superuser:
         raise HTTPException(status_code=403, detail='Missing privileges')
     return user
 
