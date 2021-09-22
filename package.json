@@ -11,6 +11,9 @@
     "mailer:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts"
   },
   "private": true,
+  "peerDependencies": {
+    "cypress": "^8.4.0"
+  },
   "devDependencies": {
     "@angular-devkit/schematics": "^12.2.4",
     "@babel/core": "^7.15.0",
@@ -44,7 +47,6 @@
     "babel-jest": "^27.0.6",
     "chalk": "^4.1.2",
     "class-transformer": "^0.4.0",
-    "cypress": "^8.4.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.11.3",
