@@ -82,6 +82,7 @@ jobs:
           context: ${{env.WORKSPACE_ROOT}}
           push: false
           file: ${{env.WORKSPACE_ROOT}}/Dockerfile
+          target: mailer_prod
           tags: ${{env.APP_NAME}}-${{github.head_ref}}-${{steps.slug.outputs.sha7}}
 
   build-apps:
