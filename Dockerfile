@@ -23,7 +23,7 @@ RUN pnpm install
 
 # MAILER: DEV IMAGE (929.95 MB)
 # ------------------------------------------------------------------------------------
-FROM base as dev
+FROM base as mailer_dev
 
 ENV NODE_ENV=developemnt
 
@@ -35,7 +35,7 @@ CMD ["pnpm", "exec", "nx", "serve", "blockchain-mailer"]
 
 # MAILER: PROD IMAGE (931.99 MB)
 # ------------------------------------------------------------------------------------
-FROM base as prod
+FROM base as mailer_prod
 
 ENV NODE_ENV=production
 
