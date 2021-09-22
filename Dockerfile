@@ -58,17 +58,9 @@ WORKDIR /usr/src
 COPY apps/blockchain-mailer ./apps/blockchain-mailer
 COPY libs ./libs
 
-COPY .editorconfig ./
-COPY .eslintrc.json ./
-COPY .gitignore ./
-COPY .prettierignore ./
-COPY .prettierrc ./
-COPY jest.config.js ./
-COPY jest.preset.js ./
 COPY nx.json ./
 COPY pnpm-lock.yaml ./
 COPY package.json ./
-COPY release.config.js ./
 COPY tsconfig.base.json ./
 COPY workspace.json ./
 
