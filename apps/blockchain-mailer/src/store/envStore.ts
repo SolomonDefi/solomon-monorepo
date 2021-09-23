@@ -44,12 +44,12 @@ class EnvStore {
   }
 
   get mailgunApiKey(): string {
-    return ''
+    return 'foo'
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
   get mailgunDomain(): string {
-    return ''
+    return 'foo.bar'
   }
 }
 
