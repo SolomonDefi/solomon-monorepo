@@ -13,6 +13,10 @@ describe('mailService', () => {
     expect(mailService).toBeDefined()
   })
 
+  test('init()', async () => {
+    await expect(mailService.init()).resolves.not.toThrow()
+  })
+
   test('send()', async () => {})
 
   test('getTemplateHtml()', async () => {
