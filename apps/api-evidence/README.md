@@ -27,10 +27,14 @@ pip3 install poetry
 
 #### OSX (untested)
 
+There will be a dependency on Postgres for poetry install. Please install Postgres first.
+Reference is at [github](https://github.com/psycopg/psycopg2/issues/1200#issuecomment-776159466)
+
 ```
 brew install poetry pyenv
 pyenv install 3.9.5
 pyenv local 3.9.5
+brew install postgresql
 ```
 
 ### Install python packages
