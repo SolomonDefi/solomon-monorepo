@@ -1,4 +1,4 @@
-# Solomon Blockchain Emailer
+# Solomon Blockchain Watcher
 
 A service that scans the blockchain and triggers actions based on incoming log messages. It is intended for use in the Solomon payments
 ecosystem, but may be adapted for general use.
@@ -16,5 +16,4 @@ Solomon implements scanners for:
 - Notifying both parties when a dispute is initiated
 - Notifying parties when funds are withdrawn from escrow
 
-The service is written with Typescript as a nodejs application. See the [Github
-repository](https://github.com/solomondefi/blockchain-watcher) for more technical details including setup and deploy procedures.
+The service is written with Typescript as a nodejs application.
