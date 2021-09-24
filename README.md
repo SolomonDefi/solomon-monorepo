@@ -14,9 +14,9 @@ pnpm install
 
 The following table outlines all the apps available. Each app is located in `apps/<app-name>`, and `<app-name>` can be substituted in the next section to serve, build, or test specific apps.
 
-| app-name          | Description                                                             |
-| ----------------- | ----------------------------------------------------------------------- |
-| blockchain-mailer | Watches Solomon contracts and emails relevant parties when events occur |
+| app-name           | Description                                                             |
+| ------------------ | ----------------------------------------------------------------------- |
+| blockchain-watcher | Watches Solomon contracts and emails relevant parties when events occur |
 
 ### App Commands
 

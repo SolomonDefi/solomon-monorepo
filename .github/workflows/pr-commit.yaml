@@ -62,11 +62,11 @@ jobs:
   #      - name: Lint commits
   #        run: pnpx commitlint --verbose --from=origin/main
 
-  build-docker-mailer:
-    name: Blockchain Mailer Image
+  build-docker-watcher:
+    name: Blockchain Watcher Image
     runs-on: ubuntu-20.04
     env:
-      APP_NAME: blockchain-mailer
+      APP_NAME: blockchain-watcher
     steps:
       - name: Get last commit short SHA
         id: slug
@@ -82,7 +82,7 @@ jobs:
           context: ${{env.WORKSPACE_ROOT}}
           push: false
           file: ${{env.WORKSPACE_ROOT}}/Dockerfile
-          target: mailer_prod
+          target: watcher_prod
           tags: ${{env.APP_NAME}}-${{github.head_ref}}-${{steps.slug.outputs.sha7}}
 
   build-apps:

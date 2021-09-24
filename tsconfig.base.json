@@ -19,10 +19,10 @@
     "paths": {
       "@ismedia/web/ui-theme": ["libs/web/ui-theme/src"],
       "@ismedia/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"],
-      "@solomon/apps/blockchain-mailer": ["apps/blockchain-mailer/src"],
+      "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
-      "@solomon/blockchain-mailer/feature-templates": [
-        "libs/blockchain-mailer/feature-templates/src/index.ts"
+      "@solomon/blockchain-watcher/feature-templates": [
+        "libs/blockchain-watcher/feature-templates/src/index.ts"
       ],
       "@solomon/shared/util-path-store": ["libs/shared/util-path-store/src/index.ts"]
     }

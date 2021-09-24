@@ -1,6 +1,6 @@
-# Blockchain Emailer
+# Blockchain Watcher
 
-Repository: Refer to the `blockchain-mailer` package in the [Solomon monorepo](https://github.com/solomondefi/solomon-monorepo)
+Repository: Refer to the `blockchain-watcher` package in the [Solomon monorepo](https://github.com/solomondefi/solomon-monorepo)
 
 A service that scans the blockchain and triggers actions based on incoming log messages. It is intended for use in the Solomon payments ecosystem, but may be adapted for more general use.
 

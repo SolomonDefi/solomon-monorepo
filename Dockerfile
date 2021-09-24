@@ -21,28 +21,28 @@ RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
 RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
 RUN pnpm install
 
-# MAILER: DEV IMAGE (929.95 MB)
+# WATCHER: DEV IMAGE (929.95 MB)
 # ------------------------------------------------------------------------------------
-FROM base as mailer_dev
+FROM base as watcher_dev
 
 ENV NODE_ENV=developemnt
 
-COPY apps/blockchain-mailer ./apps/blockchain-mailer
+COPY apps/blockchain-watcher ./apps/blockchain-watcher
 COPY libs ./libs
 
 ENTRYPOINT ["/sbin/tini", "-v", "--"]
-CMD ["pnpm", "exec", "nx", "serve", "blockchain-mailer"]
+CMD ["pnpm", "exec", "nx", "serve", "blockchain-watcher"]
 
-# MAILER: PROD IMAGE (931.99 MB)
+# WATCHER: PROD IMAGE (931.99 MB)
 # ------------------------------------------------------------------------------------
-FROM base as mailer_prod
+FROM base as watcher_prod
 
 ENV NODE_ENV=production
 
-COPY apps/blockchain-mailer ./apps/blockchain-mailer
+COPY apps/blockchain-watcher ./apps/blockchain-watcher
 COPY libs ./libs
 
-RUN pnpm exec nx build blockchain-mailer
+RUN pnpm exec nx build blockchain-watcher
 
 ENTRYPOINT ["/sbin/tini", "-v", "--"]
-CMD ["node", "./dist/apps/blockchain-mailer/main.js"]
+CMD ["node", "./dist/apps/blockchain-watcher/main.js"]

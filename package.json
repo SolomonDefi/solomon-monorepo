@@ -8,7 +8,7 @@
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
-    "mailer:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts"
+    "watcher:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts"
   },
   "private": true,
   "devDependencies": {

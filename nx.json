@@ -30,7 +30,7 @@
     "api-evidence": {
       "tags": ["scope:api", "type:app"]
     },
-    "blockchain-mailer-feature-templates": {
+    "blockchain-watcher-feature-templates": {
       "tags": ["scope:service", "type:feature"]
     },
     "blockchain-watcher": {
