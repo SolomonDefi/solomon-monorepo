@@ -1,53 +1,27 @@
 {
   "version": 2,
   "projects": {
-    "blockchain-mailer": {
-      "root": "apps/blockchain-mailer",
-      "sourceRoot": "apps/blockchain-mailer/src",
+    "api-evidence": {
+      "root": "apps/api-evidence",
       "projectType": "application",
+      "sourceRoot": "apps/api-evidence/src",
       "targets": {
-        "build": {
-          "executor": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/apps/blockchain-mailer",
-            "main": "apps/blockchain-mailer/src/main.ts",
-            "tsConfig": "apps/blockchain-mailer/tsconfig.app.json",
-            "assets": ["apps/blockchain-mailer/src/assets"]
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/blockchain-mailer/src/environments/environment.ts",
-                  "with": "apps/blockchain-mailer/src/environments/environment.prod.ts"
-                }
-              ]
-            }
-          }
-        },
         "serve": {
-          "executor": "@nrwl/node:execute",
+          "executor": "nx-python-fastapi:serve",
           "options": {
-            "buildTarget": "blockchain-mailer:build"
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/blockchain-mailer/**/*.ts"]
+            "host": "localhost",
+            "port": 3000
           }
         },
         "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/blockchain-mailer"],
-          "options": {
-            "jestConfig": "apps/blockchain-mailer/jest.config.js",
-            "passWithNoTests": true
-          }
+          "executor": "nx-python-fastapi:test",
+          "outputs": ["coverage/apps/api-evidence"]
+        },
+        "lint": {
+          "executor": "nx-python-fastapi:lint"
+        },
+        "format": {
+          "executor": "nx-python-fastapi:format"
         }
       }
     },
@@ -67,6 +41,56 @@
           "outputs": ["coverage/libs/blockchain-mailer/feature-templates"],
           "options": {
             "jestConfig": "libs/blockchain-mailer/feature-templates/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "blockchain-watcher": {
+      "root": "apps/blockchain-watcher",
+      "sourceRoot": "apps/blockchain-watcher/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/blockchain-watcher",
+            "main": "apps/blockchain-watcher/src/main.ts",
+            "tsConfig": "apps/blockchain-watcher/tsconfig.app.json",
+            "assets": ["apps/blockchain-watcher/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/blockchain-watcher/src/environments/environment.ts",
+                  "with": "apps/blockchain-watcher/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "blockchain-watcher:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/blockchain-watcher/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/blockchain-watcher"],
+          "options": {
+            "jestConfig": "apps/blockchain-watcher/jest.config.js",
             "passWithNoTests": true
           }
         }
@@ -182,34 +206,10 @@
           }
         }
       }
-    },
-    "api-evidence": {
-      "root": "apps/api-evidence",
-      "projectType": "application",
-      "sourceRoot": "apps/api-evidence/src",
-      "targets": {
-        "serve": {
-          "executor": "nx-python-fastapi:serve",
-          "options": {
-            "host": "localhost",
-            "port": 3000
-          }
-        },
-        "test": {
-          "executor": "nx-python-fastapi:test",
-          "outputs": ["coverage/apps/api-evidence"]
-        },
-        "lint": {
-          "executor": "nx-python-fastapi:lint"
-        },
-        "format": {
-          "executor": "nx-python-fastapi:format"
-        }
-      }
     }
   },
   "cli": {
     "defaultCollection": "@nrwl/node"
   },
-  "defaultProject": "blockchain-mailer"
+  "defaultProject": "blockchain-watcher"
 }
