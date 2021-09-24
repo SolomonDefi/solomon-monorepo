@@ -1,6 +1,6 @@
 import mailService from './mailService'
 import { JSDOM } from 'jsdom'
-import generateMailTemplates from '@solomon/blockchain-mailer/feature-templates'
+import generateMailTemplates from '@solomon/blockchain-watcher/feature-templates'
 
 describe('mailService', () => {
   jest.setTimeout(60 * 1000)
