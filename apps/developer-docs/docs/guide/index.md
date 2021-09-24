@@ -30,8 +30,8 @@ Solomon uses a monorepo for all apps and libraries that make up the ecosytem:
 
 ### Utilities
 
-- Blockchain Mailer App
-  - https://github.com/SolomonDefi/solomon-monorepo/tree/main/apps/blockchain-mailer
+- Blockchain Watcher App
+  - https://github.com/SolomonDefi/solomon-monorepo/tree/main/apps/blockchain-watcher
 - Link shortener
   - TBD (monorepo migration in progress)
 - Evidence Uploader

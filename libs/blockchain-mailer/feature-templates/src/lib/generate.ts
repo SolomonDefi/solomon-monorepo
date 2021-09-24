@@ -5,7 +5,7 @@ import mjml2html = require('mjml')
 
 export default async (): Promise<boolean> => {
   try {
-    const templateDirPath = path.resolve(pathStore.mailer, 'src', 'template')
+    const templateDirPath = path.resolve(pathStore.watcher, 'src', 'template')
     const templateNames = await readdir(templateDirPath)
 
     for (let templateName of templateNames) {

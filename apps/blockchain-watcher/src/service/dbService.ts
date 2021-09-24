@@ -13,7 +13,7 @@ export class DbService {
       __dirname,
       '..',
       '..',
-      `blockchain-mailer-storage.${envStore.envName}.db`,
+      `blockchain-watcher-storage.${envStore.envName}.db`,
     )
   }
 

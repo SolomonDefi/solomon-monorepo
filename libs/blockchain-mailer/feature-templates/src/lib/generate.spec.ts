@@ -1,6 +1,6 @@
 import generateMailTemplates from './generate'
 
-describe('blockchain mailer generate templates', () => {
+describe('blockchain watcher generate templates', () => {
   it('should work', async () => {
     expect(await generateMailTemplates()).toBe(true)
   })

@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'blockchain-mailer-feature-templates',
+  displayName: 'blockchain-watcher-feature-templates',
   preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {

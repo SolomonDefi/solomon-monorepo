@@ -6,8 +6,8 @@ class PathStore {
     return pkgDir.sync() || ''
   }
 
-  get mailer() {
-    return path.resolve(this.root, 'apps', 'blockchain-mailer')
+  get watcher() {
+    return path.resolve(this.root, 'apps', 'blockchain-watcher')
   }
 
   get doc() {

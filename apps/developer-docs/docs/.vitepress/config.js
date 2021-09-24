@@ -119,8 +119,8 @@ module.exports = {
               link: '/utilities/shortener',
             },
             {
-              text: 'Blockchain Emailer',
-              link: '/utilities/mailer',
+              text: 'Blockchain wATCHER',
+              link: '/utilities/watcher',
             },
           ],
         },

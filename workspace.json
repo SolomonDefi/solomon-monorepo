@@ -25,22 +25,22 @@
         }
       }
     },
-    "blockchain-mailer-feature-templates": {
-      "root": "libs/blockchain-mailer/feature-templates",
-      "sourceRoot": "libs/blockchain-mailer/feature-templates/src",
+    "blockchain-watcher-feature-templates": {
+      "root": "libs/blockchain-watcher/feature-templates",
+      "sourceRoot": "libs/blockchain-watcher/feature-templates/src",
       "projectType": "library",
       "targets": {
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/blockchain-mailer/feature-templates/**/*.ts"]
+            "lintFilePatterns": ["libs/blockchain-watcher/feature-templates/**/*.ts"]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/blockchain-mailer/feature-templates"],
+          "outputs": ["coverage/libs/blockchain-watcher/feature-templates"],
           "options": {
-            "jestConfig": "libs/blockchain-mailer/feature-templates/jest.config.js",
+            "jestConfig": "libs/blockchain-watcher/feature-templates/jest.config.js",
             "passWithNoTests": true
           }
         }

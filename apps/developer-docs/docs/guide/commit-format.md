@@ -33,7 +33,7 @@ TODO
 `root` refers to changes that affect monorepo operation, and arent specifict
 
 - root
-- mailer
+- watcher
 - evidence
 - contracts
 - docs
