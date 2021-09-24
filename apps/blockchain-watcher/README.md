@@ -17,4 +17,4 @@ Solomon implements scanners for:
 - Notifying parties when funds are withdrawn from escrow
 
 The service is written with Typescript as a nodejs application. See the [Github
-repository](https://github.com/solomondefi/blockchain-mailer) for more technical details including setup and deploy procedures.
+repository](https://github.com/solomondefi/blockchain-watcher) for more technical details including setup and deploy procedures.
