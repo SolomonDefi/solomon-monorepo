@@ -27,11 +27,14 @@
     ]
   },
   "projects": {
-    "blockchain-mailer": {
-      "tags": ["scope:service", "type:app"]
+    "api-evidence": {
+      "tags": ["scope:api", "type:app"]
     },
     "blockchain-mailer-feature-templates": {
       "tags": ["scope:service", "type:feature"]
+    },
+    "blockchain-watcher": {
+      "tags": ["scope:service", "type:app"]
     },
     "developer-docs": {
       "tags": ["scope:web", "type:docs"]
@@ -47,9 +50,6 @@
     },
     "web-evidence": {
       "tags": ["scope:web", "type:app"]
-    },
-    "api-evidence": {
-      "tags": ["scope:api", "type:app"]
     }
   }
 }
