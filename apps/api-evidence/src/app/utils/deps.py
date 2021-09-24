@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.config import config
 from app.db.session import SessionLocal
+from app.storage import Encryption, Storage, StorageBackend
 
 token_auth = OAuth2PasswordBearer(tokenUrl="/auth/email")
 
@@ -19,6 +20,34 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
+
+
+def get_s3_backend() -> StorageBackend:
+    from app.storage.backend.s3 import S3
+
+    if config.S3_REGION is None or config.S3_KEY is None or config.S3_SECRET is None:
+        raise ValueError('S3 is not configured')
+
+    return S3(
+        config.S3_REGION,
+        config.S3_KEY,
+        config.S3_SECRET,
+        config.S3_BUCKET,
+        endpoint=config.S3_ENDPOINT,
+    )
+
+
+def get_encryption() -> Encryption:
+    from app.storage.security import FernetEncryption
+
+    return FernetEncryption(config.SECRET_KEY.encode('utf-8'))
+
+
+def get_storage(
+    backend: StorageBackend = Depends(get_s3_backend),
+    encryption: Encryption = Depends(get_encryption),
+) -> Storage:
+    return Storage(backend, encryption)
 
 
 def get_current_user(

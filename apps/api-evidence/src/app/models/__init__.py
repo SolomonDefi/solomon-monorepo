@@ -1,2 +1,2 @@
-from .upload_item import UploadItem
+from .evidence import Evidence
 from .user import User

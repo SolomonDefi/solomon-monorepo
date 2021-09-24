@@ -49,7 +49,6 @@ class Config(BaseSettings):
     INITIAL_ADMIN_EMAIL: EmailStr
     INITIAL_ADMIN_PASSWORD: str
 
-    MAX_FILE_TTL: int = 90
     APP_DOMAIN: str = 'localhost'
     APP_PORT = 5010
     S3_BUCKET: str = 'evidence-uploads'
@@ -59,6 +58,10 @@ class Config(BaseSettings):
     S3_REGION: Optional[str] = None
     SHORTENER_URL: AnyHttpUrl = 'http://localhost:5050/'
     SHORTENER_ACCESS_TOKEN: str = 'dev'
+
+    MAX_FILE_TTL: int = 90  # in days
+    MAX_FILE_SIZE: int = 4  # in mb
+    ALLOWED_FILE_TYPES: list[str] = ['png', 'jpg', 'jepg', 'zip', 'txt', 'pdf']
 
     TEST_DB: Optional[str] = 'solomon_test'
 

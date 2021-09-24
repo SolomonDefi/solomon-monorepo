@@ -26,7 +26,7 @@ class Storage:
         self.encryption = encryption
 
     def _file_extension(self, filename: str) -> str:
-        return PurePath(filename).suffix
+        return PurePath(filename).suffix.lower()
 
     def _stored_filename(self, file: typing.IO) -> str:
         ext = self._file_extension(file.name)

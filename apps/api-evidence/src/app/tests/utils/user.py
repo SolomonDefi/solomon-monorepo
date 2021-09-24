@@ -11,9 +11,10 @@ from app.tests.utils import random_email, random_lower_string
 def user_authentication_headers(
     *, client: TestClient, email: str, password: str
 ) -> dict[str, str]:
-    data = {"username": email, "password": password}
-
-    r = client.post(f"{config.API_PREFIX}/login/access-token", data=data)
+    r = client.post(
+        f"{config.API_PREFIX}/auth/email",
+        data={"username": email, "password": password},
+    )
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}
@@ -41,7 +42,7 @@ def eth_sign_data(challenge: dict, private_key: bytes) -> str:
 
 def authentication_token_from_email(
     *, client: TestClient, email: str, db: Session
-) -> dict[str, str]:
+) -> tuple[dict[str, str], int]:
     """
     Return a valid token for the user with given email.
 
@@ -58,4 +59,7 @@ def authentication_token_from_email(
         user_in_update = schemas.UserUpdate(password=password)
         user = crud.user.update(db, db_obj=user, obj_in=user_in_update)
 
-    return user_authentication_headers(client=client, email=email, password=password)
+    return (
+        user_authentication_headers(client=client, email=email, password=password),
+        user.id,
+    )

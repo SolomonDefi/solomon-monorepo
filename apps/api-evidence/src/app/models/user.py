@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from app.models.upload_item import UploadItem
+    from app.models.evidence import Evidence
 
 
 class User(Base):
@@ -20,4 +20,4 @@ class User(Base):
     eth_address = Column(String, unique=True, index=True)
     challenge_hash = Column(String)
     challenge_expiry = Column(Integer, default=0)
-    items = relationship('UploadItem', back_populates='owner')
+    items = relationship('Evidence', back_populates='owner')

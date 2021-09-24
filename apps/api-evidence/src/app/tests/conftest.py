@@ -12,7 +12,7 @@ from app.db.base import Base
 from app.db.session import engine, SessionLocal
 from main import app
 from app.tests.utils.user import authentication_token_from_email
-from app.tests.utils import get_superuser_token_headers
+from app.tests.utils import get_superuser_token_headers, random_email
 
 
 def setup_db() -> None:
@@ -50,19 +50,28 @@ def db() -> Generator:
     yield SessionLocal()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def client() -> Generator:
     with TestClient(app) as c:
         yield c
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
+def authed_client(normal_user_token_headers: tuple[dict[str, str], int]) -> Generator:
+    with TestClient(app) as c:
+        headers, user_id = normal_user_token_headers
+        c.user_id = user_id
+        c.headers.update(headers)
+        yield c
+
+
+@pytest.fixture(scope='session')
 def superuser_token_headers(client: TestClient) -> dict[str, str]:
     return get_superuser_token_headers(client)
 
 
-@pytest.fixture(scope='module')
-def normal_user_token_headers(client: TestClient, db: Session) -> dict[str, str]:
+@pytest.fixture(scope='session')
+def normal_user_token_headers(client: TestClient, db: Session) -> tuple[dict[str, str], int]:
     return authentication_token_from_email(
-        client=client, email=config.EMAIL_TEST_USER, db=db
+        client=client, email=random_email(), db=db
     )
