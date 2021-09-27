@@ -71,7 +71,7 @@ def superuser_token_headers(client: TestClient) -> dict[str, str]:
 
 
 @pytest.fixture(scope='session')
-def normal_user_token_headers(client: TestClient, db: Session) -> tuple[dict[str, str], int]:
-    return authentication_token_from_email(
-        client=client, email=random_email(), db=db
-    )
+def normal_user_token_headers(
+    client: TestClient, db: Session
+) -> tuple[dict[str, str], int]:
+    return authentication_token_from_email(client=client, email=random_email(), db=db)

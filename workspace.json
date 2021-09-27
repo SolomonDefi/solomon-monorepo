@@ -13,7 +13,7 @@
             "port": 3000
           }
         },
-        "test": {
+        "test-evidence": {
           "executor": "nx-python-fastapi:test",
           "outputs": ["coverage/apps/api-evidence"]
         },
@@ -22,27 +22,6 @@
         },
         "format": {
           "executor": "nx-python-fastapi:format"
-        }
-      }
-    },
-    "blockchain-watcher-feature-templates": {
-      "root": "libs/blockchain-watcher/feature-templates",
-      "sourceRoot": "libs/blockchain-watcher/feature-templates/src",
-      "projectType": "library",
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/blockchain-watcher/feature-templates/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/blockchain-watcher/feature-templates"],
-          "options": {
-            "jestConfig": "libs/blockchain-watcher/feature-templates/jest.config.js",
-            "passWithNoTests": true
-          }
         }
       }
     },
@@ -91,6 +70,27 @@
           "outputs": ["coverage/apps/blockchain-watcher"],
           "options": {
             "jestConfig": "apps/blockchain-watcher/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "blockchain-watcher-feature-templates": {
+      "root": "libs/blockchain-watcher/feature-templates",
+      "sourceRoot": "libs/blockchain-watcher/feature-templates/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/blockchain-watcher/feature-templates/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/blockchain-watcher/feature-templates"],
+          "options": {
+            "jestConfig": "libs/blockchain-watcher/feature-templates/jest.config.js",
             "passWithNoTests": true
           }
         }

@@ -55,7 +55,7 @@ def address_login(
             detail='User not found',
             headers={'WWW-Authenticate': 'Bearer'},
         )
-    if user.challenge_expiry > datetime.now().timestamp():
+    if user.challenge_expiry < datetime.utcnow().timestamp():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Challenge expired',

@@ -45,7 +45,7 @@ poetry install
 
 ### Run the app
 
-First you'll need to create a database (make sure Postgres is installed). Make sure to set the appropriate variables in `.env` as well.
+First you'll need to create a database (make sure Postgres is installed). Make sure to set the appropriate variables in `src/.env` as well. You can copy `.env.dist` as a reference
 
 ```
 createdb -U <dbuser> <dbname>
