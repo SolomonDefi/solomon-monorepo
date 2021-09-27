@@ -30,11 +30,11 @@
     "api-evidence": {
       "tags": ["scope:api", "type:app"]
     },
-    "blockchain-watcher-feature-templates": {
-      "tags": ["scope:service", "type:feature"]
-    },
     "blockchain-watcher": {
       "tags": ["scope:service", "type:app"]
+    },
+    "blockchain-watcher-feature-templates": {
+      "tags": ["scope:service", "type:feature"]
     },
     "developer-docs": {
       "tags": ["scope:web", "type:docs"]

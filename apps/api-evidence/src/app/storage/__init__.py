@@ -19,9 +19,7 @@ class Storage:
     backend: StorageBackend
     encryption: typing.Optional[Encryption]
 
-    def __init__(
-        self, backend: StorageBackend, encryption: Encryption = None
-    ) -> None:
+    def __init__(self, backend: StorageBackend, encryption: Encryption = None) -> None:
         self.backend = backend
         self.encryption = encryption
 

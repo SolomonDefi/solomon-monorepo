@@ -74,9 +74,7 @@ class AddressHeaderAuth:
         hash = hmac.HMAC(uuid4().bytes, hashes.SHA256())
         hash.update(f"{checksum_address}{uuid4().hex}".encode())
         challenge_hash = hash.finalize().hex()
-        challenge_expiry = int(
-            (datetime.utcnow() + timedelta(seconds=config.CHALLENGE_TTL)).timestamp()
-        )
+        challenge_expiry = int(datetime.utcnow().timestamp() + config.CHALLENGE_TTL)
         challenge = self.challenge_from_hash(challenge_hash)
         address_user_chaellenge = schemas.AddressUserChallenge(
             **{

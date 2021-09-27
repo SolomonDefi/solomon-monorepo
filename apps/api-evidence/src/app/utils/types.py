@@ -69,9 +69,9 @@ class EvidenceFile(UploadFile):
     def validate(cls, v: Any) -> 'EvidenceFile':
         file: UploadFile = UploadFile.validate(v)
 
-        size_in_mb = .0
+        size_in_mb = 0.0
         for chunk in file.file:
-            size_in_mb += (len(chunk) / 1024 / 1024)
+            size_in_mb += len(chunk) / 1024 / 1024
             if size_in_mb > config.MAX_FILE_SIZE:
                 raise FileTooLargeError
 

@@ -14,6 +14,7 @@
     "editor.tabSize": 4,
     "editor.defaultFormatter": "ms-python.python"
   },
+  "python.defaultInterpreterPath": "apps/api-evidence/.venv/bin/python",
   "python.formatting.provider": "black",
   "python.formatting.blackPath": "apps/api-evidence/.venv/bin/black"
 }
