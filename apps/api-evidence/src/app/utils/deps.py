@@ -40,7 +40,7 @@ def get_s3_backend() -> StorageBackend:
 def get_encryption() -> Encryption:
     from app.storage.security import FernetEncryption
 
-    return FernetEncryption(config.SECRET_KEY.encode('utf-8'))
+    return FernetEncryption(config.FILE_ENCRYPTION_KEY.encode('utf-8'))
 
 
 def get_storage(

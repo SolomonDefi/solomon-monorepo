@@ -22,10 +22,12 @@ class FernetEncryption(Encryption):
         self.encryptor = Fernet(secret_key)
 
     def encrypt(self, file: typing.IO) -> bytes:
+        file.seek(0)
         return self.encryptor.encrypt(file.read())
 
     def decrypt(self, encryted_file: typing.IO) -> typing.Optional[bytes]:
         try:
+            encryted_file.seek(0)
             return self.encryptor.decrypt(encryted_file.read())
         except InvalidToken:
             pass

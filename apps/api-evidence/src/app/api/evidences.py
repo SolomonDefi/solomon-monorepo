@@ -39,19 +39,19 @@ def create_evidence(
     current_user: models.User = Depends(deps.get_current_active_user),
     title: str = Form(...),
     description: str = Form(...),
-    file: types.EvidenceFile = File(...),
+    evidence_file: types.EvidenceFile = File(...),
 ) -> Any:
     """
     Create new evidence.
     """
-    file_key = storage.save(file)
+    file_key = storage.save(evidence_file.filename, evidence_file.file)
 
     evidence_in = schemas.EvidenceCreate(
         title=title,
         description=description,
         storage_backend=storage.backend.name,
         file_key=file_key,
-        media_type=file.content_type,
+        media_type=evidence_file.content_type,
     )
     evidence = crud.evidence.create_with_owner(
         db=db, obj_in=evidence_in, owner_id=current_user.id
