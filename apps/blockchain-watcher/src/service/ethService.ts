@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import envStore from '../store/envStore'
 import mailService from './mailService'
-import { SlmFactory, SlmFactory__factory } from '../../../_temp-contract/src/types'
+import { SlmFactory, SlmFactory__factory } from '../../../_temp-contract/typechain'
 
 export class EthService {
   provider: ethers.providers.JsonRpcProvider = null as any

@@ -5,4 +5,4 @@ node_modules
 cache
 artifacts
 
-src/types
+typechain
