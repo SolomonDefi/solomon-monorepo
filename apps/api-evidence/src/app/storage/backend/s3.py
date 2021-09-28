@@ -1,9 +1,9 @@
+import io
 import typing
 
 import boto3
-from botocore.client import BaseClient
 from botocore.exceptions import ClientError
-from botocore.response import StreamingBody
+from mypy_boto3_s3.client import S3Client
 
 from . import StorageBackend, StorageBackendError
 
@@ -14,7 +14,7 @@ class GetObjectError(StorageBackendError):
 
 class S3(StorageBackend):
     name: str = 'S3'
-    s3_client: BaseClient
+    s3_client: S3Client
     bucket_name: str
 
     def __init__(
@@ -25,21 +25,24 @@ class S3(StorageBackend):
         bucket_name: str,
         endpoint: typing.Optional[str] = None,
     ) -> None:
-        config = {
-            'region_name': region,
-            'aws_access_key_id': key,
-            'aws_secret_access_key': secret,
-        }
         self.bucket_name = bucket_name
-        if endpoint is not None:
-            config['endpoint_url'] = f'https://{endpoint}'
-        self.s3_client = boto3.client('s3', **config)
+        endpoint_url = None
+        if endpoint:
+            endpoint_url = f'https://{endpoint}'
+        self.s3_client = boto3.client(
+            's3',
+            region_name=region,
+            aws_access_key_id=key,
+            aws_secret_access_key=secret,
+            endpoint_url=endpoint_url,
+        )
 
     def save_file(self, name: str, file: typing.IO) -> str:
         try:
-            self.s3_client.upload_fileobj(
-                file, self.bucket_name, name, ExtraArgs={'ACL': 'private'}
+            self.s3_client.put_object(
+                Bucket=self.bucket_name, Key=name, Body=file, ACL='private'
             )
+            return name
         except:
             pass
 
@@ -49,8 +52,6 @@ class S3(StorageBackend):
                 Bucket=self.bucket_name,
                 Key=key,
             )
-            body: StreamingBody = response['Body']
-
-            return body._raw_stream
+            return io.BytesIO(response['Body'].read())
         except ClientError as e:
             raise GetObjectError from e

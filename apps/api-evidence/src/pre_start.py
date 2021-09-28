@@ -2,6 +2,7 @@ import logging
 import secrets
 
 import dotenv
+from cryptography.fernet import Fernet
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from app.db.session import SessionLocal
@@ -32,8 +33,11 @@ def check_db() -> None:
 def create_secret() -> None:
     env = dotenv.dotenv_values('.env')
     if 'SECRET_KEY' not in env:
-        logger.info('Secret key is not found, initializing secret key')
+        logger.info('Secret key is not found, initializing the key')
         dotenv.set_key('.env', 'SECRET_KEY', secrets.token_urlsafe(32))
+    if 'FILE_ENCRYPTION_KEY' not in env:
+        logger.info('File encryption key is not found, initializing the key')
+        dotenv.set_key('.env', 'FILE_ENCRYPTION_KEY', Fernet.generate_key())
 
 
 def main() -> None:

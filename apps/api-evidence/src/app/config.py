@@ -1,12 +1,14 @@
 import secrets
 from typing import Any, Optional, Union
 
+from cryptography.fernet import Fernet
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, validator
 
 
 class Config(BaseSettings):
     API_PREFIX: str = '/api'
     SECRET_KEY: str = secrets.token_urlsafe(32)
+    FILE_ENCRYPTION_KEY: str = Fernet.generate_key()
     CHAIN_ID: int
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8

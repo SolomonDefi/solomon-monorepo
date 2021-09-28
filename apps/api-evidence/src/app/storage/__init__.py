@@ -26,18 +26,20 @@ class Storage:
     def _file_extension(self, filename: str) -> str:
         return PurePath(filename).suffix.lower()
 
-    def _stored_filename(self, file: typing.IO) -> str:
-        ext = self._file_extension(file.name)
+    def _stored_filename(self, filename: str) -> str:
+        ext = self._file_extension(filename)
         if self.encryption is not None:
             ext = '.enc'
         return f'{uuid4().hex}{ext}'
 
-    def save(self, file: typing.IO) -> str:
-        if self.encryption is not None:
-            encrypted = io.BytesIO()
-            encrypted.write(self.encryption.encrypt(file))
-            return self.backend.save_file(self._stored_filename(file), encrypted)
-        return self.backend.save_file(self._stored_filename(file), file)
+    def save(self, name: str, file: typing.IO) -> str:
+        try:
+            if self.encryption is not None:
+                encrypted = io.BytesIO(self.encryption.encrypt(file))
+                return self.backend.save_file(self._stored_filename(name), encrypted)
+            return self.backend.save_file(self._stored_filename(name), file)
+        except StorageBackendError:
+            raise StorageError
 
     def get(self, file_key: str) -> typing.IO:
         try:
@@ -46,9 +48,7 @@ class Storage:
                 decrypted = self.encryption.decrypt(stored_file)
                 if decrypted is None:
                     raise InvalidEncryptedFile
-                file = io.BytesIO()
-                file.write(decrypted)
-                return file
+                return io.BytesIO(decrypted)
         except (InvalidEncryptedFile, StorageBackendError):
             raise StorageError
         return stored_file
