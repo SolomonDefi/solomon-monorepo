@@ -6,6 +6,7 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, validator
 
 
 class Config(BaseSettings):
+    DEBUG: bool = False
     API_PREFIX: str = '/api'
     SECRET_KEY: str = secrets.token_urlsafe(32)
     FILE_ENCRYPTION_KEY: str = Fernet.generate_key()

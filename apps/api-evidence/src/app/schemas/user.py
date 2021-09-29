@@ -10,8 +10,6 @@ class UserBase(BaseModel):
     is_superuser: bool = False
     full_name: Optional[str] = None
     eth_address: Optional[str] = None
-    challenge_hash: Optional[str] = None
-    challenge_expiry: Optional[int] = None
 
 
 # Properties to receive via API on creation
@@ -25,7 +23,7 @@ class UserUpdate(UserBase):
     password: Optional[str] = None
 
 
-class AddressUserChallenge(UserBase):
+class AddressUserChallenge(BaseModel):
     eth_address: str
     challenge_hash: str
     challenge_expiry: int

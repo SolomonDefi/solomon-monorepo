@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException
+from fastapi import APIRouter, Depends, File, Form, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get('', response_model=list[schemas.Evidence])
-def get_evidence(
+def get_evidence_list(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
@@ -59,7 +59,15 @@ def create_evidence(
     return evidence
 
 
-@router.get('/{id}')
+@router.get(
+    '/{id}',
+    response_class=StreamingResponse,
+    responses={
+        400: {'description': 'Evidence expired'},
+        403: {'description': 'Not enough permissions'},
+        404: {},
+    },
+)
 def get_evidence(
     id: int,
     db: Session = Depends(deps.get_db),
@@ -72,11 +80,15 @@ def get_evidence(
     evidence = crud.evidence.get(db=db, id=id)
 
     if evidence is None:
-        raise HTTPException(status_code=404, detail='Evidence not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if not current_user.is_superuser and evidence.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail='Not enough permissions')
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail='Not enough permissions'
+        )
     if evidence.created + timedelta(days=config.MAX_FILE_TTL) < datetime.utcnow():
-        raise HTTPException(status_code=400, detail='Evidence expired')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail='Evidence expired'
+        )
 
     return StreamingResponse(
         storage.get(evidence.file_key), media_type=evidence.media_type
