@@ -13,7 +13,12 @@ router = APIRouter()
 address_auth = security.AddressHeaderAuth()
 
 
-@router.post('/email', response_model=schemas.Token)
+@router.post(
+    '/email',
+    summary='Login with email and passowrd',
+    response_model=schemas.Token,
+    responses={401: {'description': 'Incorrect username or password'}},
+)
 def email_login(
     db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> schemas.Token:
@@ -29,7 +34,11 @@ def email_login(
     return security.create_access_token(schemas.TokenPayload(sub=str(user.id)))
 
 
-@router.post('/address-challenge', response_model=schemas.AddressChallenge)
+@router.post(
+    '/address-challenge',
+    summary='Generate a challenge for wallet address authentication',
+    response_model=schemas.AddressChallenge,
+)
 def address_challenge(
     address_in: schemas.AddressChallengeCreate, db: Session = Depends(deps.get_db)
 ) -> schemas.AddressChallenge:
@@ -37,7 +46,12 @@ def address_challenge(
     return schemas.AddressChallenge(challenge=jsonable_encoder(challenge))
 
 
-@router.post('/address', response_model=schemas.Token)
+@router.post(
+    '/address',
+    summary='Login with wallet address authentication',
+    response_model=schemas.Token,
+    responses={401: {'description': 'User not found / Challenge expired'}},
+)
 def address_login(
     db: Session = Depends(deps.get_db),
     address: Optional[str] = Depends(address_auth),

@@ -54,15 +54,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         self, db: Session, *, challenge: AddressUserChallenge
     ) -> User:
         user = self.get_by_eth_address(db, eth_address=challenge.eth_address)
-        if user:
-            user.challenge_hash = challenge.challenge_hash
-            user.challenge_expiry = challenge.challenge_expiry
-        else:
-            db_obj = User(**challenge.dict())
-            db.add(db_obj)
+        if not user:
+            user = User(eth_address=challenge.eth_address)
+            db.add(user)
+        user.challenge_hash = challenge.challenge_hash
+        user.challenge_expiry = challenge.challenge_expiry
         db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        db.refresh(user)
+        return user
 
 
 user = CRUDUser(User)

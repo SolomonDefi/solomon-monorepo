@@ -77,11 +77,9 @@ class AddressHeaderAuth:
         challenge_expiry = int(datetime.utcnow().timestamp() + config.CHALLENGE_TTL)
         challenge = self.challenge_from_hash(challenge_hash)
         address_user_chaellenge = schemas.AddressUserChallenge(
-            **{
-                "eth_address": checksum_address,
-                "challenge_hash": challenge_hash,
-                "challenge_expiry": challenge_expiry,
-            }
+            eth_address=checksum_address,
+            challenge_hash=challenge_hash,
+            challenge_expiry=challenge_expiry,
         )
         crud.user.challenge_address_user(db, challenge=address_user_chaellenge)
         return challenge

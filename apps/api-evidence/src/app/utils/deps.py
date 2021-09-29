@@ -11,7 +11,7 @@ from app.config import config
 from app.db.session import SessionLocal
 from app.storage import Encryption, Storage, StorageBackend
 
-token_auth = OAuth2PasswordBearer(tokenUrl="/auth/email")
+token_auth = OAuth2PasswordBearer(tokenUrl="/api/auth/email")
 
 
 def get_db() -> Generator:
@@ -57,14 +57,10 @@ def get_current_user(
         payload = jwt.decode(token, config.SECRET_KEY)
         token_data = schemas.TokenPayload(**payload)
     except (jwt.JWTError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = crud.user.get(db, id=token_data.sub)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return user
 
 

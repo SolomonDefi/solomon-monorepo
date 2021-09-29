@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
@@ -14,7 +14,7 @@ from app.utils import deps
 router = APIRouter()
 
 
-@router.get('/', response_model=list[schemas.User])
+@router.get('', summary='Read Users (Admin)', response_model=list[schemas.User])
 def read_users(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
@@ -28,7 +28,12 @@ def read_users(
     return users
 
 
-@router.post('/', response_model=schemas.User)
+@router.post(
+    '',
+    summary='Create User (Admin)',
+    response_model=schemas.User,
+    responses={400: {'description': 'The username is taken'}},
+)
 def create_user(
     *,
     db: Session = Depends(deps.get_db),
@@ -41,7 +46,7 @@ def create_user(
     user = crud.user.get_by_email(db, email=user_in.email)
     if user:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail='The username is taken.',
         )
     user = crud.user.create(db, obj_in=user_in)
@@ -49,6 +54,29 @@ def create_user(
     #     send_new_account_email(
     #         email_to=user_in.email, username=user_in.email, password=user_in.password
     #     )
+    return user
+
+
+@router.put(
+    '/{user_id}',
+    summary='Update User (Admin)',
+    response_model=schemas.User,
+    responses={404: {}},
+)
+def update_user(
+    *,
+    db: Session = Depends(deps.get_db),
+    user_id: int,
+    user_in: schemas.UserUpdate,
+    current_user: models.User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    """
+    Update a user.
+    """
+    user = crud.user.get(db, id=user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user = crud.user.update(db, db_obj=user, obj_in=user_in)
     return user
 
 
@@ -87,8 +115,15 @@ def read_user_me(
     return current_user
 
 
-@router.post('/open', response_model=schemas.User)
-def create_user_open(
+@router.post(
+    '',
+    response_model=schemas.User,
+    responses={
+        400: {'description': 'The user already exists'},
+        403: {'description': 'Open user registration is forbidden on this server'},
+    },
+)
+def user_signup(
     *,
     db: Session = Depends(deps.get_db),
     password: str = Body(...),
@@ -100,13 +135,13 @@ def create_user_open(
     """
     if not config.USERS_OPEN_REGISTRATION:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail='Open user registration is forbidden on this server',
         )
     user = crud.user.get_by_email(db, email=email)
     if user:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail='The user already exists',
         )
     user_in = schemas.UserCreate(password=password, email=email, full_name=full_name)
@@ -114,7 +149,11 @@ def create_user_open(
     return user
 
 
-@router.get('/{user_id}', response_model=schemas.User)
+@router.get(
+    '/{user_id}',
+    response_model=schemas.User,
+    responses={403: {'description': 'Missing privileges'}},
+)
 def read_user_by_id(
     user_id: int,
     current_user: models.User = Depends(deps.get_current_active_user),
@@ -127,26 +166,7 @@ def read_user_by_id(
     if user == current_user:
         return user
     if not current_user.is_superuser:
-        raise HTTPException(status_code=403, detail='Missing privileges')
-    return user
-
-
-@router.put('/{user_id}', response_model=schemas.User)
-def update_user(
-    *,
-    db: Session = Depends(deps.get_db),
-    user_id: int,
-    user_in: schemas.UserUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
-) -> Any:
-    """
-    Update a user.
-    """
-    user = crud.user.get(db, id=user_id)
-    if not user:
         raise HTTPException(
-            status_code=404,
-            detail='The user does not exist',
+            status_code=status.HTTP_403_FORBIDDEN, detail='Missing privileges'
         )
-    user = crud.user.update(db, db_obj=user, obj_in=user_in)
     return user
