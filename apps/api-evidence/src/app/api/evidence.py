@@ -14,22 +14,22 @@ router = APIRouter()
 
 
 @router.get('', response_model=list[schemas.Evidence])
-def get_evidences(
+def get_evidence(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
-    Retrieve evidences.
+    Retrieve evidence.
     """
     if current_user.is_superuser:
-        evidences = crud.evidence.get_multi(db, skip=skip, limit=limit)
+        evidence = crud.evidence.get_multi(db, skip=skip, limit=limit)
     else:
-        evidences = crud.evidence.get_by_owner(
+        evidence = crud.evidence.get_by_owner(
             db=db, owner_id=current_user.id, skip=skip, limit=limit
         )
-    return evidences
+    return evidence
 
 
 @router.post('', response_model=schemas.Evidence)
