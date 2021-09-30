@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class Evidence(Base):
-    __tablename__ = 'evidences'
+    __tablename__ = 'evidence'
 
     owner_id = Column(Integer, ForeignKey('users.id'))
     owner = relationship('User', back_populates='items')

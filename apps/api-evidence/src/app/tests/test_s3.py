@@ -15,7 +15,7 @@ def test_s3_create_evidence(authed_client: TestClient, s3_client: S3Client) -> N
     title = random_lower_string()
     description = random_lower_string()
     rsp = authed_client.post(
-        '/api/evidences',
+        '/api/evidence',
         data={'title': title, 'description': description},
         files={'evidence_file': (test_filename, file)},
     )
@@ -31,13 +31,13 @@ def test_s3_get_evidence(authed_client: TestClient, s3_client: S3Client) -> None
     title = random_lower_string()
     description = random_lower_string()
     rsp = authed_client.post(
-        '/api/evidences',
+        '/api/evidence',
         data={'title': title, 'description': description},
         files={'evidence_file': (test_filename, test_file)},
     )
     assert rsp.ok
     evidence_id = rsp.json()['id']
 
-    rsp = authed_client.get(f'/api/evidences/{evidence_id}')
+    rsp = authed_client.get(f'/api/evidence/{evidence_id}')
     assert rsp.ok
     assert rsp.content == test_file_content

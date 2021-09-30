@@ -16,11 +16,11 @@ def test_healthcheck(client: TestClient) -> None:
     assert rsp.ok
 
 
-def test_get_evidences(db: Session, authed_client: TestClient) -> None:
+def test_get_evidence(db: Session, authed_client: TestClient) -> None:
     num_evidence = 3
     for _ in range(num_evidence):
         create_random_evidence(db, owner_id=authed_client.user_id)
-    rsp = authed_client.get('/api/evidences')
+    rsp = authed_client.get('/api/evidence')
     assert rsp.ok
     data = rsp.json()
     assert len(data) == num_evidence
@@ -44,14 +44,14 @@ def test_create_evidence(authed_client: TestClient) -> None:
         title = random_lower_string()
         description = random_lower_string()
         rsp = authed_client.post(
-            '/api/evidences',
+            '/api/evidence',
             data={'title': title, 'description': description},
             files={'evidence_file': (test_filename, file)},
         )
         assert rsp.ok
 
 
-def test_get_evidence(authed_client: TestClient) -> None:
+def test_get_one_evidence(authed_client: TestClient) -> None:
     test_filename = 'test.jpg'
     test_file_content = b'test'
     test_file = io.BytesIO()
@@ -67,13 +67,13 @@ def test_get_evidence(authed_client: TestClient) -> None:
         title = random_lower_string()
         description = random_lower_string()
         rsp = authed_client.post(
-            '/api/evidences',
+            '/api/evidence',
             data={'title': title, 'description': description},
             files={'evidence_file': (test_filename, file)},
         )
         assert rsp.ok
         evidence_id = rsp.json()['id']
 
-        rsp = authed_client.get(f'/api/evidences/{evidence_id}')
+        rsp = authed_client.get(f'/api/evidence/{evidence_id}')
         assert rsp.ok
         assert rsp.content == test_file_content
