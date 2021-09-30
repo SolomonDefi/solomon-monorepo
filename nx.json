@@ -30,6 +30,9 @@
     "api-evidence": {
       "tags": ["scope:api", "type:app"]
     },
+    "api-dispute": {
+      "tags": ["scope:api", "type:app"]
+    },
     "blockchain-watcher": {
       "tags": ["scope:service", "type:app"]
     },

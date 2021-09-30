@@ -13,9 +13,33 @@
             "port": 3000
           }
         },
-        "test-evidence": {
+        "test": {
           "executor": "nx-python-fastapi:test",
           "outputs": ["coverage/apps/api-evidence"]
+        },
+        "lint": {
+          "executor": "nx-python-fastapi:lint"
+        },
+        "format": {
+          "executor": "nx-python-fastapi:format"
+        }
+      }
+    },
+    "api-dispute": {
+      "root": "apps/api-dispute",
+      "projectType": "application",
+      "sourceRoot": "apps/api-dispute/src",
+      "targets": {
+        "serve": {
+          "executor": "nx-python-fastapi:serve",
+          "options": {
+            "host": "localhost",
+            "port": 3000
+          }
+        },
+        "test": {
+          "executor": "nx-python-fastapi:test",
+          "outputs": ["coverage/apps/api-dispute"]
         },
         "lint": {
           "executor": "nx-python-fastapi:lint"
