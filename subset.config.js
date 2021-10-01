@@ -1,25 +1,19 @@
 module.exports = {
-  'web-evidence': [
-    'vue',
-    '@sampullman/vue3-fetch-api',
-    'vue-i18n',
-    'vue-router',
-    'date-fns',
-    'class-transformer',
-    '@vueform/multiselect',
-    'vue3-datepicker',
-    // devDependencies
-    '@intlify/vite-plugin-vue-i18n',
-    '@samatech/postcss-basics',
-    '@vue/compiler-sfc',
-    '@vitejs/plugin-vue',
-    'nx-vue3-vite',
-    'postcss',
-    '@nrwl/web',
-    'typescript',
-    'vite',
-    'snarkdown',
-    'unplugin-vue-components',
-    'vite-plugin-vue-images',
-  ],
+  'web-evidence': {
+    include: [
+      // dependencies
+      'vue',
+      '@sampullman/vue3-fetch-api',
+      'vue-i18n',
+      'vue-router',
+      // devDependencies
+      '@vitejs/plugin-vue',
+      'nx-vue3-vite',
+      'vite',
+      'unplugin-vue-components',
+      'vite-plugin-vue-images',
+      '@nrwl/cli',
+      '@nrwl/workspace',
+    ],
+  },
 }
