@@ -115,6 +115,121 @@
         }
       }
     },
+    "plugin": {
+      "root": "libs/web/plugin",
+      "projectType": "library",
+      "sourceRoot": "libs/web/plugin/src",
+      "targets": {
+        "build": {
+          "executor": "nx-vue3-vite:build-app",
+          "options": {
+            "dist": "dist/libs/web/plugin"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/web/plugin"],
+          "options": {
+            "jestConfig": "libs/web/plugin/est.config.ts",
+            "passWithNoTests": true
+          }
+        },
+        "e2e": {
+          "executor": "nx-vue3-vite:cypress",
+          "options": {
+            "cypressConfig": "libs/web/plugin/cypress.json",
+            "testingType": "component"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/web/plugin/**/*.{js,ts,vue}"]
+          }
+        }
+      }
+    },
+    "plugin-example-vue3": {
+      "root": "apps/plugin-example-vue3",
+      "projectType": "application",
+      "sourceRoot": "apps/plugin-example-vue3/src",
+      "targets": {
+        "build": {
+          "executor": "nx-vue3-vite:build-app",
+          "options": {
+            "dist": "dist/apps/plugin-example-vue3"
+          }
+        },
+        "serve": {
+          "executor": "nx-vue3-vite:dev-server"
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/plugin-example-vue3"],
+          "options": {
+            "jestConfig": "apps/plugin-example-vue3/jest.config.ts",
+            "passWithNoTests": true
+          }
+        },
+        "e2e": {
+          "executor": "nx-vue3-vite:cypress",
+          "options": {
+            "cypressConfig": "apps/plugin-example-vue3/cypress.json",
+            "testingType": "component"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/plugin-example-vue3/**/*.{js,jsx,ts,tsx,vue}"]
+          }
+        }
+      }
+    },
+    "shared-util-api-evidence-types": {
+      "root": "libs/shared/util-api-evidence-types",
+      "sourceRoot": "libs/shared/util-api-evidence-types/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/shared/util-api-evidence-types/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/util-api-evidence-types"],
+          "options": {
+            "jestConfig": "libs/shared/util-api-evidence-types/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-util-core": {
+      "root": "libs/shared/util-core",
+      "sourceRoot": "libs/shared/util-core/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/shared/util-core/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/util-core"],
+          "options": {
+            "jestConfig": "libs/shared/util-core/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "shared-util-path-store": {
       "root": "libs/shared/util-path-store",
       "sourceRoot": "libs/shared/util-path-store/src",
@@ -163,6 +278,48 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/web/ui-widgets/**/*.{js,jsx,ts,tsx,vue}"]
+          }
+        }
+      }
+    },
+    "web-data-access-api": {
+      "root": "libs/web/data-access-api",
+      "sourceRoot": "libs/web/data-access-api/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/web/data-access-api/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/web/data-access-api"],
+          "options": {
+            "jestConfig": "libs/web/data-access-api/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "web-data-access-state": {
+      "root": "libs/web/data-access-state",
+      "sourceRoot": "libs/web/data-access-state/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/web/data-access-state/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/web/data-access-state"],
+          "options": {
+            "jestConfig": "libs/web/data-access-state/jest.config.ts",
+            "passWithNoTests": true
           }
         }
       }

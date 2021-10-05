@@ -1,0 +1,1 @@
+export { Widget } from '@lib/Widget.vue'
