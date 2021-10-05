@@ -57,7 +57,7 @@ jobs:
       - name: Install modules
         run: pnpm i
       - name: Lint source code
-        run: pnpx nx affected:lint --base=origin/main --parallel --exclude api-evidence
+        run: pnpx nx affected:lint --base=origin/main --parallel --exclude api-evidence api-dispute
   # TODO
   #      - name: Lint commits
   #        run: pnpx commitlint --verbose --from=origin/main
@@ -115,40 +115,12 @@ jobs:
   test:
     name: Unit Tests
     runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code into workspace directory
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Set up NodeJS (v14)
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Cache pnpm modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 6.0.2
-      - name: Install modules
-        run: pnpm i
-      - name: Run unit tests
-        run: pnpx nx affected:test --base=origin/main --parallel
-
-  test-evidence:
-    name: Evidence Unit Tests with Postgres
-    runs-on: ubuntu-20.04
     services:
       postgres:
         image: postgres:13.4
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: solomon_test
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
@@ -179,22 +151,17 @@ jobs:
         with:
           python-version: 3.9
       - name: Install Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-      - name: Poetry cache
-        uses: actions/cache@v2
+        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+      - name: Setup api-evidence
+        uses: ./.github/actions/setup-python-app
         with:
-          path: apps/api-evidence/.venv
-          key: venv-${{ runner.os }}-3.9-${{ hashFiles('**/poetry.lock') }}
-      - name: Install Poetry packages
-        run: |
-          source $HOME/.poetry/env
-          cd apps/api-evidence && poetry install
-      - name: Use .env.dist for .env
-        run: cp apps/api-evidence/.env.dist apps/api-evidence/.env
+          app-name: 'api-evidence'
+      - name: Setup api-dispute
+        uses: ./.github/actions/setup-python-app
+        with:
+          app-name: 'api-dispute'
       - name: Run unit tests
-        run: |
-          source $HOME/.poetry/env
-          pnpx nx affected --target test-evidence --base=origin/main --parallel
+        run: pnpx nx affected:test --base=origin/main --parallel
 
   e2e:
     name: E2E Tests
