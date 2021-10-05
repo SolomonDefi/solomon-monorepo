@@ -42,6 +42,18 @@
     "developer-docs": {
       "tags": ["scope:web", "type:docs"]
     },
+    "plugin": {
+      "tags": ["scope:web", "type:plugin"]
+    },
+    "plugin-example-vue3": {
+      "tags": ["scope=web", "type=app"]
+    },
+    "shared-util-api-evidence-types": {
+      "tags": ["scope:shared", "type:util"]
+    },
+    "shared-util-core": {
+      "tags": ["scope:shared", "type:util"]
+    },
     "shared-util-path-store": {
       "tags": ["scope:shared", "type:util"]
     },
@@ -53,6 +65,12 @@
     },
     "web-evidence": {
       "tags": ["scope:web", "type:app"]
+    },
+    "web-data-access-api": {
+      "tags": ["scope:web", "type:data-access"]
+    },
+    "web-data-access-state": {
+      "tags": ["scope:web", "type:data-access"]
     }
   }
 }

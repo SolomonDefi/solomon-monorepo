@@ -30,6 +30,7 @@
     "@nrwl/tao": "12.9.0",
     "@nrwl/workspace": "12.9.0",
     "@samatech/postcss-basics": "^0.4.2",
+    "@sampullman/fetch-api": "^0.5.0",
     "@types/jest": "26.0.24",
     "@types/jsdom": "^16.2.13",
     "@types/mjml": "^4.7.0",
