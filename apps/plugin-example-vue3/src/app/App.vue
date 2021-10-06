@@ -46,6 +46,7 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+// eslint-disable-next-lint import/extensions
 import { SlmPlugin } from '../../../../dist/libs/web/plugin/plugin.es'
 
 const { t } = useI18n()
@@ -70,7 +71,7 @@ const enabled = computed(() => plugins.value.filter((p) => p.checked).map((p) =>
 </script>
 
 <style lang="postcss">
-@import '/dist/font.css';
+@import '../../../../dist/libs/web/plugin/style.css';
 
 html,
 body {
