@@ -61,7 +61,9 @@ def client() -> typing.Generator:
 
 
 @pytest.fixture(scope='session')
-def authed_client(normal_user_token_headers: tuple[dict[str, str], int]) -> typing.Generator:
+def authed_client(
+    normal_user_token_headers: tuple[dict[str, str], int]
+) -> typing.Generator:
     with TestClient(app) as c:
         headers, user_id = normal_user_token_headers
         c.user_id = user_id

@@ -1,9 +1,7 @@
 {
   "extends": "../../../tsconfig.base.json",
-  "compilerOptions": {
-    "strict": true,
-    "baseUrl": "."
-  },
+  "files": [],
+  "include": [],
   "references": [
     {
       "path": "./tsconfig.lib.json"

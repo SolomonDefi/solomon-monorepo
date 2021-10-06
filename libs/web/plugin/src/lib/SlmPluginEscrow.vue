@@ -1,22 +1,22 @@
 <template>
   <div class="slm-plugin-escrow">
     <div class="slm-plugin-content-title">
-      {{ t('escrow.enter') }}
+      {{ ts('escrow.enter') }}
     </div>
     <div class="slm-plugin-content">
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.select_label') }}
+          {{ ts('chargebacks.select_label') }}
         </div>
         <SlmSelect
           v-model="currency"
-          :options="tm('chargebacks.currency')"
+          :options="tr('chargebacks.currency')"
           class="slm-plugin-row-right"
         />
       </div>
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.schedule') }}
+          {{ ts('chargebacks.schedule') }}
         </div>
         <div class="slm-plugin-row-right">
           <SlmSelect
@@ -35,7 +35,7 @@
       </div>
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.protection') }}
+          {{ ts('chargebacks.protection') }}
         </div>
         <SlmSelect
           v-model="protection"
@@ -57,7 +57,7 @@
       </div>
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.price') }}
+          {{ ts('chargebacks.price') }}
         </div>
         <div class="slm-plugin-row-right">
           <div class="slm-plugin-price">
@@ -74,9 +74,8 @@
 
 <script lang="ts" setup>
 import { ref, computed, toRefs } from 'vue'
-import i18n from './i18n'
+import { ts, tr } from './i18n'
 
-const { t, tm } = i18n.global
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 const props = defineProps({

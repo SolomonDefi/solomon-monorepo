@@ -6,5 +6,11 @@
     "composite": true
   },
   "exclude": ["**/*.spec.js", "**/*.spec.ts"],
-  "include": ["**/*.js", "**/*.ts", "**/*.vue", "**/*.json"]
+  "include": [
+    "**/*.js",
+    "**/*.ts",
+    "**/*.vue",
+    "**/*.json",
+    "../../../tsconfig.base.json"
+  ]
 }

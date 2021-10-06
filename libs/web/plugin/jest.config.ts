@@ -1,6 +1,6 @@
 module.exports = {
   displayName: 'plugin',
-  preset: '../../../jest.preset.js',
+  preset: '../../../jest.preset.ts',
   transform: {
     '^.+\\.[jt]sx?$': 'ts-jest',
   },

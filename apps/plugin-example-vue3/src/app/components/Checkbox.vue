@@ -34,7 +34,7 @@ const internalCheckedClass = computed(() => {
 </script>
 
 <style lang="postcss">
-@import '/lib/assets/css/global.css';
+@import '@theme/css/defines.css';
 
 .slm-checkbox {
   display: flex;

@@ -1,12 +1,12 @@
 <template>
   <div class="slm-plugin-chargebacks">
     <div class="slm-plugin-content-title">
-      {{ t('chargebacks.select') }}
+      {{ ts('chargebacks.select') }}
     </div>
     <div class="slm-plugin-content">
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.usd_price') }}
+          {{ ts('chargebacks.usd_price') }}
         </div>
         <div class="slm-plugin-row-right">
           {{ priceUsd }}
@@ -14,17 +14,17 @@
       </div>
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.select_label') }}
+          {{ ts('chargebacks.select_label') }}
         </div>
         <SlmSelect
           v-model="currency"
-          :options="tm('chargebacks.currency')"
+          :options="tr('chargebacks.currency')"
           class="slm-plugin-row-right"
         />
       </div>
       <div class="slm-plugin-content-row">
         <div class="slm-plugin-select-title">
-          {{ t('chargebacks.price') }}
+          {{ ts('chargebacks.price') }}
         </div>
         <div class="slm-plugin-row-right">
           <div class="slm-plugin-price">
@@ -41,7 +41,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, toRefs } from 'vue'
-import i18n from './i18n'
+import { ts, tr } from './i18n'
 
 const props = defineProps({
   prices: {
@@ -50,8 +50,6 @@ const props = defineProps({
   },
 })
 const { prices } = toRefs(props)
-
-const { t, tm } = i18n.global
 
 const currency = ref('SLM')
 
