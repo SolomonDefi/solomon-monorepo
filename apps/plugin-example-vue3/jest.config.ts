@@ -1,6 +1,6 @@
 module.exports = {
   displayName: 'plugin-example-vue3',
-  preset: '../../jest.preset.js',
+  preset: '../../jest.preset.ts',
   transform: {
     '^.+\\.vue$': './deps/vue3-jest',
     '^.+\\.[jt]sx?$': 'ts-jest',

@@ -1,11 +1,20 @@
 $blue: #277cea;
+$main-blue: #1476f1;
+$purple: #8d49ec;
 $dark1: #2a292b;
 $dark3: #495057;
 $grey1: #f5f6f8;
 $grey2: #d5d5d5;
+$grey4: #3c3d41;
+$disabled1: #908e8e;
+$text-main: #23262f;
 $text-light: #707073;
 $text-light2: #838d8f;
 $red: #f46a6a;
+$bg1: #838d8f;
+$bg2: #eeeeee;
+$bg3: #f0f3f4;
+$border1: #d8d8d8;
 
 $overlay: rgba(0, 0, 0, 0.6);
 
@@ -37,6 +46,18 @@ $overlay: rgba(0, 0, 0, 0.6);
   font-size: $size;
 }
 
+@define-mixin title-medium $size {
+  font-family: 'SlmTitle', 'Avenir', 'sans-serif';
+  font-weight: 500;
+  font-size: $size;
+}
+
+@define-mixin title-regular $size {
+  font-family: 'SlmTitle', 'Avenir', 'sans-serif';
+  font-weight: 400;
+  font-size: $size;
+}
+
 @define-mixin semibold $size {
   font-family: 'Montserrat', 'Avenir', Helvetica;
   font-weight: 600;
@@ -53,4 +74,16 @@ $overlay: rgba(0, 0, 0, 0.6);
   font-family: 'Montserrat', Garamond, serif;
   font-weight: 400;
   font-size: $size;
+}
+
+@define-mixin select {
+  @mixin title-regular 14px;
+  @mixin flex-center;
+  border-radius: 4px;
+  background-color: #eee;
+  box-shadow: inset 0 1px $border1;
+  color: $grey1;
+  padding: 8px 10px;
+  min-width: 48px;
+  position: relative;
 }

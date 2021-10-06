@@ -46,7 +46,7 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { SlmPlugin } from '/dist/plugin.es.js'
+import { SlmPlugin } from '../../../../dist/libs/web/plugin/plugin.es'
 
 const { t } = useI18n()
 

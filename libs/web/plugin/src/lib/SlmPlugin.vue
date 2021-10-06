@@ -5,38 +5,50 @@
       <div class="slm-plugin-wrap">
         <div class="slm-plugin">
           <div class="slm-plugin-title">
-            {{ t('title') }}
+            {{ ts('title') }}
           </div>
           <div class="slm-plugin-types-wrap">
             <div class="slm-plugin-types">
               <div
                 v-for="plugin in plugins"
+                :id="pluginTypes[plugin].selectId"
                 :key="plugin"
-                :ref="(el) => setTypeRef(plugin, el as HTMLElement)"
-                :class="{ active: type.name === plugin }"
-                @click="selectType(types[plugin])"
+                :class="{ active: pluginType.name === plugin }"
+                @click="selectType(pluginTypes[plugin])"
               >
-                {{ t(`${plugin}.label`) }}
+                {{ ts(`${plugin}.label`) }}
               </div>
             </div>
-            <div class="slm-plugin-types-arrow" :style="{ left: type.arrowPosition }" />
+            <div
+              class="slm-plugin-types-arrow"
+              :style="{ left: pluginType.arrowPosition }"
+            />
           </div>
           <div class="slm-plugin-content-wrap">
             <transition name="plugin-content" mode="out-in">
-              <SlmPluginChargebacks v-if="type.name === 'chargebacks'" :prices="prices" />
-              <SlmPluginPreorder v-else-if="type.name === 'preorder'" :prices="prices" />
-              <SlmPluginEscrow v-else-if="type.name === 'escrow'" :prices="prices" />
+              <SlmPluginChargebacks
+                v-if="pluginType.name === 'chargebacks'"
+                :prices="prices"
+              />
+              <SlmPluginPreorder
+                v-else-if="pluginType.name === 'preorder'"
+                :prices="prices"
+              />
+              <SlmPluginEscrow
+                v-else-if="pluginType.name === 'escrow'"
+                :prices="prices"
+              />
             </transition>
             <div class="slm-plugin-secure">
               <img :src="IcLock" />
-              <div>{{ t('secure') }}</div>
+              <div>{{ ts('secure') }}</div>
             </div>
             <div class="slm-plugin-buttons">
               <div class="slm-plugin-continue" @click="$emit('cancel')">
-                {{ t('continue') }}
+                {{ ts('continue') }}
               </div>
               <div class="slm-plugin-confirm">
-                {{ t('confirm') }}
+                {{ ts('confirm') }}
               </div>
             </div>
           </div>
@@ -47,9 +59,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch, onMounted, onBeforeUnmount, toRefs } from 'vue'
-import i18n from './i18n'
-const allPlugins = ['chargebacks', 'preorder', 'escrow']
+import { computed, ref, watch, onMounted, onBeforeUnmount, toRefs, onUpdated } from 'vue'
+import { allPlugins } from './defaults'
+import { ts } from './i18n'
 
 const emit = defineEmits(['cancel'])
 
@@ -78,25 +90,30 @@ const { initialType, availableTypes, store, priceUsdCents } = toRefs(props)
 
 interface PluginType {
   name: string
+  selectId: string
   arrowPosition: string
 }
 
-const types: Record<string, PluginType> = {
+const pluginTypes: Record<string, PluginType> = {
   chargebacks: {
     name: 'chargebacks',
+    selectId: 'chargebacks-select',
     arrowPosition: '140px',
   },
   preorder: {
     name: 'preorder',
+    selectId: 'preorder-select',
     arrowPosition: '208px',
   },
   escrow: {
     name: 'escrow',
+    selectId: 'escrow-select',
     arrowPosition: '326px',
   },
 }
-const { t } = i18n.global
-const type = ref(types[initialType.value || (availableTypes.value || allPlugins)[0]])
+const pluginType = ref(
+  pluginTypes[initialType.value || (availableTypes.value || allPlugins)[0]],
+)
 const plugins = computed(() => availableTypes.value || allPlugins)
 const priceCents = computed(() =>
   store.value ? store.value.totalPrice : priceUsdCents.value,
@@ -109,7 +126,7 @@ const prices = computed(() => ({
   priceEth: priceEth.value,
 }))
 watch(initialType, (newVal: string) => {
-  type.value = types[newVal]
+  pluginType.value = pluginTypes[newVal]
 })
 const escapeListener = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
@@ -117,14 +134,18 @@ const escapeListener = (event: KeyboardEvent) => {
   }
 }
 const selectType = (newType: PluginType) => {
-  type.value = newType
+  pluginType.value = newType
 }
-const setTypeRef = (plugin: string, el: HTMLElement) => {
-  const type = types[plugin]
-  if (el) {
-    type.arrowPosition = `${el.offsetLeft + (el.offsetWidth - 20) / 2}px`
+
+onUpdated(() => {
+  for (const name of allPlugins) {
+    const type = pluginTypes[name]
+    const el = document.getElementById(type.selectId)
+    if (el) {
+      type.arrowPosition = `${el.offsetLeft + (el.offsetWidth - 20) / 2}px`
+    }
   }
-}
+})
 onMounted(() => {
   window.addEventListener('keyup', escapeListener)
 })
@@ -134,7 +155,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="postcss">
-@import '/lib/assets/css/global.css';
+@import '@theme/css/global.css';
 
 .slm-plugin-modal {
   position: fixed;
@@ -177,7 +198,7 @@ onBeforeUnmount(() => {
     height: 80px;
     min-height: 80px;
     border-bottom: 1px solid #eee;
-    color: $grey1;
+    color: $grey4;
   }
   .slm-plugin-types-wrap {
     position: relative;
@@ -210,7 +231,7 @@ onBeforeUnmount(() => {
     position: absolute;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid $grey1;
+    border-bottom: 10px solid $grey4;
     transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .slm-plugin-type {
@@ -227,7 +248,7 @@ onBeforeUnmount(() => {
     opacity: 0;
   }
   .slm-plugin-content-wrap {
-    background-color: $grey1;
+    background-color: $grey4;
     transition: height 0.3s;
   }
   .slm-plugin-content-title {
@@ -253,9 +274,9 @@ onBeforeUnmount(() => {
     }
     .slm-plugin-select-title {
       @mixin flex-center;
-      @mixin title-regular 12px;
+      @mixin title 12px;
       justify-content: flex-end;
-      color: $grey1;
+      color: $grey4;
       height: 34px;
       width: 120px;
       margin-right: 8px;
@@ -263,7 +284,7 @@ onBeforeUnmount(() => {
     .slm-plugin-row-right {
       @mixin flex-center;
       @mixin title-medium 15px;
-      color: $grey1;
+      color: $grey4;
       justify-content: flex-start;
       flex-grow: 1;
     }
@@ -312,7 +333,7 @@ onBeforeUnmount(() => {
       cursor: pointer;
     }
     .slm-plugin-continue {
-      color: $grey1;
+      color: $grey4;
       border: 1px solid $border1;
       margin-right: 16px;
     }

@@ -54,6 +54,9 @@
     "shared-util-core": {
       "tags": ["scope:shared", "type:util"]
     },
+    "shared-util-i18n": {
+      "tags": ["scope:shared", "type:util"]
+    },
     "shared-util-path-store": {
       "tags": ["scope:shared", "type:util"]
     },
@@ -63,14 +66,14 @@
     "ui-widgets": {
       "tags": ["scope:web", "type:ui"]
     },
-    "web-evidence": {
-      "tags": ["scope:web", "type:app"]
-    },
     "web-data-access-api": {
       "tags": ["scope:web", "type:data-access"]
     },
     "web-data-access-state": {
       "tags": ["scope:web", "type:data-access"]
+    },
+    "web-evidence": {
+      "tags": ["scope:web", "type:app"]
     }
   }
 }

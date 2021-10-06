@@ -1,6 +1,6 @@
 module.exports = {
   displayName: 'ui-widgets',
-  preset: '../../../jest.preset.js',
+  preset: '../../../jest.preset.ts',
   transform: {
     '^.+\\.[jt]sx?$': 'ts-jest',
   },

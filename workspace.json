@@ -93,7 +93,7 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/apps/blockchain-watcher"],
           "options": {
-            "jestConfig": "apps/blockchain-watcher/jest.config.js",
+            "jestConfig": "apps/blockchain-watcher/jest.config.ts",
             "passWithNoTests": true
           }
         }
@@ -114,7 +114,7 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/blockchain-watcher/feature-templates"],
           "options": {
-            "jestConfig": "libs/blockchain-watcher/feature-templates/jest.config.js",
+            "jestConfig": "libs/blockchain-watcher/feature-templates/jest.config.ts",
             "passWithNoTests": true
           }
         }
@@ -226,7 +226,7 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/shared/util-api-evidence-types"],
           "options": {
-            "jestConfig": "libs/shared/util-api-evidence-types/jest.config.js",
+            "jestConfig": "libs/shared/util-api-evidence-types/jest.config.ts",
             "passWithNoTests": true
           }
         }
@@ -248,7 +248,29 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/shared/util-core"],
           "options": {
-            "jestConfig": "libs/shared/util-core/jest.config.js",
+            "jestConfig": "libs/shared/util-core/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-util-i18n": {
+      "root": "libs/shared/util-i18n",
+      "sourceRoot": "libs/shared/util-i18n/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/shared/util-i18n/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/util-i18n"],
+          "options": {
+            "jestConfig": "libs/shared/util-i18n/jest.config.ts",
             "passWithNoTests": true
           }
         }
@@ -269,7 +291,7 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/shared/util-path-store"],
           "options": {
-            "jestConfig": "libs/shared/util-path-store/jest.config.js",
+            "jestConfig": "libs/shared/util-path-store/jest.config.ts",
             "passWithNoTests": true
           }
         }
