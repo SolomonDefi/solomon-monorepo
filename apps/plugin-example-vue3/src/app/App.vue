@@ -4,14 +4,14 @@
       <div class="checkout-payment">
         <div class="section-head">
           <div class="head-line1 title">
-            {{ t('title') }}
+            {{ text.title }}
           </div>
           <div class="head-line2 title">
-            {{ t('subtitle') }}
+            {{ text.subtitle }}
           </div>
         </div>
         <div class="payment-amount">
-          <div>{{ t('charge_amount') }}</div>
+          <div>{{ text.charge_amount }}</div>
           <SlmInput v-model="price" />
         </div>
         <div class="payment-options">
@@ -45,14 +45,17 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-// eslint-disable-next-lint import/extensions
-import { SlmPlugin } from '../../../../dist/libs/web/plugin/plugin.es'
+// eslint-disable-next-line import/extensions
+import { SlmPlugin } from '../../../../dist/libs/web/plugin/plugin.es.js'
 
-const { t } = useI18n()
+const text = {
+  title: 'Solomon Plugin Example',
+  subtitle: 'Configure and run the plugin.',
+  charge_amount: 'Charge Amount (USD)',
+}
 
 const price = ref('5')
-const paymentType = ref(null)
+const paymentType = ref<string | null>(null)
 // const enableChargebacks = ref(true)
 // const enablePreorder = ref(true)
 // const enableEscrow = ref(true)

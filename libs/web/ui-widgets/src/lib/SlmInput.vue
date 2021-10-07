@@ -56,21 +56,20 @@ const props = defineProps({
   },
   maxLength: {
     type: Number,
-    default: undefined,
+    default: null,
   },
 })
 const { inputClass, rows, placeholder, inputType, maxLength } = toRefs(props)
 const uid = uidSingleton.next()
 
 const commonProps = computed(() => {
-  const props = {
+  const props: Record<string, unknown> = {
     class: {
       'slm-input': true,
       'slm-textarea': !!rows.value,
       [inputClass.value]: inputClass.value,
     },
-    maxlength: maxLength.value,
-    // eslint-disable-next-line
+    maxlength: maxLength.value || undefined,
     name: `input${uid}`,
     placeholder: placeholder.value,
   }

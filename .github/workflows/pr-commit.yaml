@@ -109,6 +109,8 @@ jobs:
           version: 6.0.2
       - name: Install modules
         run: pnpm i
+      - name: Build plugin
+        run: pnpx nx build plugin
       - name: Build apps
         run: pnpx nx affected:build --base=origin/main --parallel
 

@@ -1,4 +1,4 @@
-import { SimpleI18n } from './simple-i18n'
+import { getArray, getRecord, getString, SimpleI18n } from './simple-i18n'
 
 describe('simple i18n', () => {
   const fallback = { test: { arr: ['1', '2', '3'], str: 'thing' } }
@@ -10,6 +10,20 @@ describe('simple i18n', () => {
 
     expect(i18n.a('test.arr')).toEqual(['1', '2', '3'])
     expect(i18n.s('test.arr.1')).toEqual('2')
+  })
+
+  it('helpers should get different types correctly', () => {
+    const i18n = new SimpleI18n(fallback)
+    const ts = getString(i18n)
+    const ta = getArray(i18n)
+    const tr = getRecord(i18n)
+
+    expect(ts('test.str')).toEqual('thing')
+
+    expect(tr('test')).toEqual({ arr: ['1', '2', '3'], str: 'thing' })
+
+    expect(ta('test.arr')).toEqual(['1', '2', '3'])
+    expect(ts('test.arr.1')).toEqual('2')
   })
 
   it('should fail to get the wrong types', () => {

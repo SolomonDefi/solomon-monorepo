@@ -12,7 +12,7 @@ module.exports = {
   plugins: ['import'],
   parser: 'vue-eslint-parser',
   parserOptions: { ecmaVersion: 2020 },
-  ignorePatterns: ['node_modules/', 'vue3-jest/'],
+  ignorePatterns: ['node_modules/'],
   rules: {
     'no-console': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',

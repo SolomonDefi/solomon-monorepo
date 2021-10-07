@@ -130,15 +130,8 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/web/plugin"],
           "options": {
-            "jestConfig": "libs/web/plugin/est.config.ts",
+            "jestConfig": "libs/web/plugin/jest.config.ts",
             "passWithNoTests": true
-          }
-        },
-        "e2e": {
-          "executor": "nx-vue3-vite:cypress",
-          "options": {
-            "cypressConfig": "libs/web/plugin/cypress.json",
-            "testingType": "component"
           }
         },
         "lint": {
@@ -169,13 +162,6 @@
           "options": {
             "jestConfig": "apps/plugin-example-vue3/jest.config.ts",
             "passWithNoTests": true
-          }
-        },
-        "e2e": {
-          "executor": "nx-vue3-vite:cypress",
-          "options": {
-            "cypressConfig": "apps/plugin-example-vue3/cypress.json",
-            "testingType": "component"
           }
         },
         "lint": {
@@ -385,6 +371,11 @@
           }
         }
       }
+    },
+    "web-ui-assets": {
+      "root": "libs/web/ui-assets",
+      "sourceRoot": "libs/web/ui-assets/src",
+      "projectType": "library"
     }
   },
   "cli": {

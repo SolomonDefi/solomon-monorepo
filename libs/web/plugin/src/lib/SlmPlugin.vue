@@ -62,6 +62,7 @@
 import { computed, ref, watch, onMounted, onBeforeUnmount, toRefs, onUpdated } from 'vue'
 import { allPlugins } from './defaults'
 import { ts } from './i18n'
+import IcLock from '../assets/img/ic_lock.png'
 
 const emit = defineEmits(['cancel'])
 

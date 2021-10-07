@@ -75,6 +75,7 @@
 <script lang="ts" setup>
 import { ref, computed, toRefs } from 'vue'
 import { ts, tr } from './i18n'
+import { SlmSelect } from '@solomon/web/ui-widgets'
 
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
