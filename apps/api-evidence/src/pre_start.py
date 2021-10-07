@@ -37,7 +37,9 @@ def create_secret() -> None:
         dotenv.set_key('.env', 'SECRET_KEY', secrets.token_urlsafe(32))
     if 'FILE_ENCRYPTION_KEY' not in env:
         logger.info('File encryption key is not found, initializing the key')
-        dotenv.set_key('.env', 'FILE_ENCRYPTION_KEY', Fernet.generate_key().decode('utf-8'))
+        dotenv.set_key(
+            '.env', 'FILE_ENCRYPTION_KEY', Fernet.generate_key().decode('utf-8')
+        )
 
 
 def main() -> None:

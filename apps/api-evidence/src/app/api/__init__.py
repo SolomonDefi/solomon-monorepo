@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from app.api import evidence, users, auth
+from app.api import auth, evidence, users
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix='/auth', tags=['Authentication'])

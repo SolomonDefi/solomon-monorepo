@@ -35,6 +35,16 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout code into workspace directory
         uses: actions/checkout@v2
@@ -56,8 +66,26 @@ jobs:
           version: 6.0.2
       - name: Install modules
         run: pnpm i
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install Poetry
+        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup api-evidence
+        uses: ./.github/actions/setup-python-app
+        with:
+          app-name: 'api-evidence'
+      - name: Setup api-dispute
+        uses: ./.github/actions/setup-python-app
+        with:
+          app-name: 'api-dispute'
       - name: Lint source code
-        run: pnpx nx affected:lint --base=origin/main --parallel --exclude api-evidence api-dispute
+        run: pnpx nx affected:lint --base=origin/main --parallel
   # TODO
   #      - name: Lint commits
   #        run: pnpx commitlint --verbose --from=origin/main
@@ -154,6 +182,10 @@ jobs:
           python-version: 3.9
       - name: Install Poetry
         run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+      - name: Checkout code into workspace directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Setup api-evidence
         uses: ./.github/actions/setup-python-app
         with:

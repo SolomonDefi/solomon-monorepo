@@ -24,13 +24,17 @@ alembic = "^1.7.3"
 boto3 = "^1.18.44"
 
 [tool.poetry.dev-dependencies]
-pylint = "*"
 pytest = "*"
 mypy = "*"
 sqlalchemy-stubs = "^0.4"
-black = "21.9b0"
 moto = {extras = ["s3"], version = "^2.2.8"}
 boto3-stubs = {extras = ["s3"], version = "^1.18.49"}
+black = "*"
+flake8 = "*"
+flake8-black = "*"
+flake8-bugbear = "*"
+flake8-import-order = "*"
+flake8-comprehensions = "*"
 
 [tool.mypy]
 ignore_missing_imports = true

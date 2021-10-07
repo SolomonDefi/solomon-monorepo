@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from app.models.user import User
+    from app.models.user import User  # noqa: F401
 
 
 class Evidence(Base):

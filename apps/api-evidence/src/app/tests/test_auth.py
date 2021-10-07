@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from .utils.user import create_random_wallet, create_random_user, eth_sign_data
+from .utils.user import create_random_user, create_random_wallet, eth_sign_data
 
 
 def test_api_without_auth(client: TestClient) -> None:
