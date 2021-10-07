@@ -3,11 +3,7 @@
   "compilerOptions": {
     // Enables stricter inference for data properties on `this`
     "strict": true,
-    "allowJs": true,
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "."
+    "allowJs": true
   },
   "references": [
     {

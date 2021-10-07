@@ -74,6 +74,9 @@
     },
     "web-evidence": {
       "tags": ["scope:web", "type:app"]
+    },
+    "web-ui-assets": {
+      "tags": ["scope:web", "type:ui"]
     }
   }
 }

@@ -17,8 +17,8 @@ export default defineConfig({
   plugins: [
     Vue(),
     Components({
-      dirs: ['src/app/components'],
+      dirs: ['src/app/components', '../../libs/web/ui-widgets'],
     }),
-    ViteImages(),
+    ViteImages({ dirs: ['src/assets/img', '../../libs/web/ui-assets/src/img'] }),
   ],
 })

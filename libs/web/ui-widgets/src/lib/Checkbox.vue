@@ -20,7 +20,8 @@ const props = defineProps({
   checkedClass: {
     type: String,
     default: null,
-    validator: (value) => ['partial', 'checked', '', null].indexOf(value) !== -1,
+    validator: (value: string | null) =>
+      ['partial', 'checked', ''].indexOf(value || '') !== -1,
   },
   disabled: {
     type: Boolean,
@@ -34,8 +35,8 @@ const internalCheckedClass = computed(() => {
   }
   return checkedClass
 })
-const handleCheck = (event, checked) => {
-  if (!disabled.value && event.target.nodeName !== 'A') {
+const handleCheck = (event: MouseEvent, checked: boolean) => {
+  if (!disabled.value && (event.target as HTMLElement).nodeName !== 'A') {
     emit('checked', checked)
   }
 }

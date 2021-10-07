@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@app/views/Home.vue'
-import SelectMethod from '@app/views/SelectMethod.vue'
-import ExternalLink from '@app/views/ExternalLink.vue'
-import SolomonLink from '@app/views/SolomonLink.vue'
+import Home from './views/Home.vue'
+import SelectMethod from './views/SelectMethod.vue'
+import ExternalLink from './views/ExternalLink.vue'
+import SolomonLink from './views/SolomonLink.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {

@@ -1,14 +1,18 @@
 module.exports = {
-  displayName: 'plugin-example-vue3',
+  displayName: 'web',
   preset: '../../jest.preset.ts',
   transform: {
-    '^.+\\.vue$': './deps/vue3-jest',
     '^.+\\.[jt]sx?$': 'ts-jest',
+  },
+  globals: {
+    'ts-jest': {
+      babelConfig: true,
+    },
   },
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  moduleFileExtensions: ['ts', 'js', 'vue'],
   testTimeout: 10000,
 }

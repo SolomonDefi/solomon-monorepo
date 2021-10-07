@@ -8,10 +8,6 @@ export default defineConfig({
   assetsInclude: /\.(pdf|jpg|png|svg)$/,
   resolve: {
     alias: {
-      '@cypress-local/': `${path.resolve(__dirname, './cypress')}/`,
-      '@assets/': `${path.resolve(__dirname, './src/assets')}/`,
-      '@app/': `${path.resolve(__dirname, './src/app')}/`,
-      '@public/': `${path.resolve(__dirname, './src/public')}/`,
       '@theme/': `${path.resolve(__dirname, '../../libs/web/ui-theme/src')}/`,
     },
   },

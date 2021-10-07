@@ -1,8 +1,8 @@
 import path from 'path'
 import { defineConfig } from 'vite'
-import Vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
 import ViteImages from 'vite-plugin-vue-images'
+import Vue from '@vitejs/plugin-vue'
 import tsconfigBase from '../../../tsconfig.base.json'
 
 const resolve = (p: string) => path.resolve(__dirname, p)
@@ -31,14 +31,9 @@ module.exports = defineConfig({
       ...tsconfigBaseAliases('../../../'),
     },
   },
-  plugins: [
-    Vue(),
-    Components({
-      dirs: ['src/lib'],
-    }),
-    ViteImages(),
-  ],
+  plugins: [Vue(), Components({ dirs: ['src/lib'] }), ViteImages()],
   build: {
+    minify: false,
     lib: {
       entry: path.resolve(__dirname, './src/index.ts'),
       name: 'plugin',
