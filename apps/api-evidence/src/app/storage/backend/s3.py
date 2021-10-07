@@ -12,6 +12,10 @@ class GetObjectError(StorageBackendError):
     pass
 
 
+class PutObjectError(StorageBackendError):
+    pass
+
+
 class S3(StorageBackend):
     name: str = 'S3'
     s3_client: S3Client
@@ -43,8 +47,8 @@ class S3(StorageBackend):
                 Bucket=self.bucket_name, Key=name, Body=file, ACL='private'
             )
             return name
-        except:
-            pass
+        except ClientError as e:
+            raise PutObjectError from e
 
     def get_file(self, key: str) -> typing.IO:
         try:

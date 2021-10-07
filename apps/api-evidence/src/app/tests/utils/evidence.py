@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from app import crud, models
 from app.config import config
 from app.schemas.evidence import EvidenceCreate
-from app.tests.utils.user import create_random_user
 from app.tests.utils import random_lower_string
+from app.tests.utils.user import create_random_user
 
 
 def generate_content_type() -> str:

@@ -14,9 +14,9 @@ from sqlalchemy.orm import Session
 from app.config import config
 from app.db.base import Base
 from app.db.session import engine, SessionLocal
-from main import app
-from app.tests.utils.user import authentication_token_from_email
 from app.tests.utils import get_superuser_token_headers, random_email
+from app.tests.utils.user import authentication_token_from_email
+from main import app
 
 
 def setup_db() -> None:

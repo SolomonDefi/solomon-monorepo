@@ -1,0 +1,11 @@
+[flake8]
+# black line length (default 88)
+max-line-length = 88
+ignore =
+  # B008: Do not perform function calls in argument defaults, ignore for FastAPI Depends
+  B008
+exclude =
+  migrations
+# import order configuration
+application-import-names = app,main
+import-order-style = smarkets

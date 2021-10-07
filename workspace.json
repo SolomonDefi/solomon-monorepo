@@ -19,9 +19,6 @@
         },
         "lint": {
           "executor": "nx-python-fastapi:lint"
-        },
-        "format": {
-          "executor": "nx-python-fastapi:format"
         }
       }
     },
