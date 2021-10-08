@@ -16,4 +16,14 @@ module.exports = {
       '@nrwl/workspace',
     ],
   },
+  'api-evidence': {
+    include: [
+      // devDependencies
+      '@nrwl/cli',
+      '@nrwl/cypress',
+      'nx-python-fastapi',
+      'shelljs',
+      'typescript',
+    ],
+  },
 }
