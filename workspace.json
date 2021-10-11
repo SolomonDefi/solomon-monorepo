@@ -9,7 +9,7 @@
         "serve": {
           "executor": "nx-python-fastapi:serve",
           "options": {
-            "host": "localhost",
+            "host": "0.0.0.0",
             "port": 3000
           }
         },
@@ -30,7 +30,7 @@
         "serve": {
           "executor": "nx-python-fastapi:serve",
           "options": {
-            "host": "localhost",
+            "host": "0.0.0.0",
             "port": 3000
           }
         },
@@ -40,9 +40,6 @@
         },
         "lint": {
           "executor": "nx-python-fastapi:lint"
-        },
-        "format": {
-          "executor": "nx-python-fastapi:format"
         }
       }
     },
