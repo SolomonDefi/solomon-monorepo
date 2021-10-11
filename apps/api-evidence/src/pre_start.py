@@ -44,7 +44,6 @@ def create_secret() -> None:
 
 def main() -> None:
     logger.info('Initializing service')
-    check_db()
     create_secret()
     logger.info('Service finished initializing')
 
