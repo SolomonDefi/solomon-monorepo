@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  labels:
+    tier: backend
+data:
+  NODE_ENV: 'dev'
+  DB_SERVICE_HOST: postgresql
+  DB_SERVICE_PORT: '5432'
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_NAME: db

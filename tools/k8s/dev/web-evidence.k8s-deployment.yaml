@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-evidence
+  labels:
+    component: web-evidence
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: web-evidence
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        component: web-evidence
+        tier: frontend
+    spec:
+      containers:
+        - name: web-evidence
+          image: web-evidence.dev
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
