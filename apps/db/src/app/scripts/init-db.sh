@@ -10,7 +10,7 @@ DB_CONNECT_OPTS="-h $DB_SERVICE_HOST -p $DB_SERVICE_PORT -U $DB_USER -d postgres
 DB_PASSWORD_FILE=~/.pgpass
 DB_PASSWORD_FILE_ENTRY=$DB_SERVICE_HOST:$DB_SERVICE_PORT:*:$DB_USER:$DB_PASSWORD
 knex_exec=node_modules/.bin/knex
-knex_dir=apps/db-api/src/app
+knex_dir=apps/db/src/app
 
 # echo "[DEBUG] NODE_ENV=$NODE_ENV"
 # echo "[DEBUG] DB_SERVICE_HOST=$DB_SERVICE_HOST"

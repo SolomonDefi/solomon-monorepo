@@ -25,17 +25,17 @@ WORKDIR /usr/src
 
 COPY subset.config.js package.json pnpm-lock.yaml ./
 COPY tools/scripts/package-subset.js ./tools/scripts/
-RUN node ./tools/scripts/package-subset.js api-evidence subset.config.js package.json package.json
+RUN node ./tools/scripts/package-subset.js api-dispute subset.config.js package.json package.json
 RUN pnpm install
 
 COPY workspace.json nx.json tsconfig*.json ./
 
-COPY apps/api-evidence ./apps/api-evidence
-COPY apps/api-evidence/.env.dist ./apps/api-evidence/src/.env
+COPY apps/api-dispute ./apps/api-dispute
+COPY apps/api-dispute/.env.dist ./apps/api-dispute/src/.env
 
-RUN cd /usr/src/apps/api-evidence \
+RUN cd /usr/src/apps/api-dispute \
     && poetry config virtualenvs.in-project true \
     && poetry install --no-dev
 
 ENTRYPOINT ["/sbin/tini", "-v", "-s", "--"]
-CMD ["pnpm", "nx", "serve", "api-evidence"]
+CMD ["pnpm", "nx", "serve", "api-dispute"]
