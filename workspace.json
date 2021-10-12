@@ -1,27 +1,6 @@
 {
   "version": 2,
   "projects": {
-    "api-evidence": {
-      "root": "apps/api-evidence",
-      "projectType": "application",
-      "sourceRoot": "apps/api-evidence/src",
-      "targets": {
-        "serve": {
-          "executor": "nx-python-fastapi:serve",
-          "options": {
-            "host": "0.0.0.0",
-            "port": 3000
-          }
-        },
-        "test": {
-          "executor": "nx-python-fastapi:test",
-          "outputs": ["coverage/apps/api-evidence"]
-        },
-        "lint": {
-          "executor": "nx-python-fastapi:lint"
-        }
-      }
-    },
     "api-dispute": {
       "root": "apps/api-dispute",
       "projectType": "application",
@@ -37,6 +16,30 @@
         "test": {
           "executor": "nx-python-fastapi:test",
           "outputs": ["coverage/apps/api-dispute"]
+        },
+        "lint": {
+          "executor": "nx-python-fastapi:lint"
+        },
+        "format": {
+          "executor": "nx-python-fastapi:format"
+        }
+      }
+    },
+    "api-evidence": {
+      "root": "apps/api-evidence",
+      "projectType": "application",
+      "sourceRoot": "apps/api-evidence/src",
+      "targets": {
+        "serve": {
+          "executor": "nx-python-fastapi:serve",
+          "options": {
+            "host": "0.0.0.0",
+            "port": 3000
+          }
+        },
+        "test": {
+          "executor": "nx-python-fastapi:test",
+          "outputs": ["coverage/apps/api-evidence"]
         },
         "lint": {
           "executor": "nx-python-fastapi:lint"
@@ -110,6 +113,19 @@
           "options": {
             "jestConfig": "libs/blockchain-watcher/feature-templates/jest.config.ts",
             "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "db": {
+      "root": "apps/db",
+      "sourceRoot": "apps/db/src",
+      "projectType": "application",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/db/**/*.js"]
           }
         }
       }

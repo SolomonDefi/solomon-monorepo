@@ -10,6 +10,39 @@ alias pnx="pnpm run nx --"
 pnpm install
 ```
 
+## Getting started
+
+Follow these instructions to set up your local development environment. Only MacOs instructions are provided, but a similar process can be followed on other systems (replace Brew with local package manager).
+
+**Global Dependencies**
+
+1. **[Docker](https://www.docker.com/products/docker-desktop)** - containerization Kubernetes cluster on your desktop.
+   - :exclamation: **After install:** Enable local Kubernetes cluster in preferences per [these instructions](https://docs.docker.com/desktop/kubernetes/#enable-kubernetes).
+     It will take a few minutes to provision the cluster for the first time.
+1. **[Homebrew](https://brew.sh/)** - package manager for MacOs.
+1. **[NodeJs (LTS)](https://nodejs.org/docs/latest-v14.x/api/index.html) and NPM** -
+   Follow [NVM Wiki](https://github.com/SolomonDefi/solomon-monorepo/wiki/NVM) to install
+   and select the correct Node/NPM versions
+
+1. **[Skaffold](https://skaffold.dev/)** - build/deploy tool for local Kubernetes development.
+
+   ```sh
+   $ brew install skaffold
+   ```
+
+**Start local dev environment**
+
+```sh
+$ pnpm install
+$ pnpm run skaffold
+```
+
+- It may take up till 5 mins for skaffold to run for the first time. The subsequent runs
+  should be much faster because most of the artifacts will be cached.
+- The skaffold run is usually finished when it a) settles (i.e. no more stuff is
+  written to the terminal log) and b) you are able to verify responses from the
+  apps in the next step.
+
 ## Apps
 
 The following table outlines all the apps available. Each app is located in `apps/<app-name>`, and `<app-name>` can be substituted in the next section to serve, build, or test specific apps.
@@ -37,8 +70,6 @@ pnpx nx build <app-name>
 ```bash
 pnpx nx test <app-name>
 ```
-
-## Apps
 
 ### Solomon Evidence Uploader
 
