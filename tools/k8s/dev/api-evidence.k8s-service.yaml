@@ -1,0 +1,16 @@
+# Which API version to use
+# https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-evidence
+  labels:
+    component: api-evidence
+    tier: backend
+spec:
+  selector:
+    component: api-evidence
+    tier: backend
+  ports:
+    - port: 3010
+      targetPort: 3010

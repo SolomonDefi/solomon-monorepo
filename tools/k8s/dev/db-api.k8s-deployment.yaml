@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    component: db
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: db
+      tier: backend
+  template:
+    metadata:
+      labels:
+        component: db
+        tier: backend
+    spec:
+      initContainers:
+        - name: db-wait-db
+          image: db
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: db-config
+          command: ['/bin/sh', '-c']
+          args:
+            - ./apps/db/src/app/scripts/wait-db.sh;
+      containers:
+        - name: db
+          image: db
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: db-config
+            - configMapRef:
+                name: db-config
+          command: ['/bin/sh', '-c']
+          args:
+            - ./apps/db/src/app/scripts/init-db.sh &&
+              tail -f /dev/null
+          # xxx

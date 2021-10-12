@@ -1,0 +1,16 @@
+# Which API version to use
+# https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-evidence
+  labels:
+    component: web-evidence
+    tier: frontend
+spec:
+  selector:
+    component: web-evidence
+    tier: frontend
+  ports:
+    - port: 8000
+      targetPort: 8000

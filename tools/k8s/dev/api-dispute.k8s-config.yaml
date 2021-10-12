@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-dispute-config
+  labels:
+    tier: backend
+data:
+  NODE_ENV: 'dev'
+  API_AUTHORIZED_REFERRERS: "\
+    http://web-evidence.localhost,\
+    http://localhost:8080,\
+    http://localhost:8000"
