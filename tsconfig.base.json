@@ -18,6 +18,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@assets/*": ["libs/web/ui-assets/src/*"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-watcher/feature-templates": [
@@ -32,8 +33,7 @@
       "@solomon/web/data-access-api": ["libs/web/data-access-api/src/index.ts"],
       "@solomon/web/data-access-state": ["libs/web/data-access-state/src/index.ts"],
       "@solomon/web/ui-theme": ["libs/web/ui-theme/src"],
-      "@solomon/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"],
-      "@assets/*": ["libs/web/ui-assets/src/*"]
+      "@solomon/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

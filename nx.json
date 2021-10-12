@@ -27,10 +27,10 @@
     ]
   },
   "projects": {
-    "api-evidence": {
+    "api-dispute": {
       "tags": ["scope:api", "type:app"]
     },
-    "api-dispute": {
+    "api-evidence": {
       "tags": ["scope:api", "type:app"]
     },
     "blockchain-watcher": {
@@ -38,6 +38,9 @@
     },
     "blockchain-watcher-feature-templates": {
       "tags": ["scope:service", "type:feature"]
+    },
+    "db": {
+      "tags": ["scope:db", "type:app"]
     },
     "developer-docs": {
       "tags": ["scope:web", "type:docs"]
