@@ -16,14 +16,14 @@ COPY package.json ./
 COPY tsconfig.base.json ./
 COPY workspace.json ./
 
-RUN apk add --no-cache nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
+RUN apk add --no-cache g++ make python3 nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
 RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
 RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
 RUN pnpm install
 
 # WATCHER: DEV IMAGE (929.95 MB)
 # ------------------------------------------------------------------------------------
-FROM base as watcher_dev
+FROM base as dev
 
 ENV NODE_ENV=developemnt
 

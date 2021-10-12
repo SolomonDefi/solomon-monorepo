@@ -8,7 +8,7 @@ ENV NPM_VER=$NPM_VER
 ARG TINI_VER=0.19
 ENV TINI_VER=$TINI_VER
 
-RUN apk add --no-cache nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
+RUN apk add --no-cache g++ make python3 nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
 RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
 RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
 

@@ -1,3 +1,12 @@
+const allApi = [
+  // devDependencies
+  '@nrwl/cli',
+  '@nrwl/cypress',
+  'nx-python-fastapi',
+  'shelljs',
+  'typescript',
+]
+
 module.exports = {
   'web-evidence': {
     include: [
@@ -17,13 +26,18 @@ module.exports = {
     ],
   },
   'api-evidence': {
+    include: [...allApi],
+  },
+  'api-dispute': {
+    include: [...allApi],
+  },
+  'db-dev': {
     include: [
+      // dependencies
+      'pg',
+      'dotenv',
       // devDependencies
-      '@nrwl/cli',
-      '@nrwl/cypress',
-      'nx-python-fastapi',
-      'shelljs',
-      'typescript',
+      'husky',
     ],
   },
 }

@@ -6,10 +6,10 @@ build:
     useBuildkit: true
     push: false
   artifacts:
-    - image: db-api
+    - image: db
       context: .
       docker:
-        dockerfile: apps/db-api/Dockerfile
+        dockerfile: apps/db/Dockerfile
         buildArgs:
           # These vars are different per each developer and cannot be part of ConfigMap in git
           SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
@@ -52,7 +52,7 @@ build:
           - src: 'libs/shared/*/src/**/*'
             dest: '/usr/src'
       docker:
-        dockerfile: apps/api/Dockerfile
+        dockerfile: apps/blockchain-watcher/Dockerfile
         target: dev
         buildArgs:
           # These vars are different per each developer and cannot be part of ConfigMap in git

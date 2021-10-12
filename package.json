@@ -94,6 +94,7 @@
     "mailgun.js": "^3.5.7",
     "mjml": "^4.10.3",
     "nodemailer": "^6.6.3",
+    "pg": "^8.7.1",
     "pkg-dir": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.0.0",
