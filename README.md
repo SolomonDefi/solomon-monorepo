@@ -37,11 +37,23 @@ $ pnpm install
 $ pnpm run skaffold
 ```
 
-- It may take up till 5 mins for skaffold to run for the first time. The subsequent runs
-  should be much faster because most of the artifacts will be cached.
+- It may take up to 10 minutes for skaffold to run for the first time. The subsequent runs
+  should be much faster because artifacts are cached
 - The skaffold run is usually finished when it a) settles (i.e. no more stuff is
   written to the terminal log) and b) you are able to verify responses from the
   apps in the next step.
+
+**Run individual Dockerfiles**
+
+It's possible to run apps individually, which can be useful if you're verifying package changes or debugging docker syntax:
+
+```
+docker build --progress=plain --no-cache -t blockchain-watcher:dev -f apps/blockchain-watcher/Dockerfile --target=dev .
+docker build --progress=plain --no-cache -t api-evidence:dev -f apps/api-evidence/Dockerfile --target=dev .
+docker build --progress=plain --no-cache -t api-dispute:dev -f apps/api-dispute/Dockerfile --target=dev .
+docker build --progress=plain --no-cache -t web-evidence:dev -f apps/web-evidence/Dockerfile --target=dev .
+docker build --progress=plain --no-cache -t db-api -f apps/db-api/Dockerfile .
+```
 
 ## Apps
 

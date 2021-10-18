@@ -23,7 +23,7 @@ FROM base as dev
 ENV SHELL=/bin/sh
 WORKDIR /usr/src
 
-COPY subset.config.js package.json pnpm-lock.yaml ./
+COPY subset.config.js package.json ./
 COPY tools/scripts/package-subset.js ./tools/scripts/
 RUN node ./tools/scripts/package-subset.js api-evidence subset.config.js package.json package.json
 RUN pnpm install

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blockchain-watcher-config
+  labels:
+    tier: backend
+data:
+  NODE_ENV: 'dev'
+  API_AUTHORIZED_REFERRERS: "\
+    http://api-evidence.localhost,\
+    http://api-dispute.localhost"

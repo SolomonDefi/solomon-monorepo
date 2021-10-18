@@ -1,0 +1,16 @@
+# Which API version to use
+# https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html
+apiVersion: v1
+kind: Service
+metadata:
+  name: blockchain-watcher
+  labels:
+    component: blockchain-watcher
+    tier: backend
+spec:
+  selector:
+    component: blockchain-watcher
+    tier: backend
+  ports:
+    - port: 4000
+      targetPort: 4000

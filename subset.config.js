@@ -1,4 +1,4 @@
-const allApi = [
+const allPython = [
   // devDependencies
   '@nrwl/cli',
   '@nrwl/cypress',
@@ -17,6 +17,8 @@ module.exports = {
       'vue-router',
       // devDependencies
       '@vitejs/plugin-vue',
+      '@vue/compiler-sfc',
+      '@samatech/postcss-basics',
       'nx-vue3-vite',
       'vite',
       'unplugin-vue-components',
@@ -26,10 +28,34 @@ module.exports = {
     ],
   },
   'api-evidence': {
-    include: [...allApi],
+    include: [...allPython],
   },
   'api-dispute': {
-    include: [...allApi],
+    include: [...allPython],
+  },
+  'blockchain-watcher': {
+    include: [
+      '@nrwl/node',
+      '@nrwl/cli',
+      '@nrwl/workspace',
+      'mjml',
+      'fs-extra',
+      '@types/fs-extra',
+      '@mikro-orm/core',
+      '@mikro-orm/sqlite',
+      'uuid',
+      '@types/uuid',
+      'ethers',
+      'nodemailer',
+      '@types/nodemailer',
+      'mailgun.js',
+      'handlebars',
+      'form-data',
+      'typescript',
+      'tslib',
+      'reflect-metadata',
+      'pkg-dir',
+    ],
   },
   'db-dev': {
     include: [

@@ -14,13 +14,12 @@ RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
 
 # WEB EVIDENCE DEV APP IMAGE (214 MB)
 # ------------------------------------------------------------------------------------
-FROM base as web_evidence_dev
+FROM base as dev
 ENV SHELL=/bin/sh
 WORKDIR /usr/src
 
 COPY subset.config.js ./
 COPY package.json ./
-COPY pnpm-lock.yaml ./
 COPY tools/scripts/package-subset.js ./tools/scripts/
 RUN node ./tools/scripts/package-subset.js web-evidence subset.config.js package.json package.json
 RUN pnpm install
