@@ -19,28 +19,20 @@ Follow these instructions to set up your local development environment. Only Mac
 1. **[Docker](https://www.docker.com/products/docker-desktop)** - containerization Kubernetes cluster on your desktop.
    - :exclamation: **After install:** Enable local Kubernetes cluster in preferences per [these instructions](https://docs.docker.com/desktop/kubernetes/#enable-kubernetes).
      It will take a few minutes to provision the cluster for the first time.
-2. **[Homebrew](https://brew.sh/)** / **[Chocolatey](https://community.chocolatey.org/)** - package manager for macOS / Windows.
+2. **[Homebrew](https://brew.sh/)** - package manager for macOS.
 3. **[NodeJs (LTS)](https://nodejs.org/docs/latest-v14.x/api/index.html) and NPM** -
    Follow [NVM Wiki](https://github.com/SolomonDefi/solomon-monorepo/wiki/NVM) to install
    and select the correct Node/NPM versions
 4. **[Helm](https://helm.sh/)** - The package manager for Kubernetes.
 
    ```sh
-   # macOS
    $ brew install helm
-
-   # Windows (with admin PowerShell)
-   $ chocolatey install helm
    ```
 
 5. **[Skaffold](https://skaffold.dev/)** - build/deploy tool for local Kubernetes development.
 
    ```sh
-   # macOS
    $ brew install skaffold
-
-   # Windows (with admin PowerShell)
-   $ chocolatey install skaffold
    ```
 
 **Start local dev environment**
