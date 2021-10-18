@@ -127,3 +127,8 @@ The following are `gitmoji` recommendations for the `scope`. These are not curre
 - Deps - :lock: `:lock:`
 - Breaking changes - :boom: `:boom:`
 - Config - :wrench: `:wrench:`
+
+### Troubleshooting
+
+- Error `**.sh: not found` when running skaffold in Windows.
+  - Make sure the EOL os `*.sh` files is `LF`, not `CRLF`, you can change it in your IDE. [SO ref here](https://stackoverflow.com/questions/40487747/trying-to-build-a-docker-container-start-sh-not-found).
