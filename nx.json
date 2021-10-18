@@ -36,6 +36,9 @@
     "blockchain-watcher": {
       "tags": ["scope:service", "type:app"]
     },
+    "blockchain-watcher-e2e": {
+      "tags": ["scope:service", "type:app"]
+    },
     "blockchain-watcher-feature-templates": {
       "tags": ["scope:service", "type:feature"]
     },
