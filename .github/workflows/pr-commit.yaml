@@ -110,7 +110,7 @@ jobs:
           context: ${{env.WORKSPACE_ROOT}}
           push: false
           file: ${{env.WORKSPACE_ROOT}}/apps/blockchain-watcher/Dockerfile
-          target: watcher_prod
+          target: production
           tags: ${{env.APP_NAME}}-${{github.head_ref}}-${{steps.slug.outputs.sha7}}
 
   build-apps:

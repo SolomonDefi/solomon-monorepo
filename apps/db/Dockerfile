@@ -22,7 +22,6 @@ WORKDIR /usr/src/db/
 COPY tools/scripts/package-subset.js ./tools/scripts/
 COPY subset.config.js ./
 COPY package.json ./
-COPY pnpm-lock.yaml ./
 RUN node ./tools/scripts/package-subset.js db-dev subset.config.js package.json package.json
 RUN pnpm install
 COPY apps/db/src/app ./apps/db/src/app

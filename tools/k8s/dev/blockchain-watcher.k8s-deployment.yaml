@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blockchain-watcher
+  labels:
+    component: blockchain-watcher
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: blockchain-watcher
+      tier: backend
+  template:
+    metadata:
+      labels:
+        component: blockchain-watcher
+        tier: backend
+    spec:
+      containers:
+        - name: blockchain-watcher
+          image: blockchain-watcher.dev
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: blockchain-watcher-config
+            - configMapRef:
+                name: db-config
