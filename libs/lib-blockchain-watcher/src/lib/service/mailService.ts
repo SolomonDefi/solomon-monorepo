@@ -4,7 +4,7 @@ import { readFile } from 'fs-extra'
 import Handlebars from 'handlebars'
 import pathStore from '@solomon/shared/util-path-store'
 import MailgunTransport from '../util/MailgunTransport'
-import envStore from '../store/envStore'
+import { envStore } from '../store/envStore'
 
 class MailService {
   mailer: Transporter = null as any
@@ -76,4 +76,4 @@ class MailService {
   constructor() {}
 }
 
-export default new MailService()
+export const mailService = new MailService()

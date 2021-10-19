@@ -19,6 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
+      "@solomon/lib-blockchain-watcher": ["libs/lib-blockchain-watcher/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-watcher/feature-templates": [

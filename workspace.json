@@ -201,6 +201,28 @@
         }
       }
     },
+    "lib-blockchain-watcher": {
+      "root": "libs/lib-blockchain-watcher",
+      "sourceRoot": "libs/lib-blockchain-watcher/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/lib-blockchain-watcher/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/lib-blockchain-watcher"],
+          "options": {
+            "jestConfig": "libs/lib-blockchain-watcher/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "plugin": {
       "root": "libs/web/plugin",
       "projectType": "library",
