@@ -1,4 +1,4 @@
-import dbService, { DbService } from './dbService'
+import { dbService, DbService } from './dbService'
 import * as fse from 'fs-extra'
 
 describe('dbService', () => {

@@ -1,9 +1,10 @@
+import 'reflect-metadata'
 import path from 'path'
 import { MikroORM } from '@mikro-orm/core'
 import { QueryOrderNumeric } from '@mikro-orm/core/enums'
 import { pathExists, remove } from 'fs-extra'
-import envStore from '../store/envStore'
 import { ScanLogEntity } from '../Entity/ScanLogEntity'
+import { envStore } from '../store/envStore'
 
 export class DbService {
   orm: MikroORM = null as any
@@ -69,4 +70,4 @@ export class DbService {
   }
 }
 
-export default new DbService()
+export const dbService = new DbService()

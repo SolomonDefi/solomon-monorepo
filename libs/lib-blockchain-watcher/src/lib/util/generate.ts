@@ -3,7 +3,7 @@ import * as path from 'path'
 import pathStore from '@solomon/shared/util-path-store'
 import mjml2html = require('mjml')
 
-export default async (): Promise<boolean> => {
+export const generateMjmlTemplate = async (): Promise<boolean> => {
   try {
     const templateDirPath = path.resolve(pathStore.watcher, 'src', 'template')
     const templateNames = await readdir(templateDirPath)

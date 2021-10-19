@@ -1,12 +1,12 @@
-import mailService from './mailService'
+import { mailService } from './mailService'
 import { JSDOM } from 'jsdom'
-import generateMailTemplates from '@solomon/blockchain-watcher/feature-templates'
+import { generateMjmlTemplate } from '@solomon/lib-blockchain-watcher'
 
 describe('mailService', () => {
   jest.setTimeout(60 * 1000)
 
   beforeAll(async () => {
-    await generateMailTemplates()
+    await generateMjmlTemplate()
   })
 
   test('constructor()', async () => {

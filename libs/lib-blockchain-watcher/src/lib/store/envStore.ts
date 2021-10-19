@@ -53,4 +53,4 @@ class EnvStore {
   }
 }
 
-export default new EnvStore()
+export const envStore = new EnvStore()

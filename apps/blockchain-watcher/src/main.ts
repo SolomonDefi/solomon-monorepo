@@ -1,6 +1,4 @@
-import 'reflect-metadata'
-import dbService from './service/dbService'
-import mailService from './service/mailService'
+import { dbService, mailService } from '@solomon/lib-blockchain-watcher'
 
 let start = async () => {
   await dbService.init()
