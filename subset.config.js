@@ -39,6 +39,7 @@ module.exports = {
       '@nrwl/cli',
       '@nrwl/workspace',
       'mjml',
+      '@types/mjml',
       'fs-extra',
       '@types/fs-extra',
       '@mikro-orm/core',
