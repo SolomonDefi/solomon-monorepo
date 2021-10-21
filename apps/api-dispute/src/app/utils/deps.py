@@ -24,7 +24,7 @@ class SignatureHeader:
             signature, generate_signature(self.secret_key, message)
         )
 
-    async def __call__(self, request: Request) -> typing.Optional[typing.Any]:
+    async def __call__(self, request: Request) -> typing.Optional[dict]:
         signature = request.headers[config.SIGNATURE_HEADER_NAME]
         if not signature:
             return None
