@@ -1,0 +1,5 @@
+# Python
+apps/*/__pycache__
+apps/*/*.pyc
+apps/*/.venv/
+apps/*/.pytest*/
