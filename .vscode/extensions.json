@@ -7,6 +7,7 @@
     "johnsoncodehk.volar",
     "samatech.postcss-vue",
     "ms-python.vscode-pylance",
-    "ms-python.python"
+    "ms-python.python",
+    "juanblanco.solidity"
   ]
 }
