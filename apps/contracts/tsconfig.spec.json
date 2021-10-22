@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "../../dist/out-tsc",
+    "types": ["mocha", "chai", "node"]
+  },
+  "files": ["hardhat.config.ts"],
+  "include": ["./test", "./scripts", "./typechain"]
+}

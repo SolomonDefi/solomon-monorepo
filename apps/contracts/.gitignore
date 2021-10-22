@@ -1,0 +1,15 @@
+build/
+build-archive/development/
+coverage/
+analysis/output
+coverage.json
+coverage_report
+artifacts
+cache
+logs
+*.zip
+types/
+typechain/
+
+log
+*.env

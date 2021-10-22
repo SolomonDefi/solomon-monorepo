@@ -39,6 +39,9 @@
     "blockchain-watcher-feature-templates": {
       "tags": ["scope:service", "type:feature"]
     },
+    "contracts": {
+      "tags": ["scope:blockchain", "type:app"]
+    },
     "db": {
       "tags": ["scope:db", "type:app"]
     },

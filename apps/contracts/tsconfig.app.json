@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "../../dist/out-tsc",
+    "types": ["node"]
+  },
+  "files": ["./hardhat.config.ts"],
+  "include": ["./scripts", "./typechain"]
+}
