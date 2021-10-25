@@ -1,6 +1,6 @@
 # INIT-DB IMAGE (? MB)
 # ------------------------------------------------------------------------------------
-FROM alpine:3.14
+FROM alpine:3.14.2
 
 ARG NODEJS_VER=14
 ENV NODEJS_VER=$NODEJS_VER
