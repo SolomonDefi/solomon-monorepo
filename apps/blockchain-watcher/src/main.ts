@@ -1,4 +1,4 @@
-import { dbService, mailService } from '@solomon/lib-blockchain-watcher'
+import { dbService, mailService } from '@solomon/blockchain-watcher/feature-app'
 
 let start = async () => {
   await dbService.init()

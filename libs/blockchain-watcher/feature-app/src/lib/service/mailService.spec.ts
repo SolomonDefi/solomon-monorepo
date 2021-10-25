@@ -1,6 +1,6 @@
 import { mailService } from './mailService'
 import { JSDOM } from 'jsdom'
-import { generateMjmlTemplate } from '@solomon/lib-blockchain-watcher'
+import { generateMjmlTemplate } from '@solomon/blockchain-watcher/feature-app'
 
 describe('mailService', () => {
   jest.setTimeout(60 * 1000)

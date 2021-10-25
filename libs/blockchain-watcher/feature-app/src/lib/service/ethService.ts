@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
-import { envStore, mailService } from '@solomon/lib-blockchain-watcher'
+import { mailService } from './mailService'
+import { envStore } from '../store/envStore'
 
 export class EthService {
   provider = null as any

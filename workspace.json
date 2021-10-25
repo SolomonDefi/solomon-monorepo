@@ -148,6 +148,28 @@
         }
       }
     },
+    "blockchain-watcher-feature-app": {
+      "root": "libs/blockchain-watcher/feature-app",
+      "sourceRoot": "libs/blockchain-watcher/feature-app/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/blockchain-watcher/feature-app/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/blockchain-watcher/feature-app"],
+          "options": {
+            "jestConfig": "libs/blockchain-watcher/feature-app/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "blockchain-watcher-feature-templates": {
       "root": "libs/blockchain-watcher/feature-templates",
       "sourceRoot": "libs/blockchain-watcher/feature-templates/src",
@@ -197,28 +219,6 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/developer-docs/**/*.{js,jsx,ts,tsx,vue}"]
-          }
-        }
-      }
-    },
-    "lib-blockchain-watcher": {
-      "root": "libs/lib-blockchain-watcher",
-      "sourceRoot": "libs/lib-blockchain-watcher/src",
-      "projectType": "library",
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "outputs": ["{options.outputFile}"],
-          "options": {
-            "lintFilePatterns": ["libs/lib-blockchain-watcher/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/lib-blockchain-watcher"],
-          "options": {
-            "jestConfig": "libs/lib-blockchain-watcher/jest.config.ts",
-            "passWithNoTests": true
           }
         }
       }

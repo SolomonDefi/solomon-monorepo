@@ -1,4 +1,8 @@
-import { dbService, ethService, mailService } from '@solomon/lib-blockchain-watcher'
+import {
+  dbService,
+  ethService,
+  mailService,
+} from '@solomon/blockchain-watcher/feature-app'
 
 describe('mailService', () => {
   it('can start', async () => {
