@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'lib-blockchain-watcher',
-  preset: '../../jest.preset.js',
+  displayName: 'blockchain-watcher-feature-app',
+  preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,5 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/lib-blockchain-watcher',
+  coverageDirectory: '../../../coverage/libs/blockchain-watcher/feature-app',
 }

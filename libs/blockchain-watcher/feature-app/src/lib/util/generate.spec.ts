@@ -1,4 +1,4 @@
-import { generateMjmlTemplate } from '@solomon/lib-blockchain-watcher'
+import { generateMjmlTemplate } from '@solomon/blockchain-watcher/feature-app'
 
 describe('blockchain watcher generate templates', () => {
   it('should work', async () => {
