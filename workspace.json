@@ -23,7 +23,8 @@
         "format": {
           "executor": "nx-python-fastapi:format"
         }
-      }
+      },
+      "tags": ["scope:api", "type:app"]
     },
     "api-evidence": {
       "root": "apps/api-evidence",
@@ -44,7 +45,8 @@
         "lint": {
           "executor": "nx-python-fastapi:lint"
         }
-      }
+      },
+      "tags": ["scope:api", "type:app"]
     },
     "blockchain-watcher": {
       "root": "apps/blockchain-watcher",
@@ -95,7 +97,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:service", "type:app"]
     },
     "blockchain-watcher-e2e": {
       "root": "apps/blockchain-watcher-e2e",
@@ -189,7 +192,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:service", "type:feature"]
     },
     "contracts": {
       "root": "apps/contracts",
@@ -221,7 +225,8 @@
             "lintFilePatterns": ["apps/contracts/**/*.{js,ts}"]
           }
         }
-      }
+      },
+      "tags": ["scope:blockchain", "type:app"]
     },
     "db": {
       "root": "apps/db",
@@ -234,7 +239,8 @@
             "lintFilePatterns": ["apps/db/**/*.js"]
           }
         }
-      }
+      },
+      "tags": ["scope:db", "type:app"]
     },
     "developer-docs": {
       "root": "apps/developer-docs",
@@ -253,7 +259,8 @@
             "lintFilePatterns": ["apps/developer-docs/**/*.{js,jsx,ts,tsx,vue}"]
           }
         }
-      }
+      },
+      "tags": ["scope:web", "type:docs"]
     },
     "plugin": {
       "root": "libs/web/plugin",
@@ -280,7 +287,8 @@
             "lintFilePatterns": ["libs/web/plugin/**/*.{js,ts,vue}"]
           }
         }
-      }
+      },
+      "tags": ["scope:web", "type:plugin"]
     },
     "plugin-example-vue3": {
       "root": "apps/plugin-example-vue3",
@@ -310,7 +318,8 @@
             "lintFilePatterns": ["apps/plugin-example-vue3/**/*.{js,jsx,ts,tsx,vue}"]
           }
         }
-      }
+      },
+      "tags": ["scope=web", "type=app"]
     },
     "shared-util-api-evidence-types": {
       "root": "libs/shared/util-api-evidence-types",
@@ -332,7 +341,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:shared", "type:util"]
     },
     "shared-util-core": {
       "root": "libs/shared/util-core",
@@ -354,7 +364,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:shared", "type:util"]
     },
     "shared-util-i18n": {
       "root": "libs/shared/util-i18n",
@@ -376,7 +387,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:shared", "type:util"]
     },
     "shared-util-path-store": {
       "root": "libs/shared/util-path-store",
@@ -397,12 +409,14 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:shared", "type:util"]
     },
     "ui-theme": {
       "root": "libs/web/ui-theme",
       "projectType": "library",
-      "sourceRoot": "libs/web/ui-theme/src"
+      "sourceRoot": "libs/web/ui-theme/src",
+      "tags": ["scope:web", "type:ui"]
     },
     "ui-widgets": {
       "root": "libs/web/ui-widgets",
@@ -428,7 +442,8 @@
             "lintFilePatterns": ["libs/web/ui-widgets/**/*.{js,jsx,ts,tsx,vue}"]
           }
         }
-      }
+      },
+      "tags": ["scope:web", "type:ui"]
     },
     "web-data-access-api": {
       "root": "libs/web/data-access-api",
@@ -449,7 +464,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:web", "type:data-access"]
     },
     "web-data-access-state": {
       "root": "libs/web/data-access-state",
@@ -470,7 +486,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["scope:web", "type:data-access"]
     },
     "web-evidence": {
       "root": "apps/web-evidence",
@@ -510,16 +527,14 @@
             "lintFilePatterns": ["apps/web-evidence/**/*.{js,jsx,ts,tsx,vue}"]
           }
         }
-      }
+      },
+      "tags": ["scope:web", "type:app"]
     },
     "web-ui-assets": {
       "root": "libs/web/ui-assets",
       "sourceRoot": "libs/web/ui-assets/src",
-      "projectType": "library"
+      "projectType": "library",
+      "tags": ["scope:web", "type:ui"]
     }
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/node"
-  },
-  "defaultProject": "blockchain-watcher"
+  }
 }

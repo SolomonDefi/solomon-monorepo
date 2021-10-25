@@ -1,6 +1,6 @@
 # BASE IMAGE (37.4MB)
 # ------------------------------------------------------------------------------------
-FROM alpine:3.14.1 AS base
+FROM alpine:3.14.2 AS base
 ARG NODEJS_VER=14
 ENV NODEJS_VER=$NODEJS_VER
 ARG NPM_VER=7

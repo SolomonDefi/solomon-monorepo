@@ -35,9 +35,7 @@ module.exports = {
   },
   'blockchain-watcher': {
     include: [
-      '@nrwl/node',
       '@nrwl/cli',
-      '@nrwl/workspace',
       'mjml',
       '@types/mjml',
       'fs-extra',

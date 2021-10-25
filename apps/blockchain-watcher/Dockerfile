@@ -1,6 +1,6 @@
 # BASE IMAGE (927.6MB)
 # ------------------------------------------------------------------------------------
-FROM alpine:3.14 as base
+FROM alpine:3.14.2 as base
 
 ARG NODEJS_VER=14
 ARG TINI_VER=0.19
