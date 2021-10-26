@@ -22,6 +22,7 @@ FROM $SOLOMON_BASE as production
 
 ENV NODE_ENV=production
 
+RUN pnpm run contract:compile
 RUN pnpm exec nx build blockchain-watcher
 
 CMD ["node", "./dist/apps/blockchain-watcher/main.js"]

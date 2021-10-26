@@ -2,10 +2,11 @@ import { ethers } from 'ethers'
 import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
 import { SlmFactory, SlmFactory__factory } from '@solomon/shared/util-contract'
+import { Provider } from '@ethersproject/providers'
 
 export class EthService {
-  provider
-  contract: SlmFactory
+  provider: Provider | null = null
+  contract: SlmFactory | null = null
 
   async onChargebackCreated() {
     // TODO: Process event
@@ -26,6 +27,10 @@ export class EthService {
   }
 
   async getChargebackCreatedLogs() {
+    if (!this.contract) {
+      return
+    }
+
     let eventFilter = this.contract.filters.ChargebackCreated()
     let events = this.contract.queryFilter(eventFilter)
 
@@ -35,6 +40,10 @@ export class EthService {
   }
 
   async getPreorderCreatedLogs() {
+    if (!this.contract) {
+      return
+    }
+
     let eventFilter = this.contract.filters.PreorderCreated()
     let events = this.contract.queryFilter(eventFilter)
 
@@ -44,6 +53,10 @@ export class EthService {
   }
 
   async getEscrowCreatedLogs() {
+    if (!this.contract) {
+      return
+    }
+
     let eventFilter = this.contract.filters.EscrowCreated()
     let events = this.contract.queryFilter(eventFilter)
 
@@ -53,8 +66,11 @@ export class EthService {
   }
 
   async init() {
-    this.provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
-    this.contract = SlmFactory__factory.connect(envStore.contractAddress, this.provider)
+    let provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
+    let contract = SlmFactory__factory.connect(envStore.contractAddress, provider)
+
+    this.provider = provider
+    this.contract = contract
 
     this.contract.connect(this.provider)
     this.contract.on('ChargebackCreated', this.onChargebackCreated)

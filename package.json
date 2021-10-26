@@ -10,7 +10,8 @@
     "test": "nx test",
     "prune": "tools/scripts/prune-all.sh",
     "skaffold": "(skaffold dev --cache-artifacts=true --force=false)",
-    "watcher:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts"
+    "watcher:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts",
+    "contract:compile": "cd apps/contracts && hardhat compile"
   },
   "private": true,
   "devDependencies": {
@@ -36,7 +37,7 @@
     "@nrwl/workspace": "13.1.2",
     "@samatech/postcss-basics": "^0.4.2",
     "@sampullman/fetch-api": "^0.5.0",
-    "@typechain/ethers-v5": "^8.0.0",
+    "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^3.0.0",
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",
@@ -93,8 +94,8 @@
     "tsconfig": "^7.0.0",
     "tsconfig-paths": "^3.11.0",
     "tslib": "^2.3.1",
-    "typechain": "^6.0.0",
-    "typescript": "~4.3.5",
+    "typechain": "^6.0.2",
+    "typescript": "4.4.4",
     "unplugin-vue-components": "^0.16.0",
     "vite": "^2.6.13",
     "vite-plugin-vue-images": "^0.6.1",
@@ -102,6 +103,7 @@
     "vue-eslint-parser": "^8.0.0"
   },
   "dependencies": {
+    "@ethersproject/providers": "^5.5.0",
     "@mikro-orm/core": "^4.5.9",
     "@mikro-orm/sqlite": "^4.5.9",
     "@sampullman/vue3-fetch-api": "^0.5.0",
