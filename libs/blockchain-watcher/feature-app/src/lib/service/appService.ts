@@ -1,48 +1,53 @@
 import express, { Request, Response } from 'express'
 import { Express } from 'express'
 import * as http from 'http'
+import { once } from 'events'
+import { promisify } from 'util'
 
 export class AppService {
   PORT = 3001
-  app: Express
-  server: http.Server
+  app: Express | null = null
+  server: http.Server | null = null
 
   async onHealthCheck(req: Request, res: Response) {
     res.status(204).send()
   }
 
   async start(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.server = this.app.listen(this.PORT, resolve)
-      console.log(`Api service listen on :${this.PORT}`)
-    })
+    if (!this.app) {
+      throw 'Express app not initialized'
+    }
+
+    this.server = this.app.listen(this.PORT)
+    await once(this.server, 'listening')
+    console.log(`Api service listen on :${this.PORT}`)
   }
 
   async stop(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.server.close((err) => {
-        if (err) {
-          console.error(err)
-          reject(err)
-        } else {
-          console.log(`Api service on :${this.PORT} closed`)
-          resolve()
-        }
-      })
-    })
+    if (!this.server) {
+      return
+    }
+
+    try {
+      await promisify(this.server.close).call(this.server)
+      console.log(`Api service on :${this.PORT} closed`)
+    } catch (err) {
+      console.error(err)
+      console.log(`Fail to close api service on :${this.PORT}`)
+    }
   }
 
   async init() {
     this.app = express()
-    this.app.all('/health-check', this.onHealthCheck)
+    this.app.get('/health-check', this.onHealthCheck)
   }
 
   async destroy() {
     if (this.server) {
       this.server.close()
-      delete this.server
+      this.server = null
     }
-    delete this.app
+    this.app = null
   }
 }
 

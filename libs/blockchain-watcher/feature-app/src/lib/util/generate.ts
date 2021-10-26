@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile } from 'fs-extra'
 import * as path from 'path'
 import mjml2html from 'mjml'
-import pathStore from '@solomon/shared/util-path-store'
+import { pathStore } from '@solomon/shared/util-path-store'
 
 export const generateMjmlTemplate = async (): Promise<boolean> => {
   try {

@@ -1,4 +1,4 @@
-import { AppService, appService } from '@solomon/blockchain-watcher/feature-app'
+import { AppService, appService } from '../service/appService'
 
 describe('appService', () => {
   afterEach(async () => {
