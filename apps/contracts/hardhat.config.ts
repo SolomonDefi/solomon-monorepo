@@ -8,8 +8,8 @@ import 'hardhat-gas-reporter'
 import 'hardhat-contract-sizer'
 import 'solidity-coverage'
 import 'tsconfig-paths/register'
-
 import { HardhatUserConfig } from 'hardhat/types'
+import { pathStore } from '@solomon/shared/util-path-store'
 
 const walletMnemonic = process.env.WALLET_MNEMONIC || ''
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || ''
@@ -64,8 +64,12 @@ const config: HardhatUserConfig = {
     root: './',
     sources: 'src/contracts',
     tests: 'src/tests',
-    cache: '../../dist/apps/contracts/cache',
-    artifacts: '../../dist/apps/contracts/artifacts',
+    cache: `${pathStore.root}/dist/apps/contracts/cache`,
+    artifacts: `${pathStore.root}/dist/apps/contracts/artifacts`,
+  },
+  typechain: {
+    outDir: `${pathStore.root}/libs/shared/util-contract/src`,
+    target: 'ethers-v5',
   },
 }
 

@@ -1,7 +1,7 @@
 import * as path from 'path'
 import pkgDir from 'pkg-dir'
 
-class PathStore {
+export class PathStore {
   get root(): string {
     return pkgDir.sync() || ''
   }
@@ -19,4 +19,4 @@ class PathStore {
   }
 }
 
-export default new PathStore()
+export const pathStore = new PathStore()
