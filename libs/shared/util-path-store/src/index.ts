@@ -1,1 +1,1 @@
-export { default } from './lib/path-store'
+export { pathStore } from './lib/path-store'

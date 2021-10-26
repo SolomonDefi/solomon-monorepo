@@ -19,7 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
-      "@monorepo/shared/util-contract": ["libs/shared/util-contract/src/index.ts"],
+      "@solomon/shared/util-contract": ["libs/shared/util-contract/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-watcher/feature-app": [
