@@ -6,8 +6,10 @@ build:
     useBuildkit: true
     push: false
   artifacts:
-    - image: base
-
+    - image: solomon_base
+      context: .
+      docker:
+        dockerfile: tools/docker/base/Dockerfile
     - image: db
       context: .
       docker:
@@ -17,6 +19,9 @@ build:
           SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
     - image: api-dispute.dev
       context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
       sync:
         manual:
           - src: 'apps/api-dispute/src/**/*'
@@ -31,6 +36,9 @@ build:
           SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
     - image: api-evidence.dev
       context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
       sync:
         manual:
           - src: 'apps/api-evidence/src/**/*'
@@ -45,6 +53,9 @@ build:
           SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
     - image: blockchain-watcher.dev
       context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
       sync:
         manual:
           - src: 'apps/blockchain-watcher/src/**/*'
@@ -61,6 +72,9 @@ build:
           SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
     - image: web-evidence.dev
       context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
       sync:
         manual:
           - src: 'apps/web-evidence/src/**/*'

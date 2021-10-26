@@ -1,4 +1,7 @@
+const all = ['@nrwl/cli', '@nrwl/workspace', 'sqlite3', 'typescript']
+
 const allPython = [
+  ...all,
   // devDependencies
   '@nrwl/cli',
   '@nrwl/cypress',
@@ -8,8 +11,12 @@ const allPython = [
 ]
 
 module.exports = {
+  base: {
+    include: all,
+  },
   'web-evidence': {
     include: [
+      ...all,
       // dependencies
       'vue',
       '@sampullman/vue3-fetch-api',
@@ -23,8 +30,6 @@ module.exports = {
       'vite',
       'unplugin-vue-components',
       'vite-plugin-vue-images',
-      '@nrwl/cli',
-      '@nrwl/workspace',
     ],
   },
   'api-evidence': {
@@ -35,13 +40,14 @@ module.exports = {
   },
   'blockchain-watcher': {
     include: [
-      '@nrwl/cli',
+      ...all,
       'mjml',
       '@types/mjml',
       'fs-extra',
       '@types/fs-extra',
       '@mikro-orm/core',
       '@mikro-orm/sqlite',
+      '@nrwl/node',
       'uuid',
       '@types/uuid',
       'ethers',
