@@ -39,7 +39,7 @@ class EnvStore {
     return ''
   }
 
-  get factoryAddress(): string {
+  get contractAddress(): string {
     return process.env.FACTORY_ADDRESS || ''
   }
 
