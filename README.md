@@ -37,6 +37,12 @@ Follow these instructions to set up your local development environment. Only Mac
 
 **Start local dev environment**
 
+> :warning: On Mac M1 devices, you must set the following environment variable, or the docker multi-stage build will fail
+
+```
+export DOCKER_DEFAULT_PLATFORM=linux/arm64
+```
+
 ```sh
 $ pnpm install
 $ pnpm run skaffold
@@ -52,11 +58,23 @@ $ pnpm run skaffold
 
 It's possible to run apps individually, which can be useful if you're verifying package changes or debugging docker syntax:
 
+Build the base image:
+
 ```
-docker build --progress=plain --no-cache -t blockchain-watcher:dev -f apps/blockchain-watcher/Dockerfile --target=dev .
-docker build --progress=plain --no-cache -t api-evidence:dev -f apps/api-evidence/Dockerfile --target=dev .
-docker build --progress=plain --no-cache -t api-dispute:dev -f apps/api-dispute/Dockerfile --target=dev .
-docker build --progress=plain --no-cache -t web-evidence:dev -f apps/web-evidence/Dockerfile --target=dev .
+docker build --progress=plain -t solomon_base:test -f tools/docker/base/Dockerfile .
+```
+
+Build app images
+
+```bash
+docker build --progress=plain --no-cache -t blockchain-watcher:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/blockchain-watcher/Dockerfile --target=dev .
+
+docker build --progress=plain --no-cache -t api-evidence:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/api-evidence/Dockerfile --target=dev .
+
+docker build --progress=plain --no-cache -t api-dispute:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/api-dispute/Dockerfile --target=dev .
+
+docker build --progress=plain --no-cache -t web-evidence:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/web-evidence/Dockerfile --target=dev .
+
 docker build --progress=plain --no-cache -t db-api -f apps/db-api/Dockerfile .
 ```
 
