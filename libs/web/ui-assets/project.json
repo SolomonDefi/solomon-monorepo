@@ -1,0 +1,6 @@
+{
+  "root": "libs/web/ui-assets",
+  "sourceRoot": "libs/web/ui-assets/src",
+  "projectType": "library",
+  "tags": ["scope:web", "type:ui"]
+}

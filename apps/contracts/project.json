@@ -1,0 +1,33 @@
+{
+  "root": "apps/contracts",
+  "projectType": "application",
+  "sourceRoot": "apps/contracts/src",
+  "targets": {
+    "build": {
+      "executor": "nx-hardhat:build"
+    },
+    "test": {
+      "executor": "nx-hardhat:test",
+      "outputs": ["coverage/apps/contracts"]
+    },
+    "check": {
+      "executor": "nx-hardhat:check"
+    },
+    "deploy": {
+      "executor": "nx-hardhat:deploy"
+    },
+    "dev": {
+      "executor": "nx-hardhat:node"
+    },
+    "clean": {
+      "executor": "nx-hardhat:clean"
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/contracts/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": ["scope:blockchain", "type:app"]
+}

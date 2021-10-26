@@ -1,0 +1,31 @@
+{
+  "root": "apps/plugin-example-vue3",
+  "projectType": "application",
+  "sourceRoot": "apps/plugin-example-vue3/src",
+  "targets": {
+    "build": {
+      "executor": "nx-vue3-vite:build-app",
+      "options": {
+        "dist": "dist/apps/plugin-example-vue3"
+      }
+    },
+    "serve": {
+      "executor": "nx-vue3-vite:dev-server"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/plugin-example-vue3"],
+      "options": {
+        "jestConfig": "apps/plugin-example-vue3/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/plugin-example-vue3/**/*.{js,jsx,ts,tsx,vue}"]
+      }
+    }
+  },
+  "tags": ["scope=web", "type=app"]
+}

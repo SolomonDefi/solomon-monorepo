@@ -1,0 +1,22 @@
+{
+  "root": "apps/api-evidence",
+  "projectType": "application",
+  "sourceRoot": "apps/api-evidence/src",
+  "targets": {
+    "serve": {
+      "executor": "nx-python-fastapi:serve",
+      "options": {
+        "host": "0.0.0.0",
+        "port": 3010
+      }
+    },
+    "test": {
+      "executor": "nx-python-fastapi:test",
+      "outputs": ["coverage/apps/api-evidence"]
+    },
+    "lint": {
+      "executor": "nx-python-fastapi:lint"
+    }
+  },
+  "tags": ["scope:api", "type:app"]
+}

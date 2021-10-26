@@ -1,0 +1,20 @@
+{
+  "root": "apps/developer-docs",
+  "projectType": "application",
+  "sourceRoot": "apps/developer-docs/src",
+  "targets": {
+    "build": {
+      "executor": "nx-vue3-vite:build-docs"
+    },
+    "serve": {
+      "executor": "nx-vue3-vite:docs-dev-server"
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/developer-docs/**/*.{js,jsx,ts,tsx,vue}"]
+      }
+    }
+  },
+  "tags": ["scope:web", "type:docs"]
+}
