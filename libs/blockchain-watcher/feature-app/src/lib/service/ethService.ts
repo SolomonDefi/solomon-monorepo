@@ -1,10 +1,11 @@
 import { ethers } from 'ethers'
 import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
+import { SlmFactory, SlmFactory__factory } from '@solomon/shared/util-contract'
 
 export class EthService {
-  provider = null as any
-  contract = null as any
+  provider
+  contract: SlmFactory
 
   async onChargebackCreated() {
     // TODO: Process event
@@ -25,8 +26,7 @@ export class EthService {
   }
 
   async getChargebackCreatedLogs() {
-    // TODO: replace with typed method
-    let eventFilter = this.contract.filters['ChargebackCreated']()
+    let eventFilter = this.contract.filters.ChargebackCreated()
     let events = this.contract.queryFilter(eventFilter)
 
     // TODO: save last event block hash
@@ -35,8 +35,7 @@ export class EthService {
   }
 
   async getPreorderCreatedLogs() {
-    // TODO: replace with typed method
-    let eventFilter = this.contract.filters['PreorderCreated']()
+    let eventFilter = this.contract.filters.PreorderCreated()
     let events = this.contract.queryFilter(eventFilter)
 
     // TODO: save last event block hash
@@ -45,8 +44,7 @@ export class EthService {
   }
 
   async getEscrowCreatedLogs() {
-    // TODO: replace with typed method
-    let eventFilter = this.contract.filters['EscrowCreated']()
+    let eventFilter = this.contract.filters.EscrowCreated()
     let events = this.contract.queryFilter(eventFilter)
 
     // TODO: save last event block hash
@@ -56,8 +54,7 @@ export class EthService {
 
   async init() {
     this.provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
-    // TODO: Replace with contract factory from TypeContract
-    this.contract = new ethers.Contract('', '', this.provider)
+    this.contract = SlmFactory__factory.connect(envStore.contractAddress, this.provider)
 
     this.contract.connect(this.provider)
     this.contract.on('ChargebackCreated', this.onChargebackCreated)
