@@ -1,0 +1,22 @@
+{
+  "root": "libs/web/data-access-state",
+  "sourceRoot": "libs/web/data-access-state/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/web/data-access-state/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/web/data-access-state"],
+      "options": {
+        "jestConfig": "libs/web/data-access-state/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:web", "type:data-access"]
+}

@@ -1,0 +1,27 @@
+{
+  "root": "libs/web/ui-widgets",
+  "projectType": "library",
+  "sourceRoot": "libs/web/ui-widgets/src",
+  "targets": {
+    "build": {
+      "executor": "nx-vue3-vite:build-app",
+      "options": {
+        "dist": "dist/libs/ui-widgets"
+      }
+    },
+    "test-component": {
+      "executor": "nx-vue3-vite:cypress",
+      "options": {
+        "cypressConfig": "libs/web/ui-widgets/cypress.json",
+        "testingType": "component"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/web/ui-widgets/**/*.{js,jsx,ts,tsx,vue}"]
+      }
+    }
+  },
+  "tags": ["scope:web", "type:ui"]
+}

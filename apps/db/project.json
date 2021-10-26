@@ -1,0 +1,14 @@
+{
+  "root": "apps/db",
+  "sourceRoot": "apps/db/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/db/**/*.js"]
+      }
+    }
+  },
+  "tags": ["scope:db", "type:app"]
+}

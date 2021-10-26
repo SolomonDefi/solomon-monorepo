@@ -27,7 +27,6 @@
       "@solomon/blockchain-watcher/feature-templates": [
         "libs/blockchain-watcher/feature-templates/src/index.ts"
       ],
-      "@solomon/lib-blockchain-watcher": ["libs/lib-blockchain-watcher/src/index.ts"],
       "@solomon/shared/util-api-evidence-types": [
         "libs/shared/util-api-evidence-types/src/index.ts"
       ],

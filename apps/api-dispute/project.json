@@ -1,0 +1,25 @@
+{
+  "root": "apps/api-dispute",
+  "projectType": "application",
+  "sourceRoot": "apps/api-dispute/src",
+  "targets": {
+    "serve": {
+      "executor": "nx-python-fastapi:serve",
+      "options": {
+        "host": "0.0.0.0",
+        "port": 3000
+      }
+    },
+    "test": {
+      "executor": "nx-python-fastapi:test",
+      "outputs": ["coverage/apps/api-dispute"]
+    },
+    "lint": {
+      "executor": "nx-python-fastapi:lint"
+    },
+    "format": {
+      "executor": "nx-python-fastapi:format"
+    }
+  },
+  "tags": ["scope:api", "type:app"]
+}

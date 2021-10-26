@@ -1,0 +1,23 @@
+{
+  "root": "libs/blockchain-watcher/feature-app",
+  "sourceRoot": "libs/blockchain-watcher/feature-app/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/blockchain-watcher/feature-app/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/blockchain-watcher/feature-app"],
+      "options": {
+        "jestConfig": "libs/blockchain-watcher/feature-app/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:service", "type:feature"]
+}

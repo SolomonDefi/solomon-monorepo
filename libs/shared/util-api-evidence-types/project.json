@@ -1,0 +1,23 @@
+{
+  "root": "libs/shared/util-api-evidence-types",
+  "sourceRoot": "libs/shared/util-api-evidence-types/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/util-api-evidence-types/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/util-api-evidence-types"],
+      "options": {
+        "jestConfig": "libs/shared/util-api-evidence-types/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:util"]
+}
