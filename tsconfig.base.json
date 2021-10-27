@@ -19,7 +19,6 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
-      "@solomon/shared/util-contract": ["libs/shared/util-contract/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-watcher/feature-app": [
@@ -31,6 +30,7 @@
       "@solomon/shared/util-api-evidence-types": [
         "libs/shared/util-api-evidence-types/src/index.ts"
       ],
+      "@solomon/shared/util-contract": ["libs/shared/util-contract/src/index.ts"],
       "@solomon/shared/util-core": ["libs/shared/util-core/src/index.ts"],
       "@solomon/shared/util-i18n": ["libs/shared/util-i18n/src/index.ts"],
       "@solomon/shared/util-path-store": ["libs/shared/util-path-store/src/index.ts"],
