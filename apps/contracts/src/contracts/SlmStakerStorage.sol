@@ -74,7 +74,7 @@ contract SlmStakerStorage is Ownable {
         stakerManager = newStakerManager;
     }
 
-    function setMinStake(uint256 newMinStake) external onlyOwner {
+    function setMinStake(uint256 newMinStake) external onlyOwnerOrManager {
         require(newMinStake > 0, "Invalid minimum stake");
         minStake = newMinStake;
     }

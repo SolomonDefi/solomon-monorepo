@@ -11,6 +11,7 @@ import '../SlmStakerManager.sol';
 contract SlmJudgement is Ownable {
 
     uint16 public minJurorCount;
+    uint256[] public temp = new uint256[](0);
 
     SlmStakerManager public stakerManager;
 
@@ -44,12 +45,12 @@ contract SlmJudgement is Ownable {
     /// List of juror list per dispute address
     mapping(address => uint256[]) public jurorList;
 
-    /// @dev Mapping of dispute address to Initial Index to Middle Index for Round Robin Mapping
-    mapping(address => mapping(uint256 => uint256)) public jurorSelectionIndices;
+    /// @dev Mapping of dispute address to latest index for Round Robin Mapping
+    mapping(address => uint32) public jurorSelectionIndex;
 
     constructor(address newStakerManager, uint16 newMinJurorCount) {
         require(newStakerManager != address(0), "Zero addr");
-        require(minJurorCount > 0, "Invalid juror count");
+        require(newMinJurorCount > 0, "Invalid juror count");
         stakerManager = SlmStakerManager(newStakerManager);
         minJurorCount = newMinJurorCount;
     }
@@ -112,45 +113,40 @@ contract SlmJudgement is Ownable {
         jurorList[slmContract] = selectedJurors;
     }
 
-    function getJurors(address slmContract) external onlyOwnerOrManager returns(uint256[] memory) {
+    function getJurors(address slmContract) external view onlyOwnerOrManager returns(uint256[] memory) {
         return jurorList[slmContract];
     }
 
     function _selectJurorList(address slmContract) private returns(uint256[] memory) {
 
         // TODO -- Find better alternative to round robin selection
-        uint256[] memory selectedJurors;
+        uint256[] storage selectedJurors = temp;
         uint256 stakerCount = stakerPool.length;
-        uint32 selectedstartCount = 0;
-        uint256 middleCount = (stakerCount / 2) + 1;
-        bool isOdd = false;
+
+        uint32 selectedStartCount;
+        if(jurorSelectionIndex[slmContract] > 0) {
+            selectedStartCount = jurorSelectionIndex[slmContract];
+        } else {
+            selectedStartCount = 0;
+        }
         address userAddress;
 
-        uint32 latestStartCount = selectedstartCount;
-        uint256 latestMiddleCount = middleCount;
         uint32 i = 0;
+
         while(i < minJurorCount) {
-            selectedJurors[i] = stakerPool[selectedstartCount];
+            selectedJurors.push(stakerPool[selectedStartCount]);
+
             userAddress = stakerManager.getUserAddress(selectedJurors[i]);
             disputes[slmContract].votes[userAddress] = 1;
-            i += 1;
-            selectedstartCount += 1;
-            if(selectedstartCount == minJurorCount) {
-                selectedstartCount = 0;
-            }
-            latestStartCount = selectedstartCount;
 
-            if(i < minJurorCount) {
-                selectedJurors[i + 1] = stakerPool[middleCount];
-                userAddress = stakerManager.getUserAddress(selectedJurors[i]);
-                disputes[slmContract].votes[userAddress] = 1;
-                i += 1;
-                middleCount += 1;
-                if(middleCount == minJurorCount) {
-                    middleCount = 0;
-                }
-                latestMiddleCount = middleCount;
+            i += 1;
+            selectedStartCount += 1;
+
+            if(selectedStartCount == stakerCount) {
+                selectedStartCount = 0;
             }
+            
+            jurorSelectionIndex[slmContract] = selectedStartCount;
         }
 
         return selectedJurors;
