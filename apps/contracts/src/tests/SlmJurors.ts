@@ -17,33 +17,27 @@ describe('SLM Jurors', function () {
       initialSupply,
       owner.address,
     )
-    await token.deployed();
-    await token.unlock();
+    await token.deployed()
+    await token.unlock()
 
-    const defaultAmount = 100;
+    const defaultAmount = 100
     await token.mint(account1.address, defaultAmount)
     await token.mint(account2.address, defaultAmount)
     await token.mint(account3.address, defaultAmount)
 
-    const unstakePeriod = 1;
-    const minimumStake = 1;
+    const unstakePeriod = 1
+    const minimumStake = 1
     const storage = await StorageFactory.deploy(
       token.address,
       unstakePeriod,
       minimumStake,
     )
 
-    const manager = await ManagerFactory.deploy(
-      token.address,
-      storage.address,
-    )
+    const manager = await ManagerFactory.deploy(token.address, storage.address)
     await storage.setStakerManager(manager.address)
 
-    const minJurorCount = 3;
-    const jurors = await JudgementFactory.deploy(
-      manager.address,
-      minJurorCount,
-    )
+    const minJurorCount = 3
+    const jurors = await JudgementFactory.deploy(manager.address, minJurorCount)
     await manager.setJudgementContract(jurors.address)
 
     const stakeAmount = 100
