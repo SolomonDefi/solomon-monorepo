@@ -1,26 +1,35 @@
 import { ethers } from 'ethers'
 import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
-import { SlmFactory, SlmFactory__factory } from '@solomon/shared/util-contract'
+import {
+  SlmChargeback__factory,
+  SlmFactory,
+  SlmFactory__factory,
+} from '@solomon/shared/util-contract'
 import { Provider } from '@ethersproject/providers'
+import { deliverService } from './deliverService'
 
 export class EthService {
   provider: Provider | null = null
   contract: SlmFactory | null = null
 
-  async onChargebackCreated() {
-    // TODO: Process event
-    await mailService.sendChargebackCreatedEmail('A')
-    await mailService.sendChargebackCreatedEmail('B')
+  async onChargebackCreated(chargebackAddress: string) {
+    let slmChargeback = await SlmChargeback__factory.connect(
+      chargebackAddress,
+      this.provider,
+    )
+
+    await deliverService.sendChargebackEvent(slmChargeback)
+    await mailService.sendChargebackCreatedEmail(slmChargeback)
   }
 
-  async onPreorderCreated() {
+  async onPreorderCreated(preorderAddress: string) {
     // TODO: Process event
     await mailService.sendPreorderCreatedEmail('A')
     await mailService.sendPreorderCreatedEmail('B')
   }
 
-  async onEscrowCreated() {
+  async onEscrowCreated(escrowAddress: string) {
     // TODO: Process event
     await mailService.sendEscrowCreatedEmail('A')
     await mailService.sendEscrowCreatedEmail('B')
@@ -32,7 +41,7 @@ export class EthService {
     }
 
     let eventFilter = this.contract.filters.ChargebackCreated()
-    let events = this.contract.queryFilter(eventFilter)
+    let events = await this.contract.queryFilter(eventFilter)
 
     // TODO: save last event block hash
 
@@ -45,7 +54,7 @@ export class EthService {
     }
 
     let eventFilter = this.contract.filters.PreorderCreated()
-    let events = this.contract.queryFilter(eventFilter)
+    let events = await this.contract.queryFilter(eventFilter)
 
     // TODO: save last event block hash
 
@@ -58,7 +67,7 @@ export class EthService {
     }
 
     let eventFilter = this.contract.filters.EscrowCreated()
-    let events = this.contract.queryFilter(eventFilter)
+    let events = await this.contract.queryFilter(eventFilter)
 
     // TODO: save last event block hash
 
@@ -66,7 +75,9 @@ export class EthService {
   }
 
   async init() {
-    let provider = new ethers.providers.JsonRpcProvider(envStore.ethChainUrl)
+    let provider = new ethers.providers.JsonRpcProvider(
+      envStore.ethChainUrl,
+    ) as unknown as Provider
     let contract = SlmFactory__factory.connect(envStore.contractAddress, provider)
 
     this.provider = provider

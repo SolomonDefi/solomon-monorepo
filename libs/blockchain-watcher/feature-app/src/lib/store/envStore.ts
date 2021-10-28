@@ -51,6 +51,14 @@ class EnvStore {
   get mailgunDomain(): string {
     return 'foo.bar'
   }
+
+  get disputeApiUrl(): string {
+    return 'http://localhost:7777'
+  }
+
+  get disputeApiSecretKey(): string {
+    return ''
+  }
 }
 
 export const envStore = new EnvStore()
