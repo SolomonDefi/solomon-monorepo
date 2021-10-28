@@ -1,9 +1,9 @@
 import * as path from 'path'
-import pkgDir = require('pkg-dir')
+import { packageDirectorySync } from 'pkg-dir'
 
 class PathStore {
   get root(): string {
-    return pkgDir.sync() || ''
+    return packageDirectorySync() || ''
   }
 
   get watcher() {
