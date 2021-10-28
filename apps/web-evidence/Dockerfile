@@ -5,15 +5,12 @@ ARG SOLOMON_BASE
 FROM $SOLOMON_BASE as dev
 
 COPY package.json ./
+RUN node ./tools/scripts/workspace-subset.js web-evidence subset.config.js workspace.json workspace.json
 RUN node ./tools/scripts/package-subset.js web-evidence subset.config.js package.json package.json
 RUN pnpm install
 
 COPY libs/web ./libs/web
-COPY apps/web-evidence/cypress.json ./apps/web-evidence/
-COPY apps/web-evidence/tsconfig*.json ./apps/web-evidence/
-COPY apps/web-evidence/index.html ./apps/web-evidence/
-COPY apps/web-evidence/vite.config.ts ./apps/web-evidence/
-COPY apps/web-evidence/postcss.config.js ./apps/web-evidence/
-COPY apps/web-evidence/src ./apps/web-evidence/src
+COPY libs/shared ./libs/shared
+COPY apps/web-evidence ./apps/web-evidence
 
 CMD ["pnpm", "exec", "nx", "serve", "web-evidence"]

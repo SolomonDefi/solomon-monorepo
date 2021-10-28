@@ -5,10 +5,8 @@
   "compilerOptions": {
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "resolveJsonModule": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "strict": true
+    "strict": true,
+    "target": "ESNext"
   },
   "references": [
     {

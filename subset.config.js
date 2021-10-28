@@ -15,6 +15,7 @@ module.exports = {
     include: all,
   },
   'web-evidence': {
+    workspace: ['libs/web'],
     include: [
       ...all,
       // dependencies

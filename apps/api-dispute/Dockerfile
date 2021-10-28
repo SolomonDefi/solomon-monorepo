@@ -5,9 +5,11 @@ ARG SOLOMON_BASE
 FROM $SOLOMON_BASE as dev
 
 COPY package.json ./
+RUN node ./tools/scripts/workspace-subset.js api-dispute subset.config.js workspace.json workspace.json
 RUN node ./tools/scripts/package-subset.js api-dispute subset.config.js package.json package.json
 RUN pnpm install
 
+COPY libs/shared ./libs/shared
 COPY apps/api-dispute ./apps/api-dispute
 COPY apps/api-dispute/.env.dist ./apps/api-dispute/src/.env
 
