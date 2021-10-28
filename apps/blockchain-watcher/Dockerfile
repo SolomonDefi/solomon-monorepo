@@ -8,6 +8,7 @@ COPY apps/blockchain-watcher ./apps/blockchain-watcher
 COPY libs ./libs
 
 COPY package.json ./
+RUN node ./tools/scripts/workspace-subset.js blockchain-watcher subset.config.js workspace.json workspace.json
 RUN node ./tools/scripts/package-subset.js blockchain-watcher subset.config.js package.json package.json
 RUN pnpm install
 

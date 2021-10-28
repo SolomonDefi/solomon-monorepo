@@ -1,9 +1,9 @@
 import * as path from 'path'
-import { packageDirectorySync } from 'pkg-dir'
+import pkgDir from 'pkg-dir'
 
 class PathStore {
   get root(): string {
-    return packageDirectorySync() || ''
+    return pkgDir.sync() || ''
   }
 
   get watcher() {

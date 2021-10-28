@@ -21,11 +21,9 @@ RUN apk add --no-cache build-base libffi-dev openssl-dev python3-dev rust cargo 
 RUN pip3 install --upgrade pip
 RUN pip3 install poetry
 
-COPY nx.json ./
 COPY subset.config.js package.json ./
-COPY tools/scripts/package-subset.js ./tools/scripts/
-COPY tsconfig.base.json ./
-COPY workspace.json ./
+COPY tools/scripts/*-subset.js ./tools/scripts/
+COPY nx.json workspace.json tsconfig.base.json ./
 
 RUN node ./tools/scripts/package-subset.js base subset.config.js package.json package.json
 RUN pnpm install
