@@ -14,6 +14,10 @@ export class EthService {
   contract: SlmFactory | null = null
 
   async onChargebackCreated(chargebackAddress: string) {
+    if (!this.provider) {
+      return
+    }
+
     let slmChargeback = await SlmChargeback__factory.connect(
       chargebackAddress,
       this.provider,
