@@ -11,7 +11,7 @@ import '../SlmStakerManager.sol';
 contract SlmJudgement is Ownable {
 
     uint16 public minJurorCount;
-    uint256[] public temp = new uint256[](0);
+    uint256[] private selectedJurors;
 
     SlmStakerManager public stakerManager;
 
@@ -50,7 +50,7 @@ contract SlmJudgement is Ownable {
 
     constructor(address newStakerManager, uint16 newMinJurorCount) {
         require(newStakerManager != address(0), "Zero addr");
-        require(newMinJurorCount > 0, "Invalid juror count");
+        require(newMinJurorCount > 3, "Invalid juror count");
         stakerManager = SlmStakerManager(newStakerManager);
         minJurorCount = newMinJurorCount;
     }
@@ -61,11 +61,14 @@ contract SlmJudgement is Ownable {
     }
 
     function setMinJurorCount(uint16 newMinJurorCount) external onlyOwner {
-        require(newMinJurorCount >= 3, "Minimum juror count must be greater than 3");
+        require(newMinJurorCount >= 3, "Invalid juror count");
         minJurorCount = newMinJurorCount;
     }
 
     function initializeDispute(address slmContract, uint16 quorum, uint256 endTime) external onlyOwner {
+        require(slmContract != address(0), "Zero addr");
+        require(quorum > 0, "Invalid number");
+        require(endTime > 0, "Invalid number");
         // TODO -- Access control
         this.setJurors(slmContract);
         disputes[slmContract].quorum = quorum;
@@ -73,6 +76,7 @@ contract SlmJudgement is Ownable {
     }
 
     function vote(address slmContract, uint8 _vote) external {
+        require(slmContract != address(0), "Zero addr");
         require(_vote == 1 || _vote == 2, 'Invalid vote');
         require(disputes[slmContract].votes[msg.sender] == 1, 'Voter ineligible');
         disputes[slmContract].votes[msg.sender] = _vote;
@@ -86,6 +90,7 @@ contract SlmJudgement is Ownable {
     /// Get the result of a contract dispute
     /// @param slmContract Contract to check dispute status
     function voteStatus(address slmContract) public view returns(uint8) {
+        require(slmContract != address(0), "Zero addr");
         Dispute storage dispute = disputes[slmContract];
         uint16 merchantVotes = dispute.merchantVoteCount;
         uint16 buyerVotes = dispute.buyerVoteCount;
@@ -109,19 +114,22 @@ contract SlmJudgement is Ownable {
     }
 
     function setJurors(address slmContract) external onlyOwner {
+        require(slmContract != address(0), "Zero addr");
         uint256[] memory selectedJurors = _selectJurorList(slmContract);
         jurorList[slmContract] = selectedJurors;
     }
 
     function getJurors(address slmContract) external view onlyOwnerOrManager returns(uint256[] memory) {
+        require(slmContract != address(0), "Zero addr");
         return jurorList[slmContract];
     }
 
     function _selectJurorList(address slmContract) private returns(uint256[] memory) {
+        require(slmContract != address(0), "Zero addr");
 
         // TODO -- Find better alternative to round robin selection
-        uint256[] storage selectedJurors = temp;
         uint256 stakerCount = stakerPool.length;
+        require(stakerCount >= minJurorCount, "Not enough stakers");
 
         uint32 selectedStartCount;
         if(jurorSelectionIndex[slmContract] > 0) {

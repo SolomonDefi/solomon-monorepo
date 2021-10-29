@@ -1,5 +1,6 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
+import { shouldRevert } from './testing'
 
 describe('SLM Jurors', function () {
   it('Checks selection and storage of jurors', async function () {
@@ -36,11 +37,12 @@ describe('SLM Jurors', function () {
     const manager = await ManagerFactory.deploy(token.address, storage.address)
     await storage.setStakerManager(manager.address)
 
-    const minJurorCount = 3
+    const minJurorCount = 4
     const jurors = await JudgementFactory.deploy(manager.address, minJurorCount)
     await manager.setJudgementContract(jurors.address)
 
     const stakeAmount = 100
+    const disputeAddress = token.address
 
     await token.connect(account2).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account2.address)).to.equal(defaultAmount)
@@ -54,16 +56,30 @@ describe('SLM Jurors', function () {
     await manager.connect(account1).stake(userId1, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(0)
 
+    await jurors.setStakerPool()
+    await shouldRevert(
+      jurors.setJurors(disputeAddress),
+      'Not enough stakers',
+      'Total stakers cannot be less than minimum juror count',
+    )
+
     await token.connect(account3).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
     const userId3 = 3
     await manager.connect(account3).stake(userId3, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(0)
 
+    await shouldRevert(
+      jurors.setMinJurorCount(2),
+      'Invalid juror count',
+      'Minimum juror count must be greater than 3',
+    )
+    await jurors.setMinJurorCount(3)
+
     await jurors.setStakerPool()
 
-    await jurors.setJurors(token.address)
-    const jurorList = await jurors.getJurors(token.address)
+    await jurors.setJurors(disputeAddress)
+    const jurorList = await jurors.getJurors(disputeAddress)
 
     chai.expect(await jurorList[0]).to.equal(userId2)
     chai.expect(await jurorList[1]).to.equal(userId1)
