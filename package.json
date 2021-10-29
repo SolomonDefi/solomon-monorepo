@@ -11,7 +11,7 @@
     "prune": "tools/scripts/prune-all.sh",
     "skaffold": "(skaffold dev --cache-artifacts=true --force=false)",
     "watcher:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts",
-    "contract:compile": "cd apps/contracts && hardhat compile"
+    "contract:compile": "cd apps/contracts && hardhat compile --force"
   },
   "private": true,
   "devDependencies": {
