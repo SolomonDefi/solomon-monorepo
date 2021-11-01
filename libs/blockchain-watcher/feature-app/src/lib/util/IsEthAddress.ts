@@ -3,6 +3,7 @@ import {
   ValidationOptions,
   ValidationArguments,
 } from 'class-validator'
+import { stringHelper } from '../helper/stringHelper'
 
 export function IsEthAddress(validationOptions?: ValidationOptions) {
   // turn off @typescript-eslint/ban-types because of object: Object
@@ -15,7 +16,7 @@ export function IsEthAddress(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          return /^0x[a-fA-F0-9]{40}$/.test(value)
+          return stringHelper.isEthAddress(value)
         },
       },
     })

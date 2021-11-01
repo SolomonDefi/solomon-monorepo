@@ -16,6 +16,10 @@ export class StringHelper {
 
     return res
   }
+
+  isEthAddress(str: string): boolean {
+    return /^0x[a-fA-F0-9]{40}$/.test(str)
+  }
 }
 
 export const stringHelper = new StringHelper()
