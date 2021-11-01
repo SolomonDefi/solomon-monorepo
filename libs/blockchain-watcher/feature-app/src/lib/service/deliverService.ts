@@ -17,7 +17,7 @@ export class DeliverService {
       type: EnumPaymentCreatedEventType.chargeback,
       party1: party1,
       party2: party2,
-      contract: '', //todo
+      contract: '', // todo
       judgeContract: judge,
       token: token,
       discount: discount,
@@ -40,9 +40,72 @@ export class DeliverService {
     })
   }
 
-  async sendPreorderEvent(slmPreorder: SlmPreorder) {}
+  async sendPreorderEvent(slmPreorder: SlmPreorder) {
+    const party1 = await slmPreorder.buyer()
+    const party2 = await slmPreorder.merchant()
+    const judge = await slmPreorder.judge()
+    const token = await slmPreorder.token()
+    const discount = await slmPreorder.discount()
 
-  async sendEscrowEvent(slmEscrow: SlmEscrow) {}
+    const event = new PaymentCreatedEvent({
+      type: EnumPaymentCreatedEventType.preorder,
+      party1: party1,
+      party2: party2,
+      contract: '', // todo
+      judgeContract: judge,
+      token: token,
+      discount: discount,
+      ethPaid: 0, // todo
+    })
+
+    const body = JSON.stringify(event)
+    const signature = stringHelper.generateDisputeApiSignature(
+      envStore.disputeApiSecretKey,
+      body,
+    )
+
+    await fetch(`${envStore.disputeApiUrl}/api/event`, {
+      method: 'post',
+      headers: {
+        'Content-type': 'application/json',
+        'X-Signature': signature,
+      },
+      body: body,
+    })
+  }
+
+  async sendEscrowEvent(slmEscrow: SlmEscrow) {
+    const party1 = await slmEscrow.party1()
+    const party2 = await slmEscrow.party2()
+    const judge = await slmEscrow.judge()
+    const token = await slmEscrow.token()
+
+    const event = new PaymentCreatedEvent({
+      type: EnumPaymentCreatedEventType.preorder,
+      party1: party1,
+      party2: party2,
+      contract: '', // todo
+      judgeContract: judge,
+      token: token,
+      discount: 0, // todo
+      ethPaid: 0, // todo
+    })
+
+    const body = JSON.stringify(event)
+    const signature = stringHelper.generateDisputeApiSignature(
+      envStore.disputeApiSecretKey,
+      body,
+    )
+
+    await fetch(`${envStore.disputeApiUrl}/api/event`, {
+      method: 'post',
+      headers: {
+        'Content-type': 'application/json',
+        'X-Signature': signature,
+      },
+      body: body,
+    })
+  }
 
   async init() {}
 }
