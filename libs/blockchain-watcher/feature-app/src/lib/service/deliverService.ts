@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
-import { SlmChargeback } from '@solomon/shared/util-contract'
-import { envStore } from '@solomon/blockchain-watcher/feature-app'
+import { SlmChargeback, SlmEscrow, SlmPreorder } from '@solomon/shared/util-contract'
+import { envStore } from '../store/envStore'
 import { PaymentCreatedEvent } from '../Klass/PaymentCreatedEvent'
 import { stringHelper } from '../helper/stringHelper'
 import { EnumPaymentCreatedEventType } from '../Enum/EnumPaymentCreatedEventType'
@@ -40,9 +40,9 @@ export class DeliverService {
     })
   }
 
-  async sendPreorderEvent() {}
+  async sendPreorderEvent(slmPreorder: SlmPreorder) {}
 
-  async sendEscrowEvent() {}
+  async sendEscrowEvent(slmEscrow: SlmEscrow) {}
 
   async init() {}
 }

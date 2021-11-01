@@ -3,8 +3,10 @@ import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
 import {
   SlmChargeback__factory,
+  SlmEscrow__factory,
   SlmFactory,
   SlmFactory__factory,
+  SlmPreorder__factory,
 } from '@solomon/shared/util-contract'
 import { Provider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
@@ -28,15 +30,25 @@ export class EthService {
   }
 
   async onPreorderCreated(preorderAddress: string) {
-    // TODO: Process event
-    await mailService.sendPreorderCreatedEmail('A')
-    await mailService.sendPreorderCreatedEmail('B')
+    if (!this.provider) {
+      return
+    }
+
+    let slmPreorder = await SlmPreorder__factory.connect(preorderAddress, this.provider)
+
+    await deliverService.sendPreorderEvent(slmPreorder)
+    await mailService.sendPreorderCreatedEmail(slmPreorder)
   }
 
   async onEscrowCreated(escrowAddress: string) {
-    // TODO: Process event
-    await mailService.sendEscrowCreatedEmail('A')
-    await mailService.sendEscrowCreatedEmail('B')
+    if (!this.provider) {
+      return
+    }
+
+    let slmEscrow = await SlmEscrow__factory.connect(escrowAddress, this.provider)
+
+    await deliverService.sendEscrowEvent(slmEscrow)
+    await mailService.sendEscrowCreatedEmail(slmEscrow)
   }
 
   async getChargebackCreatedLogs() {
