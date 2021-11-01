@@ -1,6 +1,15 @@
 import { EnumPaymentCreatedEventType } from '../Enum/EnumPaymentCreatedEventType'
 import { v4 } from 'uuid'
-import { IsEnum, IsNotIn, IsNumber, IsString, IsUUID, Max, Min } from 'class-validator'
+import {
+  IsEnum,
+  IsNotIn,
+  IsNumber,
+  IsString,
+  IsUUID,
+  Max,
+  Min,
+  validateSync,
+} from 'class-validator'
 import { IsEthAddress } from '../util/IsEthAddress'
 
 export class PaymentCreatedEvent {
@@ -40,6 +49,19 @@ export class PaymentCreatedEvent {
   @Min(0)
   @IsNumber()
   ethPaid: number = 0
+
+  isValid() {
+    let errArr = validateSync(this)
+
+    if (errArr.length > 0) {
+      for (let err of errArr) {
+        console.error(err)
+      }
+      return false
+    }
+
+    return true
+  }
 
   constructor(props: Partial<PaymentCreatedEvent>) {
     Object.assign(this, props)
