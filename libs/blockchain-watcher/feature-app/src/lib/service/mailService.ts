@@ -5,7 +5,7 @@ import Handlebars from 'handlebars'
 import { pathStore } from '@solomon/shared/util-path-store'
 import MailgunTransport from '../util/MailgunTransport'
 import { envStore } from '../store/envStore'
-import { SlmChargeback } from '@solomon/shared/util-contract'
+import { SlmChargeback, SlmEscrow, SlmPreorder } from '@solomon/shared/util-contract'
 
 class MailService {
   mailer: Transporter = null as any
@@ -41,7 +41,7 @@ class MailService {
     await this.send('to', subject, finalHtml, text)
   }
 
-  async sendPreorderCreatedEmail(to: string) {
+  async sendPreorderCreatedEmail(slmPreorder: SlmPreorder) {
     let subject = 'Preorder created'
     let templateHtml = await this.getTemplateHtml('preorderCreated.html')
     let finalHtml = templateHtml({
@@ -49,10 +49,10 @@ class MailService {
     })
     let text = ''
 
-    await this.send(to, subject, finalHtml, text)
+    await this.send('to', subject, finalHtml, text)
   }
 
-  async sendEscrowCreatedEmail(to: string) {
+  async sendEscrowCreatedEmail(slmEscrow: SlmEscrow) {
     let subject = 'Escrow created'
     let templateHtml = await this.getTemplateHtml('escrowCreated.html')
     let finalHtml = templateHtml({
@@ -60,7 +60,7 @@ class MailService {
     })
     let text = ''
 
-    await this.send(to, subject, finalHtml, text)
+    await this.send('to', subject, finalHtml, text)
   }
 
   async init() {
