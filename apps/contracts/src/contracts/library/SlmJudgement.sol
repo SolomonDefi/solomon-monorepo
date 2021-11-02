@@ -13,6 +13,10 @@ contract SlmJudgement is Ownable {
     uint16 public minJurorCount;
     uint256[] private selectedJurors;
 
+    mapping(address => bool) public adminList;
+
+    mapping(address => uint8) public voteResults;
+
     SlmStakerManager public stakerManager;
 
     uint256[] public stakerPool;
@@ -87,6 +91,40 @@ contract SlmJudgement is Ownable {
         }
     }
 
+    function setAdminRights(address walletAddress) external onlyOwner{
+        require(walletAddress != address(0), "Zero addr");
+
+        adminList(walletAddress) = true;
+    }
+
+    function removeAdminRights(address walletAddress) external onlyOwner{
+        require(walletAddress != address(0), "Zero addr");
+        require(adminList(walletAddress) == true, "Not an admin");
+
+        adminList(walletAddress) = false;
+    }
+
+    function getAdminRights(address walletAddress) external returns(bool) {
+        require(walletAddress != address(0), "Zero addr");
+        if(adminList(walletAddress) == true) {
+            return true;
+        }
+        return false;
+    }
+
+    function tieBreaker(address slmContract, bool buyerWins) external {
+        require(slmContract != address(0), "Zero addr");
+        require(adminList(msg.sender) == true, "Not an admin");
+        require(voteResults(slmContract) == 4, "Not a tie");
+
+        if(buyerWins) {
+            voteResults(slmContract) = 2;
+        } else {
+            voteResults(slmContract) = 3;
+        }
+        
+    }
+
     /// Get the result of a contract dispute
     /// @param slmContract Contract to check dispute status
     function voteStatus(address slmContract) public view returns(uint8) {
@@ -96,17 +134,28 @@ contract SlmJudgement is Ownable {
         uint16 buyerVotes = dispute.buyerVoteCount;
         // No vote exists
         if(dispute.quorum == 0) {
-            return 0;
+            voteResults(slmContract) = 0;
         }
         // Vote not complete
-        if(merchantVotes + buyerVotes < dispute.quorum) {
-            return 1;
+        else if(merchantVotes + buyerVotes < dispute.quorum) {
+            voteResults(slmContract) = 1;
         }
-        // Tie goes to the buyer
-        if(buyerVotes >= merchantVotes) {
-            return 2;
+        else if(buyerVotes > merchantVotes) {
+            voteResults(slmContract) = 2;
         }
-        return 3;
+        else if(merchantVotes > buyerVotes) {
+            voteResults(slmContract) = 3;
+        }
+        // Tie breaker
+        else {
+            voteResults(slmContract) = 4;
+        }
+    }
+
+    function getVoteResults(address slmContract) external returns(uint8) {
+        require(slmContract != address(0), "Zero addr");
+
+        return voteResults(slmContract);
     }
 
     function setStakerPool() external onlyOwner {

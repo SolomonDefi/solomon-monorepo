@@ -60,7 +60,7 @@ contract SlmChargeback is SlmShared {
     /// Allow buyer to withdraw if eligible
     function buyerWithdraw() external {
         require(msg.sender == buyer(), 'Only buyer can withdraw');
-        require(judge.voteStatus(address(this)) == 2, 'Cannot withdraw');
+        require(judge.getVoteResults(address(this)) == 2, 'Cannot withdraw');
         state = TransactionState.CompleteParty1;
         withdraw(buyer());
     }
@@ -68,7 +68,7 @@ contract SlmChargeback is SlmShared {
     /// Allow merchant to withdraw if eligible
     function merchantWithdraw() external {
         require(msg.sender == merchant(), 'Only merchant can withdraw');
-        require(judge.voteStatus(address(this)) == 3, 'Cannot withdraw');
+        require(judge.getVoteResults(address(this)) == 3, 'Cannot withdraw');
         state = TransactionState.CompleteParty2;
         withdraw(merchant());
     }
