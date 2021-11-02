@@ -1,6 +1,6 @@
 import { mailService } from './mailService'
 import { JSDOM } from 'jsdom'
-import { generateMjmlTemplate } from '@solomon/blockchain-watcher/feature-app'
+import { generateMjmlTemplate } from '../util/generateMjmlTemplate'
 
 describe('mailService', () => {
   jest.setTimeout(60 * 1000)
@@ -38,7 +38,7 @@ describe('mailService', () => {
     let realSend = mailService.send
     mailService.send = jest.fn()
 
-    await mailService.sendChargebackCreatedEmail('foo')
+    await mailService.sendChargebackCreatedEmail('foo' as any)
 
     expect(mailService.send.call.length).toEqual(1)
 
@@ -49,7 +49,7 @@ describe('mailService', () => {
     let realSend = mailService.send
     mailService.send = jest.fn()
 
-    await mailService.sendPreorderCreatedEmail('foo')
+    await mailService.sendPreorderCreatedEmail('foo' as any)
 
     expect(mailService.send.call.length).toEqual(1)
 
@@ -60,7 +60,7 @@ describe('mailService', () => {
     let realSend = mailService.send
     mailService.send = jest.fn()
 
-    await mailService.sendEscrowCreatedEmail('foo')
+    await mailService.sendEscrowCreatedEmail('foo' as any)
 
     expect(mailService.send.call.length).toEqual(1)
 

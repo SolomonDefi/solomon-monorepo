@@ -81,7 +81,7 @@ export class DeliverService {
     const token = await slmEscrow.token()
 
     const event = new PaymentCreatedEvent({
-      type: EnumPaymentCreatedEventType.preorder,
+      type: EnumPaymentCreatedEventType.escrow,
       party1: party1,
       party2: party2,
       contract: '', // todo

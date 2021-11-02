@@ -1,7 +1,7 @@
-import generateMailTemplates from '@solomon/blockchain-watcher/feature-templates'
+import { generateMjmlTemplate } from '../../libs/blockchain-watcher/feature-app/src'
 
 let run = async () => {
-  await generateMailTemplates()
+  await generateMjmlTemplate()
 }
 
 run()

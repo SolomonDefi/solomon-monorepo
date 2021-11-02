@@ -5,7 +5,7 @@ import { pathStore } from '@solomon/shared/util-path-store'
 
 export const generateMjmlTemplate = async (): Promise<boolean> => {
   try {
-    const templateDirPath = path.resolve(pathStore.watcher, 'src', 'template')
+    const templateDirPath = pathStore.mailTemplates
     const templateNames = await readdir(templateDirPath)
 
     for (let templateName of templateNames) {
