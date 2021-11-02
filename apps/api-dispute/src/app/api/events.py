@@ -1,6 +1,8 @@
 import typing
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.exceptions import RequestValidationError
+from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import Session
 
 from app import schemas, models
@@ -31,9 +33,12 @@ def handle_event(
         raise HTTPException(status.HTTP_400_BAD_REQUEST)
 
     event_schema = getattr(schemas, event_schema_class(event_type))
-    message: schemas.EventIn = event_schema(**data)
-    event = schemas.EventCreate(
-        **message.to_common_dict(), message_id=message.id, data=message.json()
-    )
-    models.Event.create(db, data=event)
+    try:
+        message: schemas.EventIn = event_schema(**data)
+        event = schemas.EventCreate(
+            **message.to_common_dict(), message_id=message.id, data=message.json()
+        )
+        models.Event.create(db, data=event)
+    except ValidationError as e:
+        raise RequestValidationError(e.raw_errors)
     return ''
