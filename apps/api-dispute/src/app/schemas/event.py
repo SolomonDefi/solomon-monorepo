@@ -9,6 +9,7 @@ __all__ = [
     'EventIn',
     'EvidenceSubmittedEvent',
     'DisputeCreatedEvent',
+    'DisputeCompletedEvent',
     'PaymentCreatedEvent',
     'EventCreate',
 ]
@@ -30,6 +31,17 @@ class EventIn(BaseEvent):
 
 class DisputeCreatedEvent(EventIn):
     judgeContract: EthAddress
+
+
+class DisputeCompletedEvent(EventIn):
+    judgeContract: EthAddress
+    awardedTo: EthAddress
+
+    @validator('awardedTo')
+    def awardee_in_party(cls, awardee: EthAddress, values: dict) -> EthAddress:
+        if awardee not in [values['party1'], values['party2']]:
+            raise ValueError('awardee address do not match')
+        return awardee
 
 
 class EvidenceSubmittedEvent(EventIn):

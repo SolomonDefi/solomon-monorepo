@@ -35,8 +35,9 @@ def test_ping(client: TestClient) -> None:
 
 valid_eth_address = '0xd3cda913deb6f67967b99d67acdfa1712c293601'
 event_data_ids = [
-    "valid_dispute_create",
-    "fail_dispute_create",
+    "valid_dispute_created",
+    "fail_dispute_created",
+    "valid_dispute_completed",
     "valid_evidence_submitted",
     "valid_payment_created",
 ]
@@ -57,9 +58,21 @@ event_data: list[tuple[dict, bool]] = [
             "id": uuid4().hex,
             "type": "dispute.preorder.created",
             "party1": valid_eth_address,
+            "party2": 'incorrect_address',
+            "contract": valid_eth_address,
+            "judgeContract": valid_eth_address,
+        },
+        False,
+    ),
+    (
+        {
+            "id": uuid4().hex,
+            "type": "dispute.preorder.completed",
+            "party1": valid_eth_address,
             "party2": valid_eth_address,
             "contract": valid_eth_address,
             "judgeContract": valid_eth_address,
+            "awardedTo": valid_eth_address,
         },
         True,
     ),
@@ -103,5 +116,4 @@ def test_events(db: Session, client: TestClient, message: dict, expected: bool) 
         json=message,
         headers={config.SIGNATURE_HEADER_NAME: signature},
     )
-    print(rsp.content)
     assert rsp.ok == expected
