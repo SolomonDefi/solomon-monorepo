@@ -1,6 +1,6 @@
 export * from './lib/Entity/ScanLogEntity'
 export * from './lib/util/MailgunTransport'
-export * from './lib/util/generate'
+export * from './lib/util/generateMjmlTemplate'
 export * from './lib/store/envStore'
 export * from './lib/service/mailService'
 export * from './lib/service/dbService'
