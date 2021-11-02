@@ -63,6 +63,32 @@ module.exports = {
       'pkg-dir',
     ],
   },
+  contracts: {
+    include: [
+      ...all,
+      '@nomiclabs/hardhat-ethers',
+      '@nomiclabs/hardhat-etherscan',
+      '@nomiclabs/hardhat-solhint',
+      '@nomiclabs/hardhat-waffle',
+      '@typechain/ethers-v5',
+      '@typechain/hardhat',
+      '@types/chai',
+      '@types/chai-as-promised',
+      '@types/jest',
+      'chai',
+      'ethereum-waffle',
+      'ethers',
+      'hardhat',
+      'hardhat-contract-sizer',
+      'hardhat-deploy',
+      'hardhat-gas-reporter',
+      'nx-hardhat',
+      'solidity-coverage',
+      'ts-jest',
+      'typechain',
+      'typescript',
+    ],
+  },
   'db-dev': {
     include: [
       // dependencies

@@ -1,0 +1,10 @@
+.git
+.github
+.env
+node_modules/
+*.zip
+.DS_Store
+log
+*~
+# IDE
+.vscode/
