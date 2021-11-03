@@ -10,7 +10,8 @@
     "test": "nx test",
     "prune": "tools/scripts/prune-all.sh",
     "skaffold": "(skaffold dev --cache-artifacts=true --force=false)",
-    "watcher:generate-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts",
+    "watcher:generate-mail-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts",
+    "watcher:generate-event-interface": "",
     "contract:compile": "cd apps/contracts && hardhat compile --force"
   },
   "private": true,
@@ -119,6 +120,7 @@
     "handlebars": "^4.7.7",
     "js-sha256": "^0.9.0",
     "lodash": "^4.17.21",
+    "json-schema-to-typescript": "^10.1.5",
     "mailgun.js": "^3.7.0",
     "mjml": "^4.10.4",
     "node-fetch": "2",

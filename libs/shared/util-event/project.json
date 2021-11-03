@@ -1,6 +1,6 @@
 {
   "root": "libs/shared/util-event",
-  "sourceRoot": "libs/shared/util-event",
+  "sourceRoot": "libs/shared/util-event/src",
   "projectType": "library",
   "targets": {
     "lint": {
