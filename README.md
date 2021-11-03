@@ -129,7 +129,7 @@ A hosted frontend and backend will be provided by Solomon, based on this reposit
 The branch name format is: `<issue-number>_<short-summary>`(`^[0-9]+_[a-z0-9-]+$`). For example: `17_some-fix`, `132_improve-core-performance`.
 
 - `issue-number`: Numeral only.
-- `short-summary`: Short summary about the branch, numeral lowercase character, `-` and `_` are acceptable. Uppercase would cause CI error, so lowercase only.
+- `short-summary`: Short summary about the branch. Numeral, lowercase character and `_` are acceptable. Uppercase would cause CI error, so lowercase only.
 
 ### Commit message
 
