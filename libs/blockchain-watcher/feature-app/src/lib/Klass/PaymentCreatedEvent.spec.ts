@@ -1,7 +1,7 @@
 import { PaymentCreatedEvent } from './PaymentCreatedEvent'
 import { v4 } from 'uuid'
 import _ from 'lodash'
-import { EnumPaymentCreatedEventType } from '../Enum/EnumPaymentCreatedEventType'
+import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
 import { stringHelper } from '@solomon/blockchain-watcher/feature-app'
 
 describe('PaymentCreatedEvent', () => {
@@ -21,7 +21,7 @@ describe('PaymentCreatedEvent', () => {
 
     let p = new PaymentCreatedEvent({
       id: id,
-      type: EnumPaymentCreatedEventType.chargeback,
+      type: PaymentCreatedEventType.chargeback,
       party1: addr1,
       party2: addr2,
       contract: addr3,
@@ -33,7 +33,7 @@ describe('PaymentCreatedEvent', () => {
 
     expect(p.isValid()).toEqual(true)
     expect(p.id).toEqual(id)
-    expect(p.type).toEqual(EnumPaymentCreatedEventType.chargeback)
+    expect(p.type).toEqual(PaymentCreatedEventType.chargeback)
     expect(p.party1).toEqual(addr1)
     expect(p.party2).toEqual(addr2)
     expect(p.contract).toEqual(addr3)
@@ -69,7 +69,7 @@ describe('PaymentCreatedEvent', () => {
     let p = new PaymentCreatedEvent({})
 
     p.id = v4()
-    p.type = EnumPaymentCreatedEventType.chargeback
+    p.type = PaymentCreatedEventType.chargeback
     p.party1 = stringHelper.generateRandomEthAddr()
     p.party2 = stringHelper.generateRandomEthAddr()
     p.contract = stringHelper.generateRandomEthAddr()
@@ -84,7 +84,7 @@ describe('PaymentCreatedEvent', () => {
   it('constructor() assign invalid props', () => {
     let p = new PaymentCreatedEvent({
       id: v4(),
-      type: EnumPaymentCreatedEventType.chargeback,
+      type: PaymentCreatedEventType.chargeback,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -101,7 +101,7 @@ describe('PaymentCreatedEvent', () => {
     expect(badP.isValid()).toEqual(false)
 
     badP = p
-    badP.type = EnumPaymentCreatedEventType.unknown
+    badP.type = PaymentCreatedEventType.unknown
     expect(badP.isValid()).toEqual(false)
 
     badP = p
