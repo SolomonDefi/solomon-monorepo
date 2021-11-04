@@ -17,7 +17,7 @@ export class EthService {
 
   async onChargebackCreated(chargebackAddress: string) {
     if (!this.provider) {
-      return
+      throw 'Provider is not defined.'
     }
 
     let slmChargeback = await SlmChargeback__factory.connect(
@@ -31,7 +31,7 @@ export class EthService {
 
   async onPreorderCreated(preorderAddress: string) {
     if (!this.provider) {
-      return
+      throw 'Provider is not defined.'
     }
 
     let slmPreorder = await SlmPreorder__factory.connect(preorderAddress, this.provider)
@@ -42,7 +42,7 @@ export class EthService {
 
   async onEscrowCreated(escrowAddress: string) {
     if (!this.provider) {
-      return
+      throw 'Provider is not defined.'
     }
 
     let slmEscrow = await SlmEscrow__factory.connect(escrowAddress, this.provider)
@@ -53,7 +53,7 @@ export class EthService {
 
   async getChargebackCreatedLogs() {
     if (!this.contract) {
-      return
+      throw 'Contract is not defined.'
     }
 
     let eventFilter = this.contract.filters.ChargebackCreated()
@@ -66,7 +66,7 @@ export class EthService {
 
   async getPreorderCreatedLogs() {
     if (!this.contract) {
-      return
+      throw 'Contract is not defined.'
     }
 
     let eventFilter = this.contract.filters.PreorderCreated()
@@ -79,7 +79,7 @@ export class EthService {
 
   async getEscrowCreatedLogs() {
     if (!this.contract) {
-      return
+      throw 'Contract is not defined.'
     }
 
     let eventFilter = this.contract.filters.EscrowCreated()
