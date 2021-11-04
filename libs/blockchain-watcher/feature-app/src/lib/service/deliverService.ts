@@ -6,6 +6,23 @@ import { stringHelper } from '../helper/stringHelper'
 import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
 
 export class DeliverService {
+  async sendEventToDisputeApi(event: PaymentCreatedEvent) {
+    const body = JSON.stringify(event)
+    const signature = stringHelper.generateDisputeApiSignature(
+      envStore.disputeApiSecretKey,
+      body,
+    )
+
+    await fetch(`${envStore.disputeApiUrl}/api/event`, {
+      method: 'post',
+      headers: {
+        'Content-type': 'application/json',
+        'X-Signature': signature,
+      },
+      body: body,
+    })
+  }
+
   async sendChargebackEvent(slmChargeback: SlmChargeback) {
     const party1 = await slmChargeback.buyer()
     const party2 = await slmChargeback.merchant()
@@ -24,20 +41,7 @@ export class DeliverService {
       ethPaid: 0, // todo
     })
 
-    const body = JSON.stringify(event)
-    const signature = stringHelper.generateDisputeApiSignature(
-      envStore.disputeApiSecretKey,
-      body,
-    )
-
-    await fetch(`${envStore.disputeApiUrl}/api/event`, {
-      method: 'post',
-      headers: {
-        'Content-type': 'application/json',
-        'X-Signature': signature,
-      },
-      body: body,
-    })
+    await this.sendEventToDisputeApi(event)
   }
 
   async sendPreorderEvent(slmPreorder: SlmPreorder) {
@@ -58,20 +62,7 @@ export class DeliverService {
       ethPaid: 0, // todo
     })
 
-    const body = JSON.stringify(event)
-    const signature = stringHelper.generateDisputeApiSignature(
-      envStore.disputeApiSecretKey,
-      body,
-    )
-
-    await fetch(`${envStore.disputeApiUrl}/api/event`, {
-      method: 'post',
-      headers: {
-        'Content-type': 'application/json',
-        'X-Signature': signature,
-      },
-      body: body,
-    })
+    await this.sendEventToDisputeApi(event)
   }
 
   async sendEscrowEvent(slmEscrow: SlmEscrow) {
@@ -91,20 +82,7 @@ export class DeliverService {
       ethPaid: 0, // todo
     })
 
-    const body = JSON.stringify(event)
-    const signature = stringHelper.generateDisputeApiSignature(
-      envStore.disputeApiSecretKey,
-      body,
-    )
-
-    await fetch(`${envStore.disputeApiUrl}/api/event`, {
-      method: 'post',
-      headers: {
-        'Content-type': 'application/json',
-        'X-Signature': signature,
-      },
-      body: body,
-    })
+    await this.sendEventToDisputeApi(event)
   }
 
   async init() {}
