@@ -1,4 +1,4 @@
-import { EnumPaymentCreatedEventType } from '../Enum/EnumPaymentCreatedEventType'
+import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
 import { v4 } from 'uuid'
 import {
   IsEnum,
@@ -17,9 +17,9 @@ export class PaymentCreatedEvent {
   @IsString()
   id: string = v4()
 
-  @IsNotIn([EnumPaymentCreatedEventType.unknown])
-  @IsEnum(EnumPaymentCreatedEventType)
-  type: EnumPaymentCreatedEventType = EnumPaymentCreatedEventType.unknown
+  @IsNotIn([PaymentCreatedEventType.unknown])
+  @IsEnum(PaymentCreatedEventType)
+  type: PaymentCreatedEventType = PaymentCreatedEventType.unknown
 
   @IsEthAddress()
   @IsString()

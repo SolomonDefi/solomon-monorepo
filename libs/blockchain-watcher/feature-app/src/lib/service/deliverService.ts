@@ -3,7 +3,7 @@ import { SlmChargeback, SlmEscrow, SlmPreorder } from '@solomon/shared/util-cont
 import { envStore } from '../store/envStore'
 import { PaymentCreatedEvent } from '../Klass/PaymentCreatedEvent'
 import { stringHelper } from '../helper/stringHelper'
-import { EnumPaymentCreatedEventType } from '../Enum/EnumPaymentCreatedEventType'
+import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
 
 export class DeliverService {
   async sendChargebackEvent(slmChargeback: SlmChargeback) {
@@ -14,7 +14,7 @@ export class DeliverService {
     const discount = await slmChargeback.discount()
 
     const event = new PaymentCreatedEvent({
-      type: EnumPaymentCreatedEventType.chargeback,
+      type: PaymentCreatedEventType.chargeback,
       party1: party1,
       party2: party2,
       contract: '', // todo
@@ -48,7 +48,7 @@ export class DeliverService {
     const discount = await slmPreorder.discount()
 
     const event = new PaymentCreatedEvent({
-      type: EnumPaymentCreatedEventType.preorder,
+      type: PaymentCreatedEventType.preorder,
       party1: party1,
       party2: party2,
       contract: '', // todo
@@ -81,7 +81,7 @@ export class DeliverService {
     const token = await slmEscrow.token()
 
     const event = new PaymentCreatedEvent({
-      type: EnumPaymentCreatedEventType.escrow,
+      type: PaymentCreatedEventType.escrow,
       party1: party1,
       party2: party2,
       contract: '', // todo
