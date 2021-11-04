@@ -46,6 +46,10 @@ export class DbService {
   }
 
   async resetForTest() {
+    if (this.orm) {
+      await this.orm.close(true)
+    }
+
     await remove(this.sqlitePath)
     await this.init()
   }
