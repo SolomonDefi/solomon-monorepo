@@ -6,7 +6,7 @@ import {
 import { stringHelper } from '../helper/stringHelper'
 
 export function IsEthAddress(validationOptions?: ValidationOptions) {
-  // turn off @typescript-eslint/ban-types because of object: Object
+  // eslint-disable-next-line @typescript-eslint/ban-types
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'isEthAddress',
