@@ -16,7 +16,7 @@ describe('appService', () => {
 
     await appService.destroy()
 
-    expect(appService.app).toBe(undefined)
+    expect(appService.app).toBe(null)
   })
 
   it('start() and stop()', async () => {

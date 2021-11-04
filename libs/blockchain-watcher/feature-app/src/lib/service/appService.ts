@@ -14,10 +14,6 @@ export class AppService {
   }
 
   async start(): Promise<void> {
-    if (!this.app) {
-      throw 'Express app not initialized'
-    }
-
     this.server = this.app.listen(this.PORT)
     await once(this.server, 'listening')
     console.log(`Api service listen on :${this.PORT}`)
@@ -29,7 +25,7 @@ export class AppService {
     }
 
     try {
-      await promisify(this.server.close).call(this.server)
+      await promisify(this.server.close).call(this.server)()
       console.log(`Api service on :${this.PORT} closed`)
     } catch (err) {
       console.error(err)
