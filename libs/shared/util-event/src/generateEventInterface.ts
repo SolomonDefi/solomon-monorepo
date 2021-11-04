@@ -3,6 +3,6 @@ import { write, writeFile } from "fs-extra";
 import path from "path";
 
 export const generateEventInterface = async ()=> {
-  let res = await compileFromFile('_sample.schema.json')
-  await writeFile(res, path.resolve(__dirname, 'test.ts'), 'utf-8')
+  let res = await compileFromFile(path.resolve(__dirname, '..', '_sample.schema.json'))
+  await writeFile(path.resolve(__dirname, 'test.schema.ts'), res, 'utf-8')
 }
