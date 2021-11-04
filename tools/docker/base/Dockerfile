@@ -18,8 +18,8 @@ RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
 RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
 
 RUN apk add --no-cache build-base libffi-dev openssl-dev python3-dev rust cargo postgresql-dev
-RUN pip3 install --upgrade pip
-RUN pip3 install poetry
+RUN pip3 install --no-cache-dir --upgrade pip
+RUN pip3 install --no-cache-dir poetry
 
 COPY subset.config.js package.json ./
 COPY tools/scripts/*-subset.js ./tools/scripts/

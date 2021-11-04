@@ -11,10 +11,12 @@ RUN pnpm install
 
 COPY libs/shared ./libs/shared
 COPY apps/api-evidence ./apps/api-evidence
+COPY apps/api-evidence/config.toml /root/.config/pypoetry/config.toml
 COPY apps/api-evidence/.env.dist ./apps/api-evidence/src/.env
 
 RUN cd /usr/src/apps/api-evidence \
-    && poetry config virtualenvs.in-project true \
-    && poetry install --no-dev
+    && poetry export -o requirements.txt --without-hashes \
+    && poetry run pip install --no-cache-dir -U pip \
+    && poetry run pip install --no-cache-dir -r requirements.txt
 
 CMD ["pnpm", "nx", "serve", "api-evidence"]

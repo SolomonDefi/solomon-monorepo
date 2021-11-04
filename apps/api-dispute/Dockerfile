@@ -11,10 +11,12 @@ RUN pnpm install
 
 COPY libs/shared ./libs/shared
 COPY apps/api-dispute ./apps/api-dispute
+COPY apps/api-dispute/config.toml /root/.config/pypoetry/config.toml
 COPY apps/api-dispute/.env.dist ./apps/api-dispute/src/.env
 
 RUN cd /usr/src/apps/api-dispute \
-    && poetry config virtualenvs.in-project true \
-    && poetry install --no-dev
+    && poetry export -o requirements.txt --without-hashes \
+    && poetry run pip install --no-cache-dir -U pip \
+    && poetry run pip install --no-cache-dir -r requirements.txt
 
 CMD ["pnpm", "nx", "serve", "api-dispute"]
