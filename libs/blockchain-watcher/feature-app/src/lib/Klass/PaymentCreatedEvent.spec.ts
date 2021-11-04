@@ -2,7 +2,7 @@ import { PaymentCreatedEvent } from './PaymentCreatedEvent'
 import { v4 } from 'uuid'
 import _ from 'lodash'
 import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
-import { stringHelper } from '@solomon/blockchain-watcher/feature-app'
+import { stringHelper } from '../helper/stringHelper'
 
 describe('PaymentCreatedEvent', () => {
   it('constructor() with empty props', () => {
@@ -12,12 +12,12 @@ describe('PaymentCreatedEvent', () => {
   })
 
   it('constructor() with valid props', () => {
-    let id = v4()
-    let addr1 = stringHelper.generateRandomEthAddr()
-    let addr2 = stringHelper.generateRandomEthAddr()
-    let addr3 = stringHelper.generateRandomEthAddr()
-    let addr4 = stringHelper.generateRandomEthAddr()
-    let addr5 = stringHelper.generateRandomEthAddr()
+    const id = v4()
+    const addr1 = stringHelper.generateRandomEthAddr()
+    const addr2 = stringHelper.generateRandomEthAddr()
+    const addr3 = stringHelper.generateRandomEthAddr()
+    const addr4 = stringHelper.generateRandomEthAddr()
+    const addr5 = stringHelper.generateRandomEthAddr()
 
     let p = new PaymentCreatedEvent({
       id: id,
@@ -44,15 +44,15 @@ describe('PaymentCreatedEvent', () => {
   })
 
   it('constructor() with invalid props', () => {
-    let badId = new PaymentCreatedEvent({ id: '' })
-    let badType = new PaymentCreatedEvent({ type: '' as any })
-    let badParty1 = new PaymentCreatedEvent({ party1: '' })
-    let badParty2 = new PaymentCreatedEvent({ party2: '' })
-    let badContract = new PaymentCreatedEvent({ contract: '' })
-    let badJudgeContract = new PaymentCreatedEvent({ judgeContract: '' })
-    let badToken = new PaymentCreatedEvent({ token: '' })
-    let badDiscount = new PaymentCreatedEvent({ discount: -1 })
-    let badEthPaid = new PaymentCreatedEvent({ ethPaid: -1 })
+    const badId = new PaymentCreatedEvent({ id: '' })
+    const badType = new PaymentCreatedEvent({ type: '' as any })
+    const badParty1 = new PaymentCreatedEvent({ party1: '' })
+    const badParty2 = new PaymentCreatedEvent({ party2: '' })
+    const badContract = new PaymentCreatedEvent({ contract: '' })
+    const badJudgeContract = new PaymentCreatedEvent({ judgeContract: '' })
+    const badToken = new PaymentCreatedEvent({ token: '' })
+    const badDiscount = new PaymentCreatedEvent({ discount: -1 })
+    const badEthPaid = new PaymentCreatedEvent({ ethPaid: -1 })
 
     expect(badId.isValid()).toEqual(false)
     expect(badType.isValid()).toEqual(false)
@@ -82,7 +82,7 @@ describe('PaymentCreatedEvent', () => {
   })
 
   it('constructor() assign invalid props', () => {
-    let p = new PaymentCreatedEvent({
+    const p = new PaymentCreatedEvent({
       id: v4(),
       type: PaymentCreatedEventType.chargeback,
       party1: stringHelper.generateRandomEthAddr(),

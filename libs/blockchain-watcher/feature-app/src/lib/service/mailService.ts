@@ -11,7 +11,7 @@ class MailService {
   mailer: Transporter = null as any
 
   async send(to: string | string[], subject: string, html: string, text: string) {
-    let info = await this.mailer.sendMail({
+    const info = await this.mailer.sendMail({
       from: 'solomondefi@gmail.com',
       to: to,
       subject: subject,
@@ -23,17 +23,17 @@ class MailService {
   }
 
   async getTemplateHtml(htmlName: string): Promise<HandlebarsTemplateDelegate> {
-    let htmlPath = path.resolve(pathStore.mailTemplates, htmlName)
-    let rawHtml = await readFile(htmlPath, 'utf-8')
-    let templateHtml = Handlebars.compile(rawHtml)
+    const htmlPath = path.resolve(pathStore.mailTemplates, htmlName)
+    const rawHtml = await readFile(htmlPath, 'utf-8')
+    const templateHtml = Handlebars.compile(rawHtml)
 
     return templateHtml
   }
 
   async sendChargebackCreatedEmail(slmChargeback: SlmChargeback) {
-    let subject = 'Chargeback created'
-    let templateHtml = await this.getTemplateHtml('chargebackCreated.html')
-    let finalHtml = templateHtml({
+    const subject = 'Chargeback created'
+    const templateHtml = await this.getTemplateHtml('chargebackCreated.html')
+    const finalHtml = templateHtml({
       // TODO
     })
     let text = ''
@@ -42,23 +42,23 @@ class MailService {
   }
 
   async sendPreorderCreatedEmail(slmPreorder: SlmPreorder) {
-    let subject = 'Preorder created'
-    let templateHtml = await this.getTemplateHtml('preorderCreated.html')
-    let finalHtml = templateHtml({
+    const subject = 'Preorder created'
+    const templateHtml = await this.getTemplateHtml('preorderCreated.html')
+    const finalHtml = templateHtml({
       // TODO
     })
-    let text = ''
+    const text = ''
 
     await this.send('to', subject, finalHtml, text)
   }
 
   async sendEscrowCreatedEmail(slmEscrow: SlmEscrow) {
-    let subject = 'Escrow created'
-    let templateHtml = await this.getTemplateHtml('escrowCreated.html')
-    let finalHtml = templateHtml({
+    const subject = 'Escrow created'
+    const templateHtml = await this.getTemplateHtml('escrowCreated.html')
+    const finalHtml = templateHtml({
       // TODO
     })
-    let text = ''
+    const text = ''
 
     await this.send('to', subject, finalHtml, text)
   }

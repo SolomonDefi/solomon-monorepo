@@ -51,8 +51,8 @@ export class DbService {
   }
 
   async init() {
-    let isDbExist = await pathExists(this.sqlitePath)
-    let orm = await MikroORM.init({
+    const isDbExist = await pathExists(this.sqlitePath)
+    const orm = await MikroORM.init({
       entities: [ScanLogEntity],
       dbName: this.sqlitePath,
       type: 'sqlite',

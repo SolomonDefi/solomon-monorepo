@@ -20,22 +20,22 @@ describe('mailService', () => {
   test('send()', async () => {})
 
   test('getTemplateHtml()', async () => {
-    let templateHtml = await mailService.getTemplateHtml('_test.html')
-    let finalHtml = templateHtml({
+    const templateHtml = await mailService.getTemplateHtml('_test.html')
+    const finalHtml = templateHtml({
       foo: 'foo',
       bar: 'bar',
     })
 
-    let dom = new JSDOM(finalHtml)
-    let r1 = dom.window.document.querySelector('#foo')?.textContent
-    let r2 = dom.window.document.querySelector('img')?.getAttribute('src')
+    const dom = new JSDOM(finalHtml)
+    const r1 = dom.window.document.querySelector('#foo')?.textContent
+    const r2 = dom.window.document.querySelector('img')?.getAttribute('src')
 
     expect(r1).toEqual('foo')
     expect(r2).toEqual('bar')
   })
 
   test('sendChargebackCreatedEmail()', async () => {
-    let realSend = mailService.send
+    const realSend = mailService.send
     mailService.send = jest.fn()
 
     await mailService.sendChargebackCreatedEmail('foo' as any)
@@ -46,7 +46,7 @@ describe('mailService', () => {
   })
 
   test('sendPreorderCreatedEmail()', async () => {
-    let realSend = mailService.send
+    const realSend = mailService.send
     mailService.send = jest.fn()
 
     await mailService.sendPreorderCreatedEmail('foo' as any)
@@ -57,7 +57,7 @@ describe('mailService', () => {
   })
 
   test('sendEscrowCreatedEmail()', async () => {
-    let realSend = mailService.send
+    const realSend = mailService.send
     mailService.send = jest.fn()
 
     await mailService.sendEscrowCreatedEmail('foo' as any)
