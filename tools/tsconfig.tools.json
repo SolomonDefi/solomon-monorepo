@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "../dist/out-tsc/tools",
     "rootDir": ".",
-    "target": "es2020",
+    "module": "CommonJS",
+    "target": "ES2020",
     "types": ["node"],
     "importHelpers": false
   },
