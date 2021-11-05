@@ -76,12 +76,12 @@ class AddressHeaderAuth:
         challenge_hash = hash.finalize().hex()
         challenge_expiry = int(datetime.utcnow().timestamp() + config.CHALLENGE_TTL)
         challenge = self.challenge_from_hash(challenge_hash)
-        address_user_chaellenge = schemas.AddressUserChallenge(
+        address_user_challenge = schemas.AddressUserChallenge(
             eth_address=checksum_address,
             challenge_hash=challenge_hash,
             challenge_expiry=challenge_expiry,
         )
-        crud.user.challenge_address_user(db, challenge=address_user_chaellenge)
+        crud.user.challenge_address_user(db, challenge=address_user_challenge)
         return challenge
 
     def is_valid_challenge(
