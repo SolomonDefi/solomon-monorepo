@@ -35,6 +35,14 @@ Follow these instructions to set up your local development environment. Only Mac
    $ brew install skaffold
    ```
 
+**Generate `util-contract`**
+
+The `libs/shared/util-contract` is generated from `apps/contracts` with following command:
+
+```shell
+pnpm run contract:compile
+```
+
 **Start local dev environment**
 
 > :warning: On Mac M1 devices, you must set the following environment variable, or the docker multi-stage build will fail
