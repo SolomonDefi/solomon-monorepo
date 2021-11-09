@@ -123,4 +123,51 @@ contract SlmStakerManager is Ownable {
     function getUserAddress(uint256 userId) external view returns(address) {
         return stakerStorage.getUserAddress(userId);
     }
+
+    function announceReward(uint32 rewardPercent) external onlyOwner {
+        require(rewardPercent > 0, "Invalid percent");
+        uint256 rewardAmount = (token.balanceOf(address(stakerStorage)) * rewardPercent) / 100;
+        stakerStorage.announceReward(rewardPercent, rewardAmount);
+    }
+
+    function withdrawRewards(address walletAddress) external {
+        require(walletAddress != address(0), "Zero addr");
+        uint256 stakeRewards = _calculateStakeRewards(walletAddress);
+        stakerStorage.sendFunds(walletAddress, stakeRewards);
+    }
+
+    function _calculateStakeRewards(address walletAddress) private returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+
+        uint256 userId = stakerStorage.getUserId(walletAddress);
+        uint256 userStake = stakerStorage.getStake(walletAddress, userId);
+        uint256 stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
+        uint256 currentRewardIndex = stakerStorage.getRewardPercentHistoryLength() - 1;
+        uint256 totalStakeRewards = 0;
+
+        if(stakerLatestIndex <= currentRewardIndex) {
+            uint diff = currentRewardIndex - stakerLatestIndex;
+            console.log(stakerLatestIndex, diff, currentRewardIndex);
+            for(uint i = 0; i <= diff; i++) {
+                uint256 lastWithdrawal = stakerStorage.getLastWithdrawalTime(walletAddress);
+                if(block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime()) {
+                    console.log('before', stakerStorage.getLastRewardIndex(walletAddress), stakerLatestIndex);
+                    uint256 rewardPercent = stakerStorage.getRewardPercentHistory(stakerLatestIndex);
+                    console.log('reward percent', rewardPercent, userStake);
+                    stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
+
+                    uint256 stakeRewards = (userStake * stakerStorage.getRewardAmountHistory(stakerLatestIndex)) / (stakerStorage.totalStaked());
+                    totalStakeRewards += stakeRewards;
+                    stakerLatestIndex++;
+                    stakerStorage.setLastRewardIndex(walletAddress, stakerLatestIndex);
+                    console.log(i, 'count', stakeRewards, totalStakeRewards);
+                    console.log('after', stakerStorage.getLastRewardIndex(walletAddress));
+                }
+            }
+            stakerStorage.setLastWithdrawalTime(walletAddress, block.timestamp);
+        }
+
+        return totalStakeRewards;
+    }
+
 }
