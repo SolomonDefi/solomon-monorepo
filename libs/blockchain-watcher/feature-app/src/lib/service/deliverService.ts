@@ -38,7 +38,7 @@ export class DeliverService {
       judgeContract: judge,
       token: token,
       discount: discount,
-      ethPaid: 0, // todo
+      ethPaid: '', // todo
     })
 
     await this.sendEventToDisputeApi(event)
@@ -59,7 +59,7 @@ export class DeliverService {
       judgeContract: judge,
       token: token,
       discount: discount,
-      ethPaid: 0, // todo
+      ethPaid: '', // todo
     })
 
     await this.sendEventToDisputeApi(event)
@@ -79,7 +79,7 @@ export class DeliverService {
       judgeContract: judge,
       token: token,
       discount: 0, // todo
-      ethPaid: 0, // todo
+      ethPaid: '', // todo
     })
 
     await this.sendEventToDisputeApi(event)
