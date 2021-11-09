@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.9;
 
-import './library/SlmShared.sol';
+import "./library/SlmShared.sol";
 
 /// @title Solomon Chargeback
 /// @author Solomon DeFi
@@ -46,7 +46,7 @@ contract SlmChargeback is SlmShared {
     /// Buyer initiated chargeback dispute
     /// @param _evidenceURL Link to real-world chargeback evidence
     function requestChargeback(string memory _evidenceURL) external {
-        require(msg.sender == buyer(), 'Only buyer can chargeback');
+        require(msg.sender == buyer(), "Only buyer can chargeback");
         super._initiateDispute();
         super._party1Evidence(_evidenceURL);
     }
@@ -59,16 +59,16 @@ contract SlmChargeback is SlmShared {
 
     /// Allow buyer to withdraw if eligible
     function buyerWithdraw() external {
-        require(msg.sender == buyer(), 'Only buyer can withdraw');
-        require(judge.getVoteResults(address(this)) == 2, 'Cannot withdraw');
+        require(msg.sender == buyer(), "Only buyer can withdraw");
+        require(judge.getVoteResults(address(this)) == 2, "Cannot withdraw");
         state = TransactionState.CompleteParty1;
         withdraw(buyer());
     }
 
     /// Allow merchant to withdraw if eligible
     function merchantWithdraw() external {
-        require(msg.sender == merchant(), 'Only merchant can withdraw');
-        require(judge.getVoteResults(address(this)) == 3, 'Cannot withdraw');
+        require(msg.sender == merchant(), "Only merchant can withdraw");
+        require(judge.getVoteResults(address(this)) == 3, "Cannot withdraw");
         state = TransactionState.CompleteParty2;
         withdraw(merchant());
     }

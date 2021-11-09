@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.9;
 
-import './Ownable.sol';
-import './IERC20.sol';
-import '../SlmStakerManager.sol';
+import "./Ownable.sol";
+import "./IERC20.sol";
+import "../SlmStakerManager.sol";
 
 /// @title Solomon Judgement
 /// @author Solomon DeFi
@@ -87,23 +87,23 @@ contract SlmJudgement is Ownable {
 
     function vote(address slmContract, uint8 _vote) external {
         require(slmContract != address(0), "Zero addr");
-        require(_vote == 1 || _vote == 2, 'Invalid vote');
-        require(disputes[slmContract].votes[msg.sender] == 1, 'Voter ineligible');
+        require(_vote == 1 || _vote == 2, "Invalid vote");
+        require(disputes[slmContract].votes[msg.sender] == 1, "Voter ineligible");
         disputes[slmContract].votes[msg.sender] = _vote;
-        if(_vote == 2) {
+        if (_vote == 2) {
             disputes[slmContract].merchantVoteCount += 1;
         } else {
             disputes[slmContract].buyerVoteCount += 1;
         }
     }
 
-    function setAdminRights(address walletAddress) external onlyOwner{
+    function setAdminRights(address walletAddress) external onlyOwner {
         require(walletAddress != address(0), "Zero addr");
 
         adminList[walletAddress] = true;
     }
 
-    function removeAdminRights(address walletAddress) external onlyOwner{
+    function removeAdminRights(address walletAddress) external onlyOwner {
         require(walletAddress != address(0), "Zero addr");
         require(this.adminList(walletAddress) == true, "Not an admin");
 
@@ -112,13 +112,13 @@ contract SlmJudgement is Ownable {
 
     function getAdminRights(address walletAddress) external view returns(bool) {
         require(walletAddress != address(0), "Zero addr");
-        if(this.adminList(walletAddress) == true) {
+        if (this.adminList(walletAddress) == true) {
             return true;
         }
         return false;
     }
 
-    function setTieBreakerDuration(uint256 newTieBreakerDuration) external onlyOwner{
+    function setTieBreakerDuration(uint256 newTieBreakerDuration) external onlyOwner {
         require(tieBreakerDuration > 0, "Invalid duration");
         tieBreakerDuration = newTieBreakerDuration;
     }
@@ -130,14 +130,14 @@ contract SlmJudgement is Ownable {
 
     function tieBreaker(address slmContract, bool buyerWins) external {
         require(slmContract != address(0), "Zero addr");
-        if(tieBreakerEndTimes[slmContract] < block.timestamp) {
+        if (tieBreakerEndTimes[slmContract] < block.timestamp) {
             voteResults[slmContract] = 2;
         } else {
             require(tieBreakerEndTimes[slmContract] > block.timestamp, "Tie breaker has ended");
             require(adminList[msg.sender] == true, "Not an admin");
             require(voteResults[slmContract] == 4, "Not a tie");
 
-            if(buyerWins) {
+            if (buyerWins) {
                 voteResults[slmContract] = 2;
             } else {
                 voteResults[slmContract] = 3;
@@ -153,21 +153,17 @@ contract SlmJudgement is Ownable {
         uint16 merchantVotes = dispute.merchantVoteCount;
         uint16 buyerVotes = dispute.buyerVoteCount;
         // No vote exists
-        if(dispute.quorum == 0) {
+        if (dispute.quorum == 0) {
             voteResults[slmContract] = 0;
-        }
         // Vote not complete
-        else if(merchantVotes + buyerVotes < dispute.quorum) {
+        } else if (merchantVotes + buyerVotes < dispute.quorum) {
             voteResults[slmContract] = 1;
-        }
-        else if(buyerVotes > merchantVotes) {
+        } else if (buyerVotes > merchantVotes) {
             voteResults[slmContract] = 2;
-        }
-        else if(merchantVotes > buyerVotes) {
+        } else if (merchantVotes > buyerVotes) {
             voteResults[slmContract] = 3;
-        }
         // Tie breaker
-        else {
+        } else {
             voteResults[slmContract] = 4;
             _startTieBreaker(slmContract);
         }
@@ -185,8 +181,7 @@ contract SlmJudgement is Ownable {
 
     function _setJurors(address slmContract) private {
         require(slmContract != address(0), "Zero addr");
-        uint256[] memory selectedJurors = _selectJurorList(slmContract);
-        jurorList[slmContract] = selectedJurors;
+        jurorList[slmContract] = _selectJurorList(slmContract);
     }
 
     function getJurors(address slmContract) external onlyOwnerOrManager view returns(uint256[] memory) {
@@ -202,7 +197,7 @@ contract SlmJudgement is Ownable {
         require(stakerCount >= minJurorCount, "Not enough stakers");
 
         uint32 selectedStartCount;
-        if(jurorSelectionIndex[slmContract] > 0) {
+        if (jurorSelectionIndex[slmContract] > 0) {
             selectedStartCount = jurorSelectionIndex[slmContract];
         } else {
             selectedStartCount = 0;
@@ -211,7 +206,7 @@ contract SlmJudgement is Ownable {
 
         uint32 i = 0;
 
-        while(i < minJurorCount) {
+        while (i < minJurorCount) {
             selectedJurors.push(stakerPool[selectedStartCount]);
 
             userAddress = stakerManager.getUserAddress(selectedJurors[i]);
@@ -220,7 +215,7 @@ contract SlmJudgement is Ownable {
             i += 1;
             selectedStartCount += 1;
 
-            if(selectedStartCount == stakerCount) {
+            if (selectedStartCount == stakerCount) {
                 selectedStartCount = 0;
             }
             
