@@ -8,3 +8,5 @@ node_modules
 cache
 logs
 log
+**/.venv
+**/.pytest_cache

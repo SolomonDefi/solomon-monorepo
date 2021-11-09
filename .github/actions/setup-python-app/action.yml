@@ -4,6 +4,9 @@ inputs:
   app-name:
     description: 'Python app project name'
     required: true
+  create-db:
+    description: 'Create database for testing'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -25,7 +28,8 @@ runs:
       run: echo "TEST_DB=${{ steps.random-generator.outputs.random-id }}" >> apps/${{ inputs.app-name }}/.env
       shell: bash
     - name: Create testing database
-      run: ./.github/actions/setup-python-app/create_db.sh ${{ steps.random-generator.outputs.random-id }}
+      run: |
+        ${{ inputs.create-db }} && ./.github/actions/setup-python-app/create_db.sh ${{ steps.random-generator.outputs.random-id }} || true
       shell: bash
       env:
         POSTGRES_USER: postgres

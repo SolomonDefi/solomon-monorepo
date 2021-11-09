@@ -99,7 +99,7 @@ event_data: list[tuple[dict, bool]] = [
             "judgeContract": valid_eth_address,
             "token": valid_eth_address,
             "discount": 40,
-            "ethPaid": "1000000"
+            "ethPaid": "1000000",
         },
         True,
     ),

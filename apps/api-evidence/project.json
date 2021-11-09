@@ -16,6 +16,9 @@
     },
     "lint": {
       "executor": "nx-python-fastapi:lint"
+    },
+    "format": {
+      "executor": "nx-python-fastapi:format"
     }
   },
   "tags": ["scope:api", "type:app"]

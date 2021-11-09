@@ -39,6 +39,7 @@ exclude = "migrations"
 [tool.black]
 include = '\.py$'
 skip-string-normalization = true
+exclude = "migrations"
 
 [build-system]
 requires = ["setuptools", "wheel"]
