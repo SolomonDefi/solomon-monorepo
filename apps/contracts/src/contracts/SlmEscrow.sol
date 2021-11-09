@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.9;
 
-import './library/SlmShared.sol';
+import "./library/SlmShared.sol";
 
 /// @title Solomon Escrow
 /// @author Solomon DeFi
@@ -42,7 +42,7 @@ contract SlmEscrow is SlmShared {
     /// Initiate escrow dispute dispute
     /// @param _evidenceURL Link to real-world dispute evidence
     function initiateDispute(string memory _evidenceURL) external {
-        require(msg.sender == _party1 || msg.sender == _party2, 'Only parties can dispute');
+        require(msg.sender == _party1 || msg.sender == _party2, "Only parties can dispute");
         super._initiateDispute();
         if(msg.sender == _party1) {
             super._party1Evidence(_evidenceURL);
@@ -65,13 +65,13 @@ contract SlmEscrow is SlmShared {
 
     /// Allow either party to withdraw if eligible
     function withdrawFunds() external {
-        require(msg.sender == _party1 || msg.sender == _party2, 'Only parties can withdraw');
-        require(judge.getVoteResults(address(this)) == 2 || judge.getVoteResults(address(this)) == 3, 'Cannot withdraw');
+        require(msg.sender == _party1 || msg.sender == _party2, "Only parties can withdraw");
+        require(judge.getVoteResults(address(this)) == 2 || judge.getVoteResults(address(this)) == 3, "Cannot withdraw");
         state = TransactionState.CompleteParty1;
         uint8 voteStatus = judge.getVoteResults(address(this));
-        if(voteStatus == 2) {
+        if (voteStatus == 2) {
             withdraw(_party1);
-        } else if(voteStatus == 3) {
+        } else if (voteStatus == 3) {
             withdraw(_party2);
         }
     }

@@ -52,14 +52,14 @@ contract SlmStakerManager is Ownable {
         address backer = msg.sender;
 
         uint256 unstakeCount = stakerStorage.getUnstakeCount(backer, beneficiary);
-        if(unstakeCount > 0) {
+        if (unstakeCount > 0) {
             uint256 unstakeTime = stakerStorage.getUnstakedTime(backer, beneficiary, unstakeCount-1);
             uint256 unstakePeriod = stakerStorage.unstakePeriod();
             require(block.timestamp > unstakeTime + unstakePeriod, "Unstake wait period has not ended");
         }
 
         uint256 userStake = stakerStorage.getStake(backer, beneficiary);
-        if(userStake == 0) {
+        if (userStake == 0) {
             stakerPool.push(beneficiary);
             stakerStorage.setUserId(backer, beneficiary);
             stakerStorage.updateStakerPool(stakerPool);
@@ -82,8 +82,8 @@ contract SlmStakerManager is Ownable {
         stakerStorage.pushUnstakedInfo(backer, beneficiary, userStake, block.timestamp);
         stakerStorage.sendFunds(backer, userStake);
 
-        for(uint256 i = 0; i < stakerPool.length; i += 1) {
-            if(stakerPool[i] == beneficiary) {
+        for (uint256 i = 0; i < stakerPool.length; i += 1) {
+            if (stakerPool[i] == beneficiary) {
                 delete stakerPool[i];
             }
         }
@@ -101,10 +101,10 @@ contract SlmStakerManager is Ownable {
 
         stakerStorage.setVoteEndTime(disputeAddress, endTime);
 
-        for(uint256 i = 0; i < jurorList.length; i++) {
+        for (uint256 i = 0; i < jurorList.length; i++) {
             uint256 currentJuror = jurorList[i];
             uint256 disputeVoteCount = stakerStorage.getDisputeVoteCount(disputeAddress, currentJuror);
-            if(disputeVoteCount == 0) {
+            if (disputeVoteCount == 0) {
                 stakerStorage.increaseOutstandingVotes(1, disputeAddress, currentJuror);
                 stakerStorage.increaseDisputeVoteCount(1, disputeAddress, currentJuror);
             } else {
@@ -145,23 +145,17 @@ contract SlmStakerManager is Ownable {
         uint256 currentRewardIndex = stakerStorage.getRewardPercentHistoryLength() - 1;
         uint256 totalStakeRewards = 0;
 
-        if(stakerLatestIndex <= currentRewardIndex) {
+        if (stakerLatestIndex <= currentRewardIndex) {
             uint diff = currentRewardIndex - stakerLatestIndex;
-            console.log(stakerLatestIndex, diff, currentRewardIndex);
-            for(uint i = 0; i <= diff; i++) {
+            for (uint i = 0; i <= diff; i++) {
                 uint256 lastWithdrawal = stakerStorage.getLastWithdrawalTime(walletAddress);
-                if(block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime()) {
-                    console.log('before', stakerStorage.getLastRewardIndex(walletAddress), stakerLatestIndex);
-                    uint256 rewardPercent = stakerStorage.getRewardPercentHistory(stakerLatestIndex);
-                    console.log('reward percent', rewardPercent, userStake);
+                if (block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime()) {
                     stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
 
                     uint256 stakeRewards = (userStake * stakerStorage.getRewardAmountHistory(stakerLatestIndex)) / (stakerStorage.totalStaked());
                     totalStakeRewards += stakeRewards;
                     stakerLatestIndex++;
                     stakerStorage.setLastRewardIndex(walletAddress, stakerLatestIndex);
-                    console.log(i, 'count', stakeRewards, totalStakeRewards);
-                    console.log('after', stakerStorage.getLastRewardIndex(walletAddress));
                 }
             }
             stakerStorage.setLastWithdrawalTime(walletAddress, block.timestamp);
