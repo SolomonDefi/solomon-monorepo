@@ -3,18 +3,22 @@ import chai from 'chai'
 import { shouldRevert } from './testing'
 
 describe('SLM Jurors', function () {
-  let jurors, token, storage, manager
+  let jurors, token, storage, manager, chargeback, escrow
+  let ChargebackFactory, EscrowFactory
   let disputeAddress
-  let owner, account1, account2, account3, account4
+  let owner, account1, account2, account3, account4, account5, account6
   let userId1, userId2, userId3
 
   before(async () => {
-    ;[owner, account1, account2, account3, account4] = await ethers.getSigners()
+    ;[owner, account1, account2, account3, account4, account5, account6] =
+      await ethers.getSigners()
 
     const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
     const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
     const TokenFactory = await ethers.getContractFactory('SlmToken')
     const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
+    ChargebackFactory = await ethers.getContractFactory('SlmChargeback')
+    EscrowFactory = await ethers.getContractFactory('SlmEscrow')
 
     const initialSupply = ethers.utils.parseEther('100000000')
     token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
@@ -42,8 +46,30 @@ describe('SLM Jurors', function () {
     )
     await manager.setJudgementContract(jurors.address)
 
+    const discount = 0
+    chargeback = await ChargebackFactory.deploy()
+    await chargeback.initializeChargeback(
+      jurors.address,
+      token.address,
+      account6.address,
+      account5.address,
+      discount,
+    )
+
+    await token.mint(chargeback.address, defaultAmount)
+
+    escrow = await EscrowFactory.deploy()
+    await escrow.initializeEscrow(
+      jurors.address,
+      token.address,
+      account5.address,
+      account6.address,
+    )
+
+    await token.mint(escrow.address, defaultAmount)
+
     const stakeAmount = 100
-    disputeAddress = token.address
+    disputeAddress = escrow.address
 
     await token.connect(account2).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account2.address)).to.equal(defaultAmount)
@@ -89,10 +115,14 @@ describe('SLM Jurors', function () {
     const voteResult = await jurors.getVoteResults(disputeAddress)
 
     chai.expect(voteResult).to.equal(2)
+
+    await escrow.connect(account5).withdrawFunds()
+
+    chai.expect(await token.balanceOf(account5.address)).to.equal(100)
   })
 
   it('Checks tie breaker timeout default behavior', async function () {
-    disputeAddress = jurors.address
+    disputeAddress = chargeback.address
 
     const endTime = Math.round(new Date().getTime() / 100)
     await jurors.initializeDispute(disputeAddress, 1, endTime)
@@ -116,10 +146,24 @@ describe('SLM Jurors', function () {
     voteResult = await jurors.getVoteResults(disputeAddress)
 
     chai.expect(voteResult).to.equal(2)
+
+    await chargeback.connect(account5).buyerWithdraw()
+
+    chai.expect(await token.balanceOf(account5.address)).to.equal(200)
   })
 
   it('Checks normal tiebreaker situations', async function () {
-    disputeAddress = storage.address
+    const chargeback2 = await ChargebackFactory.deploy()
+    await chargeback2.initializeChargeback(
+      jurors.address,
+      token.address,
+      account6.address,
+      account5.address,
+      0,
+    )
+    disputeAddress = chargeback2.address
+
+    await token.mint(chargeback2.address, 100)
 
     await jurors.setTieBreakerDuration(10)
 
@@ -145,5 +189,9 @@ describe('SLM Jurors', function () {
     voteResult = await jurors.getVoteResults(disputeAddress)
 
     chai.expect(voteResult).to.equal(3)
+
+    await chargeback2.connect(account6).merchantWithdraw()
+
+    chai.expect(await token.balanceOf(account6.address)).to.equal(100)
   })
 })

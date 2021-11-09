@@ -66,7 +66,7 @@ contract SlmEscrow is SlmShared {
     /// Allow either party to withdraw if eligible
     function withdrawFunds() external {
         require(msg.sender == _party1 || msg.sender == _party2, 'Only parties can withdraw');
-        require(judge.getVoteResults(address(this)) == 3, 'Cannot withdraw');
+        require(judge.getVoteResults(address(this)) == 2 || judge.getVoteResults(address(this)) == 3, 'Cannot withdraw');
         state = TransactionState.CompleteParty1;
         uint8 voteStatus = judge.getVoteResults(address(this));
         if(voteStatus == 2) {
