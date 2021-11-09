@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 import "./library/Ownable.sol";
 import "./library/IERC20.sol";
 import "./SlmStakerManager.sol";
+import "hardhat/console.sol";
 
 // TODO: Add back interest/reward sections
 // TODO: Update references to SLM Token
@@ -17,6 +18,16 @@ contract SlmStakerStorage is Ownable {
     uint256 minStake;
 
     uint256 public unstakePeriod;
+
+    uint256 public totalStaked;
+
+    uint256 public minWithdrawalWaitTime;
+
+    /// Mapping of wallet address to datestamp of last withdrawal
+    mapping(address => uint256) public stakerLastWithdrawalTime;
+
+    /// Mapping of wallet address to latest reward index withdrawn
+    mapping(address => uint256) public stakerLastRewardIndex;
 
     /// Mapping of StakerManager address to staker pool
     mapping(address => uint256[]) public stakerPool;
@@ -44,6 +55,12 @@ contract SlmStakerStorage is Ownable {
 
     /// Timestamp in seconds for voting end times for all disputes
     mapping(address => uint256) public voteEndTimes;
+
+    /// History of reward percentages
+    uint256[] public rewardPercentHistory;
+
+    /// History of reward Amounts
+    uint256[] public rewardAmountHistory;
 
     struct unstakedInfo {
         uint256 amount;
@@ -82,6 +99,11 @@ contract SlmStakerStorage is Ownable {
     function setUnstakePeriod(uint256 periodDays) external onlyOwnerOrManager {
         require(periodDays > 0, "Invalid days");
         unstakePeriod = periodDays;
+    }
+
+    function setMinWithdrawalWaitTime(uint256 newWaitTime) external onlyOwner {
+        require(newWaitTime >= 0, "Invalid wait time");
+        minWithdrawalWaitTime = newWaitTime;
     }
 
     function setUserId(address walletAddress, uint256 userId) external onlyOwnerOrManager {
@@ -123,6 +145,7 @@ contract SlmStakerStorage is Ownable {
         require(beneficiary > 0, "Invalid account");
         require(amount > 0, "Invalid amount");
         stakes[user][beneficiary] += amount;
+        totalStaked += amount;
     }
 
     function decreaseStakeAmount(address user, uint256 beneficiary, uint256 amount) external onlyOwnerOrManager {
@@ -130,6 +153,7 @@ contract SlmStakerStorage is Ownable {
         require(beneficiary > 0, "Invalid account");
         require(amount > 0, "Invalid amount");
         stakes[user][beneficiary] -= amount;
+        totalStaked -= amount;
     }
 
     function increaseOutstandingVotes(uint256 amount, address user, uint256 beneficiary) external onlyOwnerOrManager {
@@ -251,10 +275,53 @@ contract SlmStakerStorage is Ownable {
         return voteEndTimes[dispute];
     }
 
-    function sendFunds(address user, uint256 amount) external onlyOwnerOrManager {
-        require(user != address(0), "Zero addr");
+    function sendFunds(address walletAddress, uint256 amount) external {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        token.transfer(user, amount);
+        token.transfer(walletAddress, amount);
+    }
+
+    function announceReward(uint32 rewardPercent, uint256 rewardAmount) external onlyOwnerOrManager {
+        require(rewardPercent > 0, "Invalid percent");
+        require(rewardAmount > 0, "Invalid amount");
+        rewardPercentHistory.push(rewardPercent);
+        rewardAmountHistory.push(rewardAmount);
+    }
+
+    function getLastRewardIndex(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerLastRewardIndex[walletAddress];
+    }
+
+    function setLastRewardIndex(address walletAddress, uint256 index) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
+        stakerLastRewardIndex[walletAddress] = index;
+    }
+
+    function getLastWithdrawalTime(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerLastWithdrawalTime[walletAddress];
+    }
+
+    function setLastWithdrawalTime(address walletAddress, uint256 timestamp) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
+        stakerLastWithdrawalTime[walletAddress] = timestamp;
+    }
+
+    function getRewardPercentHistory(uint256 index) external view returns(uint256) {
+        return rewardPercentHistory[index];
+    }
+
+    function getRewardPercentHistoryLength() external view returns(uint256) {
+        return rewardPercentHistory.length;
+    }
+
+    function getRewardAmountHistory(uint256 index) external view returns(uint256) {
+        return rewardAmountHistory[index];
+    }
+
+    function getRewardAmountHistoryLength() external view returns(uint256) {
+        return rewardPercentHistory.length;
     }
 
 }
