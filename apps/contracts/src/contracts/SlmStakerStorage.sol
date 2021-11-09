@@ -4,18 +4,17 @@ pragma solidity 0.8.9;
 import "./library/Ownable.sol";
 import "./library/IERC20.sol";
 import "./SlmStakerManager.sol";
-import "hardhat/console.sol";
 
 // TODO: Add back interest/reward sections
 // TODO: Update references to SLM Token
 
 /// @title SlmStakerStorage stores information related to the Stakers
 contract SlmStakerStorage is Ownable {
-    address stakerManager;
+    address public stakerManager;
 
     IERC20 public token;
 
-    uint256 minStake;
+    uint256 public minStake;
 
     uint256 public unstakePeriod;
 
@@ -128,7 +127,7 @@ contract SlmStakerStorage is Ownable {
     }
 
     function getStakerPool(address managerAddress) external view returns(uint256[] memory) {
-        if(managerAddress == address(0)) {
+        if (managerAddress == address(0)) {
             return stakerPool[stakerManager];
         }
         return stakerPool[managerAddress];
@@ -258,7 +257,7 @@ contract SlmStakerStorage is Ownable {
         require(user != address(0), "Zero addr");
         require(beneficiary > 0, "Invalid account");
         uint256 currentUnstakedSLM = 0;
-        for(uint256 i = 0; i < unstakedSLM[user][beneficiary].length; i += 1) {
+        for (uint256 i = 0; i < unstakedSLM[user][beneficiary].length; i += 1) {
             currentUnstakedSLM += unstakedSLM[user][beneficiary][i].amount;
         }
         return currentUnstakedSLM;
