@@ -151,6 +151,8 @@ jobs:
         run: pnpx nx build plugin
       - name: Compile contract and generate type
         run: pnpm run contract:compile
+      - name: Generate event interface
+        run: pnpm run watcher:generate-event-interface
       - name: Build apps
         run: pnpx nx affected:build --base=origin/main --parallel
 
