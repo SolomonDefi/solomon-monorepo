@@ -11,8 +11,9 @@ import {
   validateSync,
 } from 'class-validator'
 import { IsEthAddress } from '../util/IsEthAddress'
+import {PaymentCreatedEvent as IPaymentCreatedEvent} from '@solomon/shared/util-event'
 
-export class PaymentCreatedEvent {
+export class PaymentCreatedEvent implements IPaymentCreatedEvent {
   @IsUUID()
   @IsString()
   id: string = v4()
@@ -47,8 +48,8 @@ export class PaymentCreatedEvent {
   discount: number = 0
 
   @Min(0)
-  @IsNumber()
-  ethPaid: number = 0
+  @IsString()
+  ethPaid: string = ''
 
   isValid() {
     let errArr = validateSync(this)
