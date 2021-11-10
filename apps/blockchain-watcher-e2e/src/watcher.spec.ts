@@ -1,19 +1,21 @@
 import {
-  dbService,
+  appService,
+  dbService, deliverService,
   ethService,
-  mailService,
-} from '@solomon/blockchain-watcher/feature-app'
+  mailService, webhookService
+} from "@solomon/blockchain-watcher/feature-app";
 
-describe('mailService', () => {
-  it('can start', async () => {
-    const start = async () => {
-      await dbService.init()
-      await mailService.init()
-      await ethService.init()
-    }
+describe('watcher', () => {
+  const start = async () => {
+    await dbService.init()
+    await ethService.init()
+    await mailService.init()
+    await deliverService.init()
+    await webhookService.init()
+    await appService.init()
+  }
 
-    expect(() => {
-      start()
-    }).not.toThrow()
+  it('start without eth environment', async () => {
+    await expect(start()).resolves.not.toThrow()
   })
 })

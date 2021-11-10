@@ -67,6 +67,7 @@
     "eslint-plugin-vue": "^7.16.0",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.1",
+    "ganache-cli": "^6.11.1-alpha.2",
     "hardhat": "^2.6.6",
     "hardhat-contract-sizer": "^2.1.1",
     "hardhat-deploy": "^0.9.4",
