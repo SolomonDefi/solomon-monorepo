@@ -1,17 +1,23 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { shouldRevert } from './testing'
+import { shouldRevert, increaseTime } from './testing'
 
 describe('SLM Jurors', function () {
   let jurors, token, storage, manager, chargeback, escrow
   let ChargebackFactory, EscrowFactory
   let disputeAddress
-  let owner, account1, account2, account3, account4, account5, account6
-  let userId1, userId2, userId3
+  let owner, account1, account2, account3, account4, account5, account6, account7
+  let userId1, userId2, userId3, userId4, userId5, userId6, userId7
+
+  let latestBlock
+  let currentTime
 
   before(async () => {
-    ;[owner, account1, account2, account3, account4, account5, account6] =
+    ;[owner, account1, account2, account3, account4, account5, account6, account7] =
       await ethers.getSigners()
+
+    latestBlock = await ethers.provider.getBlock('latest')
+    currentTime = latestBlock.timestamp
 
     const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
     const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
@@ -29,6 +35,10 @@ describe('SLM Jurors', function () {
     await token.mint(account1.address, defaultAmount)
     await token.mint(account2.address, defaultAmount)
     await token.mint(account3.address, defaultAmount)
+    await token.mint(account4.address, defaultAmount)
+    await token.mint(account5.address, defaultAmount)
+    await token.mint(account6.address, defaultAmount)
+    await token.mint(account7.address, defaultAmount)
 
     const unstakePeriod = 1
     const minimumStake = 1
@@ -89,6 +99,30 @@ describe('SLM Jurors', function () {
     await manager.connect(account3).stake(userId3, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(0)
 
+    await token.connect(account4).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account4.address)).to.equal(defaultAmount)
+    userId4 = 4
+    await manager.connect(account4).stake(userId4, 100)
+    chai.expect(await token.balanceOf(account4.address)).to.equal(0)
+
+    await token.connect(account5).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account5.address)).to.equal(defaultAmount)
+    userId5 = 5
+    await manager.connect(account5).stake(userId5, 100)
+    chai.expect(await token.balanceOf(account5.address)).to.equal(0)
+
+    await token.connect(account6).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account6.address)).to.equal(defaultAmount)
+    userId6 = 6
+    await manager.connect(account6).stake(userId6, 100)
+    chai.expect(await token.balanceOf(account6.address)).to.equal(0)
+
+    await token.connect(account7).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account7.address)).to.equal(defaultAmount)
+    userId7 = 7
+    await manager.connect(account7).stake(userId7, 100)
+    chai.expect(await token.balanceOf(account7.address)).to.equal(0)
+
     await shouldRevert(
       jurors.setMinJurorCount(2),
       'Minimum juror count must be greater than 3',
@@ -100,15 +134,33 @@ describe('SLM Jurors', function () {
   })
 
   it('Checks voting', async function () {
-    const endTime = Math.round(new Date().getTime() / 100)
+    const endTime = Math.round(new Date().getTime() / 1000) + 259200
+    await jurors.setMinJurorCount(7)
     await jurors.initializeDispute(disputeAddress, 1, endTime)
     const jurorList = await jurors.getJurors(disputeAddress)
 
     chai.expect(await jurorList[0]).to.equal(userId2)
     chai.expect(await jurorList[1]).to.equal(userId1)
     chai.expect(await jurorList[2]).to.equal(userId3)
+    chai.expect(await jurorList[3]).to.equal(userId4)
+    chai.expect(await jurorList[4]).to.equal(userId5)
+    chai.expect(await jurorList[5]).to.equal(userId6)
+    chai.expect(await jurorList[6]).to.equal(userId7)
 
     await jurors.connect(account1).vote(disputeAddress, 1)
+    await jurors.connect(account7).vote(disputeAddress, 1)
+
+    currentTime = await increaseTime(2, currentTime)
+
+    await jurors.connect(account2).vote(disputeAddress, 2)
+
+    currentTime = await increaseTime(1, currentTime)
+
+    await shouldRevert(
+      jurors.connect(account3).vote(disputeAddress, 2),
+      'Voting time has passed',
+      'Voting cannot occur after voting period',
+    )
 
     await jurors.voteStatus(disputeAddress)
 
@@ -124,7 +176,8 @@ describe('SLM Jurors', function () {
   it('Checks tie breaker timeout default behavior', async function () {
     disputeAddress = chargeback.address
 
-    const endTime = Math.round(new Date().getTime() / 100)
+    const endTime = currentTime + 259200
+    await jurors.setMinJurorCount(3)
     await jurors.initializeDispute(disputeAddress, 1, endTime)
     const jurorList = await jurors.getJurors(disputeAddress)
 
@@ -167,7 +220,7 @@ describe('SLM Jurors', function () {
 
     await jurors.setTieBreakerDuration(10)
 
-    const endTime = Math.round(new Date().getTime() / 100)
+    const endTime = currentTime + 259200
     await jurors.initializeDispute(disputeAddress, 1, endTime)
     const jurorList = await jurors.getJurors(disputeAddress)
 
