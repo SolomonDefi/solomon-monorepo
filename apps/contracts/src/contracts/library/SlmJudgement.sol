@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 import "./Ownable.sol";
 import "./IERC20.sol";
 import "../SlmStakerManager.sol";
+import "hardhat/console.sol";
 
 /// @title Solomon Judgement
 /// @author Solomon DeFi
@@ -42,6 +43,8 @@ contract SlmJudgement is Ownable {
         uint16 buyerVoteCount;
         // Required votes for decision
         uint16 quorum;
+        // Voting end time
+        uint256 voteEndTime;
     }
 
     /// Record of SLM contracts to chargeback/escrow votes
@@ -82,11 +85,13 @@ contract SlmJudgement is Ownable {
         // TODO -- Access control
         _setJurors(slmContract);
         disputes[slmContract].quorum = quorum;
+        disputes[slmContract].voteEndTime = endTime;
         stakerManager.setVoteDetails(slmContract, endTime);
     }
 
     function vote(address slmContract, uint8 _vote) external {
         require(slmContract != address(0), "Zero addr");
+        require(disputes[slmContract].voteEndTime > block.timestamp, "Voting time has passed");
         require(_vote == 1 || _vote == 2, "Invalid vote");
         require(disputes[slmContract].votes[msg.sender] == 1, "Voter ineligible");
         disputes[slmContract].votes[msg.sender] = _vote;
