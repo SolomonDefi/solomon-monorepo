@@ -58,17 +58,17 @@ contract SlmChargeback is SlmShared {
     }
 
     /// Allow buyer to withdraw if eligible
-    function buyerWithdraw() external {
+    function buyerWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == buyer(), "Only buyer can withdraw");
-        require(judge.getVoteResults(address(this)) == 2, "Cannot withdraw");
+        require(judge.getVoteResults(address(this), encryptionKey) == 2, "Cannot withdraw");
         state = TransactionState.CompleteParty1;
         withdraw(buyer());
     }
 
     /// Allow merchant to withdraw if eligible
-    function merchantWithdraw() external {
+    function merchantWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == merchant(), "Only merchant can withdraw");
-        require(judge.getVoteResults(address(this)) == 3, "Cannot withdraw");
+        require(judge.getVoteResults(address(this), encryptionKey) == 3, "Cannot withdraw");
         state = TransactionState.CompleteParty2;
         withdraw(merchant());
     }
