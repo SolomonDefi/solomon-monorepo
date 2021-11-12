@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, Wallet } from "ethers";
 import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
 import {
@@ -8,11 +8,12 @@ import {
   SlmFactory__factory,
   SlmPreorder__factory,
 } from '@solomon/shared/util-contract'
-import { Provider } from '@ethersproject/providers'
+import { JsonRpcProvider, Provider } from "@ethersproject/providers";
 import { deliverService } from './deliverService'
 
 export class EthService {
-  provider: Provider | null = null
+  provider: JsonRpcProvider | null = null
+  wallet: Wallet | null = null
   contract: SlmFactory | null = null
 
   async onChargebackCreated(chargebackAddress: string) {
@@ -90,19 +91,28 @@ export class EthService {
     return events
   }
 
-  async init() {
-    let provider = new ethers.providers.JsonRpcProvider(
-      envStore.ethChainUrl,
-    ) as unknown as Provider
-    let contract = SlmFactory__factory.connect(envStore.contractAddress, provider)
-
-    this.provider = provider
-    this.contract = contract
-
-    this.contract.connect(this.provider)
+  async start() {
     this.contract.on('ChargebackCreated', this.onChargebackCreated)
     this.contract.on('PreorderCreated', this.onPreorderCreated)
     this.contract.on('EscrowCreated', this.onEscrowCreated)
+  }
+
+  async stop() {
+    this.contract.off('ChargebackCreated', this.onChargebackCreated)
+    this.contract.off('PreorderCreated', this.onPreorderCreated)
+    this.contract.off('EscrowCreated', this.onEscrowCreated)
+  }
+
+  async init() {
+    let provider = new ethers.providers.JsonRpcProvider(envStore.ethNetworkUrl)
+    let wallet = new ethers.Wallet(envStore.walletPrivateKey, provider)
+    let contract = SlmFactory__factory.connect(envStore.contractAddress, wallet)
+
+    this.provider = provider
+    this.wallet = wallet
+    this.contract = contract
+
+    this.contract.connect(this.provider)
   }
 }
 
