@@ -1,3 +1,5 @@
+import { stringHelper } from "../helper/stringHelper";
+
 class EnvStore {
   get isTest(): boolean {
     return process.env.NODE_ENV === 'test'
@@ -44,20 +46,32 @@ class EnvStore {
   }
 
   get contractAddress(): string {
+    if(this.isTest) {
+      return stringHelper.generateRandomEthAddr()
+    }
+
     return process.env['CONTRACT_ADDRESS'] || ''
   }
 
   get walletPrivateKey(): string {
+    if(this.isTest) {
+      return stringHelper.generateRandomEthPrivateKey()
+    }
+
     return process.env['WALLET_PRIVATE_KEY'] || ''
   }
 
   get mailgunApiKey(): string {
-    return process.env['MAILGUN_API'] || ''
+    if(this.isTest) {
+      return 'foo'
+    }
+
+    return process.env['MAILGUN_API']
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
   get mailgunDomain(): string {
-    return process.env['MAILGUN_DOMAIN'] || ''
+    return process.env['MAILGUN_DOMAIN']
   }
 
   get disputeApiUrl(): string {

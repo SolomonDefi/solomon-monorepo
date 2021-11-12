@@ -17,6 +17,18 @@ export class StringHelper {
     return res
   }
 
+  generateRandomEthPrivateKey(): string {
+    const chs = '0123456789abcdef'
+    let res = ''
+
+    for (let i = 1; i <= 64; i++) {
+      const ri = Math.floor(Math.random() * 16)
+      res += chs[ri]
+    }
+
+    return res
+  }
+
   isEthAddress(str: string): boolean {
     return /^0x[a-fA-F0-9]{40}$/.test(str)
   }
