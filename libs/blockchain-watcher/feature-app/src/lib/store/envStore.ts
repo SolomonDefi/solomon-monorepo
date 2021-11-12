@@ -20,44 +20,52 @@ class EnvStore {
   }
 
   get infuraId(): string {
-    return ''
+    return process.env['INFURA_ID'] || ''
   }
 
-  get ethChainUrl(): string {
+  get ethNetworkUrl(): string {
+    if (this.isTest) {
+      return process.env['ETH_NETWORK_URL_TEST'] || 'http://localhost:8545'
+    }
+
     if (this.isDev) {
-      return 'http://localhost:8545'
+      return process.env['ETH_NETWORK_URL_DEV'] || 'http://localhost:8545'
     }
 
     if (this.isStage) {
-      return `https://ropsten.infura.io/v3/${this.infuraId}`
+      return process.env['ETH_NETWORK_URL_STAGE'] || `https://ropsten.infura.io/v3/${this.infuraId}`
     }
 
     if (this.isProd) {
-      return `https://infura.io/v3/${this.infuraId}`
+      return process.env['ETH_NETWORK_URL_PROD'] || `https://infura.io/v3/${this.infuraId}`
     }
 
     return ''
   }
 
   get contractAddress(): string {
-    return process.env.FACTORY_ADDRESS || ''
+    return process.env['CONTRACT_ADDRESS'] || ''
+  }
+
+  get walletPrivateKey(): string {
+    return process.env['WALLET_PRIVATE_KEY'] || ''
   }
 
   get mailgunApiKey(): string {
-    return 'foo'
+    return process.env['MAILGUN_API'] || ''
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
   get mailgunDomain(): string {
-    return 'foo.bar'
+    return process.env['MAILGUN_DOMAIN'] || ''
   }
 
   get disputeApiUrl(): string {
-    return 'http://localhost:7777'
+    return process.env['DISPUTE_API_URL'] || ''
   }
 
   get disputeApiSecretKey(): string {
-    return ''
+    return process.env['DISPUTE_API_SECRET_KEY'] || ''
   }
 }
 
