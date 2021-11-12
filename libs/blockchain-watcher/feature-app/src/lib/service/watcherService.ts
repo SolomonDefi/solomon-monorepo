@@ -4,8 +4,8 @@ import {
   deliverService,
   ethService,
   mailService,
-  webhookService
-} from "@solomon/blockchain-watcher/feature-app";
+  webhookService,
+} from '@solomon/blockchain-watcher/feature-app'
 
 export class WatcherService {
   isWatching: boolean = false

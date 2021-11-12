@@ -1,4 +1,4 @@
-import { ethers, Wallet } from "ethers";
+import { ethers, Wallet } from 'ethers'
 import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
 import {
@@ -8,9 +8,9 @@ import {
   SlmFactory__factory,
   SlmPreorder__factory,
 } from '@solomon/shared/util-contract'
-import { JsonRpcProvider, Provider } from "@ethersproject/providers";
+import { JsonRpcProvider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
-import { dbService } from "./dbService";
+import { dbService } from './dbService'
 
 export class EthService {
   provider: JsonRpcProvider | null = null
@@ -93,12 +93,20 @@ export class EthService {
   }
 
   async start() {
+    if (!this.contract) {
+      throw 'Contract is not defined.'
+    }
+
     this.contract.on('ChargebackCreated', this.onChargebackCreated)
     this.contract.on('PreorderCreated', this.onPreorderCreated)
     this.contract.on('EscrowCreated', this.onEscrowCreated)
   }
 
   async stop() {
+    if (!this.contract) {
+      throw 'Contract is not defined.'
+    }
+
     this.contract.off('ChargebackCreated', this.onChargebackCreated)
     this.contract.off('PreorderCreated', this.onPreorderCreated)
     this.contract.off('EscrowCreated', this.onEscrowCreated)

@@ -1,4 +1,4 @@
-import { stringHelper } from "../helper/stringHelper";
+import { stringHelper } from '../helper/stringHelper'
 
 class EnvStore {
   get isTest(): boolean {
@@ -35,18 +35,23 @@ class EnvStore {
     }
 
     if (this.isStage) {
-      return process.env['ETH_NETWORK_URL_STAGE'] || `https://ropsten.infura.io/v3/${this.infuraId}`
+      return (
+        process.env['ETH_NETWORK_URL_STAGE'] ||
+        `https://ropsten.infura.io/v3/${this.infuraId}`
+      )
     }
 
     if (this.isProd) {
-      return process.env['ETH_NETWORK_URL_PROD'] || `https://infura.io/v3/${this.infuraId}`
+      return (
+        process.env['ETH_NETWORK_URL_PROD'] || `https://infura.io/v3/${this.infuraId}`
+      )
     }
 
     return ''
   }
 
   get contractAddress(): string {
-    if(this.isTest) {
+    if (this.isTest) {
       return stringHelper.generateRandomEthAddr()
     }
 
@@ -54,7 +59,7 @@ class EnvStore {
   }
 
   get walletPrivateKey(): string {
-    if(this.isTest) {
+    if (this.isTest) {
       return stringHelper.generateRandomEthPrivateKey()
     }
 
@@ -62,16 +67,16 @@ class EnvStore {
   }
 
   get mailgunApiKey(): string {
-    if(this.isTest) {
+    if (this.isTest) {
       return 'foo'
     }
 
-    return process.env['MAILGUN_API']
+    return process.env['MAILGUN_API'] || ''
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
   get mailgunDomain(): string {
-    return process.env['MAILGUN_DOMAIN']
+    return process.env['MAILGUN_DOMAIN'] || ''
   }
 
   get disputeApiUrl(): string {
