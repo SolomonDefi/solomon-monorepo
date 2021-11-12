@@ -4,7 +4,6 @@ pragma solidity 0.8.9;
 import "./Ownable.sol";
 import "./IERC20.sol";
 import "../SlmStakerManager.sol";
-import "hardhat/console.sol";
 
 /// @title Solomon Judgement
 /// @author Solomon DeFi
@@ -18,37 +17,10 @@ contract SlmJudgement is Ownable {
 
     mapping(address => uint8) public voteResults;
 
-    SlmStakerManager public stakerManager;
-
-    uint256[] public stakerPool;
-
-    uint256 public tieBreakerDuration;
-
-    mapping(address => uint256) public tieBreakerEndTimes;
-
-    modifier onlyOwnerOrManager() {
-        require(msg.sender == owner || msg.sender == address(stakerManager), "Unauthorized access");
-        _;
-    }
-
-    struct Dispute {
-        // Chargeback/escrow votes
-        //  1 == Valid voter
-        //  2 == Vote in favor of merchant
-        //  3 == Vote in favor of buyer
-        mapping(address => uint8) votes;
-        // Number of votes in favor of merchant
-        uint16 merchantVoteCount;
-        // Number of votes in favor of buyer
-        uint16 buyerVoteCount;
-        // Required votes for decision
-        uint16 quorum;
-        // Voting end time
-        uint256 voteEndTime;
-    }
-
     /// Record of SLM contracts to chargeback/escrow votes
     mapping(address => Dispute) public disputes;
+
+    mapping(address => Role) private disputeRoles;
 
     /// Map of available voters
     mapping(address => bool) public voters;
@@ -58,6 +30,50 @@ contract SlmJudgement is Ownable {
 
     /// @dev Mapping of dispute address to latest index for Round Robin Mapping
     mapping(address => uint32) public jurorSelectionIndex;
+
+    mapping(address => uint256) public tieBreakerEndTimes;
+
+    // mapping(address => bytes32) public encryptedKeyList;
+
+    SlmStakerManager public stakerManager;
+
+    uint256[] public stakerPool;
+
+    uint256 public tieBreakerDuration;
+
+    modifier onlyOwnerOrManager() {
+        require(msg.sender == owner || msg.sender == address(stakerManager), "Unauthorized access");
+        _;
+    }
+
+    struct Dispute {
+        // Chargeback/escrow votes
+        //  0 == No vote
+        //  1 == Vote in favor of buyer
+        //  2 == Vote in favor of merchant
+        mapping(address => uint8) votes;
+        // How many times a certain user voted
+        mapping(address => uint16) voteCount;
+        // Number of votes in favor of merchant
+        uint16 merchantVoteCount;
+        // Number of votes in favor of buyer
+        uint16 buyerVoteCount;
+        // Required votes for decision
+        uint16 quorum;
+        // Voting end time
+        uint256 voteEndTime;
+
+        bool tieBreakComplete;
+    }
+
+    struct Role {
+        // Member role
+        //  1 == Merchant
+        //  2 == Buyer
+        //  3 == Juror
+        mapping(address => uint8) memberRoles;
+        mapping(address => bytes32) encryptedKeyList;
+    }
 
     constructor(address newStakerManager, uint16 newMinJurorCount, uint256 newTieBreakerDuration) {
         require(newStakerManager != address(0), "Zero addr");
@@ -82,24 +98,50 @@ contract SlmJudgement is Ownable {
         require(slmContract != address(0), "Zero addr");
         require(quorum > 0, "Invalid number");
         require(endTime > 0, "Invalid number");
-        // TODO -- Access control
+        
         _setJurors(slmContract);
         disputes[slmContract].quorum = quorum;
         disputes[slmContract].voteEndTime = endTime;
         stakerManager.setVoteDetails(slmContract, endTime);
     }
 
-    function vote(address slmContract, uint8 _vote) external {
+    function setDisputeAccess(address slmContract, uint8[] memory roles, address[] memory addressList, bytes32[] memory keyList) external onlyOwner {
         require(slmContract != address(0), "Zero addr");
-        require(disputes[slmContract].voteEndTime > block.timestamp, "Voting time has passed");
-        require(_vote == 1 || _vote == 2, "Invalid vote");
-        require(disputes[slmContract].votes[msg.sender] == 1, "Voter ineligible");
-        disputes[slmContract].votes[msg.sender] = _vote;
-        if (_vote == 2) {
-            disputes[slmContract].merchantVoteCount += 1;
-        } else {
-            disputes[slmContract].buyerVoteCount += 1;
+        require(addressList.length == keyList.length && keyList.length == roles.length, "Invalid array length");
+        require(roles.length > 0, "Empty array");
+        Role storage disputeRole = disputeRoles[slmContract];
+        for (uint32 i = 0; i < roles.length; i++) {
+            disputeRole.memberRoles[addressList[i]] = roles[i];
+            disputeRole.encryptedKeyList[addressList[i]] = keyList[i];
         }
+    }
+
+    function vote(address slmContract, bytes32 encryptionKey, uint8 _voteForBuyer) external {
+        require(slmContract != address(0), "Zero addr");
+        require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
+        Role storage roles = disputeRoles[slmContract];
+        require(roles.memberRoles[msg.sender] == 3, "Voter ineligible");
+        if (roles.encryptedKeyList[msg.sender] == keccak256(abi.encodePacked(msg.sender, encryptionKey, _voteForBuyer))) {
+            if (disputes[slmContract].votes[msg.sender] == 0) {
+                disputes[slmContract].buyerVoteCount += 1;
+            } else if (disputes[slmContract].votes[msg.sender] == 2) {
+                disputes[slmContract].merchantVoteCount -= 1;
+                disputes[slmContract].buyerVoteCount += 1;
+            }
+        } else {
+            if (_voteForBuyer == 1) {
+                _voteForBuyer = 2;
+            }
+
+            if (disputes[slmContract].votes[msg.sender] == 0) {
+                disputes[slmContract].merchantVoteCount += 1;
+            } else if (disputes[slmContract].votes[msg.sender] == 1) {
+                disputes[slmContract].buyerVoteCount -= 1;
+                disputes[slmContract].merchantVoteCount += 1;
+            }
+        }
+        disputes[slmContract].voteCount[msg.sender] += 1;
+        disputes[slmContract].votes[msg.sender] = _voteForBuyer;
     }
 
     function setAdminRights(address walletAddress) external onlyOwner {
@@ -135,6 +177,7 @@ contract SlmJudgement is Ownable {
 
     function tieBreaker(address slmContract, bool buyerWins) external {
         require(slmContract != address(0), "Zero addr");
+        require(disputes[slmContract].voteEndTime < block.timestamp, "Voting period still active");
         if (tieBreakerEndTimes[slmContract] < block.timestamp) {
             voteResults[slmContract] = 2;
         } else {
@@ -170,13 +213,21 @@ contract SlmJudgement is Ownable {
         // Tie breaker
         } else {
             voteResults[slmContract] = 4;
-            _startTieBreaker(slmContract);
+            if (dispute.voteEndTime < block.timestamp) {
+                _startTieBreaker(slmContract);
+            }
         }
     }
 
-    function getVoteResults(address slmContract) external view returns(uint8) {
+    function getVoteResults(address slmContract, bytes32 encryptionKey) external view returns(uint8) {
         require(slmContract != address(0), "Zero addr");
-
+        Dispute storage dispute = disputes[slmContract];
+        Role storage roles = disputeRoles[slmContract];
+        if (dispute.voteEndTime > block.timestamp || tieBreakerEndTimes[slmContract] > block.timestamp) {
+            require(roles.memberRoles[msg.sender] == 1 || roles.memberRoles[msg.sender] == 2 || adminList[msg.sender] == true, "Unauthorized role");
+            require(roles.encryptedKeyList[msg.sender] == keccak256(abi.encodePacked(msg.sender, encryptionKey)), "Unauthorized access");
+            return voteResults[slmContract];
+        }
         return voteResults[slmContract];
     }
 
@@ -197,6 +248,7 @@ contract SlmJudgement is Ownable {
     function _selectJurorList(address slmContract) private returns(uint256[] memory) {
         require(slmContract != address(0), "Zero addr");
 
+        Role storage roles = disputeRoles[slmContract];
         // TODO -- Find better alternative to round robin selection
         uint256 stakerCount = stakerPool.length;
         require(stakerCount >= minJurorCount, "Not enough stakers");
@@ -215,7 +267,7 @@ contract SlmJudgement is Ownable {
             selectedJurors.push(stakerPool[selectedStartCount]);
 
             userAddress = stakerManager.getUserAddress(selectedJurors[i]);
-            disputes[slmContract].votes[userAddress] = 1;
+            roles.memberRoles[userAddress] = 3;
 
             i += 1;
             selectedStartCount += 1;
