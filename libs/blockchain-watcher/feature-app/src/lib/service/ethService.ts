@@ -10,6 +10,7 @@ import {
 } from '@solomon/shared/util-contract'
 import { JsonRpcProvider, Provider } from "@ethersproject/providers";
 import { deliverService } from './deliverService'
+import { dbService } from "./dbService";
 
 export class EthService {
   provider: JsonRpcProvider | null = null
@@ -52,41 +53,41 @@ export class EthService {
     await mailService.sendEscrowCreatedEmail(slmEscrow)
   }
 
-  async getChargebackCreatedLogs() {
+  async getChargebackCreatedLogs(fromBlockHash?: string) {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
 
     let eventFilter = this.contract.filters.ChargebackCreated()
-    let events = await this.contract.queryFilter(eventFilter)
+    let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-    // TODO: save last event block hash
+    await dbService.setLastScanned(events[events.length - 1].blockHash)
 
     return events
   }
 
-  async getPreorderCreatedLogs() {
+  async getPreorderCreatedLogs(fromBlockHash?: string) {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
 
     let eventFilter = this.contract.filters.PreorderCreated()
-    let events = await this.contract.queryFilter(eventFilter)
+    let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-    // TODO: save last event block hash
+    await dbService.setLastScanned(events[events.length - 1].blockHash)
 
     return events
   }
 
-  async getEscrowCreatedLogs() {
+  async getEscrowCreatedLogs(fromBlockHash?: string) {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
 
     let eventFilter = this.contract.filters.EscrowCreated()
-    let events = await this.contract.queryFilter(eventFilter)
+    let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-    // TODO: save last event block hash
+    await dbService.setLastScanned(events[events.length - 1].blockHash)
 
     return events
   }
