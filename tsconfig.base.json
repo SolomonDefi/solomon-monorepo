@@ -41,5 +41,6 @@
       "@solomon/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"]
     }
   },
+  "include": ["json-schema-to-typescript.d.ts"],
   "exclude": ["node_modules", "tmp"]
 }
