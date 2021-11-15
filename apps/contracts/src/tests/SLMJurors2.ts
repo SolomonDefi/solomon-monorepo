@@ -103,7 +103,12 @@ describe('SLM Jurors', function () {
 
     await token.mint(escrow.address, defaultAmount)
 
+  })
+
+  it('Checks selection and storage of jurors', async function () {
+    const defaultAmount = 100
     const stakeAmount = 100
+    const endTime = Math.round(new Date().getTime() / 1000) + 259200
     disputeAddress = escrow.address
 
     await token.connect(account2).increaseAllowance(manager.address, 100)
@@ -117,6 +122,13 @@ describe('SLM Jurors', function () {
     userId1 = 1
     await manager.connect(account1).stake(userId1, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(0)
+
+    await jurors.setStakerPool()
+    await shouldRevert(
+      jurors.initializeDispute(disputeAddress, 1, endTime),
+      'Not enough stakers',
+      'Total stakers cannot be less than minimum juror count',
+    )
 
     await token.connect(account3).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
@@ -150,18 +162,26 @@ describe('SLM Jurors', function () {
 
     await shouldRevert(
       jurors.setMinJurorCount(2),
-      'Minimum juror count must be greater than 3',
       'Invalid juror count',
+      'Minimum juror count must be greater than 3',
     )
-    await jurors.setMinJurorCount(3)
 
     await jurors.setStakerPool()
+
+    await jurors.setMinJurorCount(7)
+    await jurors.initializeDispute(disputeAddress, 1, endTime)
+
+    const jurorList = await jurors.getJurors(disputeAddress)
+    chai.expect(await jurorList[0]).to.equal(userId2)
+    chai.expect(await jurorList[1]).to.equal(userId1)
+    chai.expect(await jurorList[2]).to.equal(userId3)
+    chai.expect(await jurorList[3]).to.equal(userId4)
+    chai.expect(await jurorList[4]).to.equal(userId5)
+    chai.expect(await jurorList[5]).to.equal(userId6)
+    chai.expect(await jurorList[6]).to.equal(userId7)
   })
 
   it('Checks voting', async function () {
-    const endTime = Math.round(new Date().getTime() / 1000) + 259200
-    await jurors.setMinJurorCount(7)
-    await jurors.initializeDispute(disputeAddress, 1, endTime)
 
     const roleArray = [2, 1, 3, 3, 3]
     const addressArray = [
@@ -204,15 +224,6 @@ describe('SLM Jurors', function () {
       addressArray,
       encryptionKeyArray,
     )
-
-    const jurorList = await jurors.getJurors(disputeAddress)
-    chai.expect(await jurorList[0]).to.equal(userId2)
-    chai.expect(await jurorList[1]).to.equal(userId1)
-    chai.expect(await jurorList[2]).to.equal(userId3)
-    chai.expect(await jurorList[3]).to.equal(userId4)
-    chai.expect(await jurorList[4]).to.equal(userId5)
-    chai.expect(await jurorList[5]).to.equal(userId6)
-    chai.expect(await jurorList[6]).to.equal(userId7)
 
     await jurors.connect(account1).vote(disputeAddress, fakeEncryptionKey, 1)
 
