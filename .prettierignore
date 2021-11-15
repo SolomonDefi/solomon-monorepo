@@ -10,3 +10,6 @@ logs
 log
 **/.venv
 **/.pytest_cache
+
+# Generated file
+**/*.schema.json
