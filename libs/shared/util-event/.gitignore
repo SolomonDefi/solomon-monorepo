@@ -1,4 +1,3 @@
-/**/*.schema.json
 /**/*.schema.ts
 
 # it's generated file
