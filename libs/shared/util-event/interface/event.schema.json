@@ -73,14 +73,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "type",
-        "party1",
-        "party2",
-        "contract",
-        "id",
-        "judgeContract"
-      ]
+      "required": ["type", "party1", "party2", "contract", "id", "judgeContract"]
     },
     "EvidenceSubmittedEvent": {
       "title": "EvidenceSubmittedEvent",

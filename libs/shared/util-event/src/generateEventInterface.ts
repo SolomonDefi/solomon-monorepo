@@ -1,6 +1,6 @@
 import { compile, compileFromFile } from 'json-schema-to-typescript'
 import path from 'path'
-import { ensureDir, readdir, writeFile } from "fs-extra";
+import { ensureDir, readdir, writeFile } from 'fs-extra'
 
 export const generateEventInterface = async () => {
   const interfaceFolderPath = path.resolve(__dirname, '..', 'interface')
