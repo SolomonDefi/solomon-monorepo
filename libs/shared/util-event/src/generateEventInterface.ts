@@ -1,15 +1,16 @@
 import { compile, compileFromFile } from 'json-schema-to-typescript'
-import { readFile, write, writeFile } from "fs-extra";
-import path from "path";
-import { readdir } from "fs-extra";
+import path from 'path'
+import { ensureDir, readdir, writeFile } from "fs-extra";
 
-export const generateEventInterface = async ()=> {
+export const generateEventInterface = async () => {
   const interfaceFolderPath = path.resolve(__dirname, '..', 'interface')
   const schemaFolderPath = path.resolve(__dirname, '..', 'schema')
   const schemaFileNames = await readdir(schemaFolderPath)
   let indexStr = ``
 
-  for(let schemaFileName of schemaFileNames) {
+  await ensureDir(interfaceFolderPath)
+
+  for (const schemaFileName of schemaFileNames) {
     try {
       const schemaFilePath = path.resolve(schemaFolderPath, schemaFileName)
       const interfaceFileName = schemaFileName.replace('.schema.json', '.schema.ts')
@@ -26,7 +27,7 @@ export const generateEventInterface = async ()=> {
       console.log(`${interfaceFilePath} generated.`)
     } catch (err) {
       console.error(err)
-      console.log(`${schemaFileName} generate fail.`)
+      throw `${schemaFileName} generate fail.`
     }
   }
 

@@ -9,6 +9,10 @@ if [[ ! $local_branch_name =~ $valid_branch_regex ]]; then
     exit 1
 fi
 
+pnpm run nx -- affected --target=generate-event-schema
+git diff --name-only | xargs git add
+
+pnpx nx format:write --base=main --head=HEAD
+
 exit 0
 
-pnpx pretty-quick --staged

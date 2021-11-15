@@ -1,6 +1,6 @@
-import { generateEventInterface } from "../../libs/shared/util-event/src/generateEventInterface";
+import { generateEventInterface } from '../../libs/shared/util-event/src/generateEventInterface'
 
-const run = async ()=> {
+const run = async () => {
   await generateEventInterface()
 }
 
