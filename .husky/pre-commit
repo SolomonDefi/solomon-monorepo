@@ -6,6 +6,7 @@ valid_branch_regex="^[0-9]+_[a-z0-9-]+$"
 
 if [[ ! $local_branch_name =~ $valid_branch_regex ]]; then
     echo "Invalid branch name. Branch names must match: $valid_branch_regex . Please rename the branch and try again."
+    echo "Current name: $local_branch_name"
     exit 1
 fi
 
