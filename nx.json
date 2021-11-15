@@ -8,7 +8,8 @@
       "dependencies": "*",
       "devDependencies": "*"
     },
-    ".eslintrc.json": "*"
+    ".eslintrc.json": "*",
+    "app/api-dispute/src/app/schemas/*.py": ["shared-util-event"]
   },
   "tasksRunnerOptions": {
     "default": {
