@@ -102,7 +102,6 @@ describe('SLM Jurors', function () {
     )
 
     await token.mint(escrow.address, defaultAmount)
-
   })
 
   it('Checks selection and storage of jurors', async function () {
@@ -182,7 +181,6 @@ describe('SLM Jurors', function () {
   })
 
   it('Checks voting', async function () {
-
     const roleArray = [2, 1, 3, 3, 3]
     const addressArray = [
       account8.address,
