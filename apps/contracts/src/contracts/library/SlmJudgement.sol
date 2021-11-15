@@ -10,6 +10,8 @@ import "../SlmStakerManager.sol";
 /// @notice Functionality for voting on chargeback/escrow events
 contract SlmJudgement is Ownable {
 
+    // TODO - Add events for certain actions
+    
     uint16 public minJurorCount;
     uint256[] private selectedJurors;
 
@@ -90,7 +92,7 @@ contract SlmJudgement is Ownable {
     }
 
     function setMinJurorCount(uint16 newMinJurorCount) external onlyOwner {
-        require(newMinJurorCount >= 0, "Invalid juror count");
+        require(newMinJurorCount >= 3, "Invalid juror count");
         minJurorCount = newMinJurorCount;
     }
 

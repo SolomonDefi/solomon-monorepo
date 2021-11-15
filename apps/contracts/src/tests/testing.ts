@@ -2,7 +2,7 @@ import assert from 'assert'
 import { ethers } from 'hardhat'
 
 // Temporary placeholders for blockchain-utils functions
-const toBN = (num) => BigInt(toSafeNumber(num))
+export const toBN = (num) => BigInt(toSafeNumber(num))
 
 const addDays = (date, days) => {
   const result = new Date(date)
@@ -33,7 +33,7 @@ const parseSci = (value) => {
   return value
 }
 
-const toSafeNumber = (value) => parseSci(value.toString())
+export const toSafeNumber = (value) => parseSci(value.toString())
 
 // End of temporary placeholders
 
