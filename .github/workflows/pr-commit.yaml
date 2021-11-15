@@ -149,6 +149,16 @@ jobs:
         run: pnpm i
       - name: Build plugin
         run: pnpx nx build plugin
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: install Python package manager
+        run: pip install poetry
+      - name: install Python packages
+        run: cd apps/api-dispute && poetry install
+      - name: Generate JSON schema file
+        run: cd apps/api-dispute && python src/extract_schema.py -f ../../libs/shared/util-event/schema/event.schema.json
       - name: Compile contract and generate type
         run: pnpm run contract:compile
       - name: Generate event interface

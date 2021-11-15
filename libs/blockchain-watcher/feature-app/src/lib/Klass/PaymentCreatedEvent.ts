@@ -11,7 +11,7 @@ import {
   validateSync,
 } from 'class-validator'
 import { IsEthAddress } from '../util/IsEthAddress'
-import {PaymentCreatedEvent as IPaymentCreatedEvent} from '@solomon/shared/util-event'
+import { PaymentCreatedEvent as IPaymentCreatedEvent } from '@solomon/shared/util-event'
 
 export class PaymentCreatedEvent implements IPaymentCreatedEvent {
   @IsUUID()

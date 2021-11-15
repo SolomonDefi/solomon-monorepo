@@ -17,6 +17,13 @@
         "jestConfig": "libs/shared/util-event/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "generate-event-schema": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "poetry install && poetry run python src/extract_schema.py -f ../../libs/shared/util-event/schema/event.schema.json",
+        "cwd": "apps/api-dispute"
+      }
     }
   },
   "tags": ["scope:shared", "type:util"]
