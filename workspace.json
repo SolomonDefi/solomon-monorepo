@@ -17,6 +17,7 @@
     "shared-util-core": "libs/shared/util-core",
     "shared-util-event": "libs/shared/util-event",
     "shared-util-i18n": "libs/shared/util-i18n",
+    "shared-util-logger": "libs/shared/util-logger",
     "shared-util-path-store": "libs/shared/util-path-store",
     "ui-theme": "libs/web/ui-theme",
     "ui-widgets": "libs/web/ui-widgets",
