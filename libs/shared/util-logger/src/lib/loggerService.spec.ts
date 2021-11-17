@@ -1,11 +1,11 @@
-import { LoggerService, loggerService } from "./loggerService";
+import { LoggerService, loggerService } from './loggerService'
 
-describe('loggerService basic', ()=> {
-  test('constructor()', async ()=> {
+describe('loggerService basic', () => {
+  test('constructor()', async () => {
     expect(loggerService).toBeInstanceOf(LoggerService)
   })
 
-  test('clear()', async ()=> {
+  test('clear()', async () => {
     loggerService['_buffer'] = ['', '']
     loggerService['_weight'] = 50
 
@@ -16,7 +16,7 @@ describe('loggerService basic', ()=> {
     expect(loggerService.weight).toEqual(0)
   })
 
-  test('flush()', async ()=> {
+  test('flush()', async () => {
     const f1 = loggerService.saveToCloud
     loggerService.saveToCloud = jest.fn()
     loggerService['_buffer'] = ['', '']
@@ -33,12 +33,12 @@ describe('loggerService basic', ()=> {
   })
 })
 
-describe('loggerService loggers', ()=> {
-  beforeEach(async ()=> {
+describe('loggerService loggers', () => {
+  beforeEach(async () => {
     loggerService.clear()
   })
 
-  test('error()', async ()=> {
+  test('error()', async () => {
     const f1 = console.error
     const f2 = loggerService.saveToCloud
     console.error = jest.fn()
@@ -52,7 +52,7 @@ describe('loggerService loggers', ()=> {
     loggerService.saveToCloud = f2
   })
 
-  test('warn()', async ()=> {
+  test('warn()', async () => {
     const f1 = console.warn
     const f2 = loggerService.saveToCloud
 
@@ -63,7 +63,7 @@ describe('loggerService loggers', ()=> {
     expect(console.warn).toBeCalled()
     expect(loggerService.saveToCloud).not.toBeCalled()
 
-    for(let i=0; i<9; i++) {
+    for (let i = 0; i < 9; i++) {
       loggerService.warn('')
     }
 
@@ -73,7 +73,7 @@ describe('loggerService loggers', ()=> {
     loggerService.saveToCloud = f2
   })
 
-  test('info()', async ()=> {
+  test('info()', async () => {
     const f1 = console.info
     const f2 = loggerService.saveToCloud
 
@@ -84,7 +84,7 @@ describe('loggerService loggers', ()=> {
     expect(console.info).toBeCalled()
     expect(loggerService.saveToCloud).not.toBeCalled()
 
-    for(let i=0; i<99; i++) {
+    for (let i = 0; i < 99; i++) {
       loggerService.info('')
     }
 
@@ -94,7 +94,7 @@ describe('loggerService loggers', ()=> {
     loggerService.saveToCloud = f2
   })
 
-  test('log()', async ()=> {
+  test('log()', async () => {
     const f1 = console.log
     const f2 = loggerService.saveToCloud
 
@@ -105,7 +105,7 @@ describe('loggerService loggers', ()=> {
     expect(console.log).toBeCalled()
     expect(loggerService.saveToCloud).not.toBeCalled()
 
-    for(let i=0; i<999; i++) {
+    for (let i = 0; i < 999; i++) {
       loggerService.log('')
     }
 
@@ -115,7 +115,7 @@ describe('loggerService loggers', ()=> {
     loggerService.saveToCloud = f2
   })
 
-  test('debug()', async ()=> {
+  test('debug()', async () => {
     const f1 = console.debug
     const f2 = loggerService.saveToCloud
 
@@ -126,7 +126,7 @@ describe('loggerService loggers', ()=> {
     expect(console.debug).toBeCalled()
     expect(loggerService.saveToCloud).not.toBeCalled()
 
-    for(let i=0; i<9999; i++) {
+    for (let i = 0; i < 9999; i++) {
       loggerService.debug('')
     }
 
