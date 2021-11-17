@@ -1,8 +1,7 @@
-import { LoggerServiceLevel } from "./LoggerServiceLevel";
-import dayjs from "dayjs";
+import { LoggerServiceLevel } from './LoggerServiceLevel'
+import dayjs from 'dayjs'
 
 export class LoggerService {
-
   private _buffer: string[] = []
   private _weight: number = 0
   protected _threshold: number = 1000
@@ -78,14 +77,12 @@ export class LoggerService {
         break
     }
 
-    if(this._weight >= this._threshold) {
+    if (this._weight >= this._threshold) {
       await this.flush()
     }
   }
 
-  async saveToCloud(logs: string[]) {
-
-  }
+  async saveToCloud(logs: string[]) {}
 
   clear() {
     this._buffer = []
