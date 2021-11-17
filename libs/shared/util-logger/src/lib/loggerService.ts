@@ -5,7 +5,7 @@ export class LoggerService {
 
   private _buffer: string[] = []
   private _weight: number = 0
-  protected _threshold: number = 100
+  protected _threshold: number = 1000
 
   /**
    * Test only getter.
@@ -43,7 +43,7 @@ export class LoggerService {
     this.addToBuffer(LoggerServiceLevel.info, data)
   }
 
-  verbose(...data: unknown[]) {
+  log(...data: unknown[]) {
     console.log(...data)
     this.addToBuffer(LoggerServiceLevel.verbose, data)
   }
@@ -65,38 +65,36 @@ export class LoggerService {
         this._weight += this._threshold
         break
       case LoggerServiceLevel.warn:
-        this._weight += 10
+        this._weight += 100
         break
       case LoggerServiceLevel.info:
-        this._weight += 1
+        this._weight += 10
         break
       case LoggerServiceLevel.verbose:
-        this._weight += 0.1
+        this._weight += 1
         break
       case LoggerServiceLevel.debug:
         this._weight += 0
         break
     }
 
-    if(this._weight < this._threshold) {
-      return
+    if(this._weight >= this._threshold) {
+      await this.flush()
     }
-
-    await this.flush()
   }
 
   async saveToCloud(logs: string[]) {
 
   }
 
-  clean() {
+  clear() {
     this._buffer = []
     this._weight = 0
   }
 
   async flush() {
     await this.saveToCloud(this._buffer)
-    this.clean()
+    this.clear()
   }
 }
 
