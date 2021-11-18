@@ -1,12 +1,12 @@
-import { stringHelper } from '@solomon/blockchain-watcher/feature-app'
 import { IsEthAddress } from './IsEthAddress'
 import { validateSync } from 'class-validator'
+import { ethers } from 'ethers'
 
 describe('IsEthAddress decorator', () => {
   it('with valid prop', async () => {
     class C1 {
       @IsEthAddress()
-      addr = stringHelper.generateRandomEthAddr()
+      addr = ethers.Wallet.createRandom().address
     }
 
     let c1 = new C1()

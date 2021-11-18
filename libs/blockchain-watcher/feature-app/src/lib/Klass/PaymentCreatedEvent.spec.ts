@@ -2,7 +2,7 @@ import { PaymentCreatedEvent } from './PaymentCreatedEvent'
 import { v4 } from 'uuid'
 import _ from 'lodash'
 import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
-import { stringHelper } from '../helper/stringHelper'
+import { ethers } from 'ethers'
 
 describe('PaymentCreatedEvent', () => {
   it('constructor() with empty props', () => {
@@ -13,11 +13,11 @@ describe('PaymentCreatedEvent', () => {
 
   it('constructor() with valid props', () => {
     const id = v4()
-    const addr1 = stringHelper.generateRandomEthAddr()
-    const addr2 = stringHelper.generateRandomEthAddr()
-    const addr3 = stringHelper.generateRandomEthAddr()
-    const addr4 = stringHelper.generateRandomEthAddr()
-    const addr5 = stringHelper.generateRandomEthAddr()
+    const addr1 = ethers.Wallet.createRandom().address
+    const addr2 = ethers.Wallet.createRandom().address
+    const addr3 = ethers.Wallet.createRandom().address
+    const addr4 = ethers.Wallet.createRandom().address
+    const addr5 = ethers.Wallet.createRandom().address
 
     let p = new PaymentCreatedEvent({
       id: id,
@@ -70,11 +70,11 @@ describe('PaymentCreatedEvent', () => {
 
     p.id = v4()
     p.type = PaymentCreatedEventType.chargeback
-    p.party1 = stringHelper.generateRandomEthAddr()
-    p.party2 = stringHelper.generateRandomEthAddr()
-    p.contract = stringHelper.generateRandomEthAddr()
-    p.judgeContract = stringHelper.generateRandomEthAddr()
-    p.token = stringHelper.generateRandomEthAddr()
+    p.party1 = ethers.Wallet.createRandom().address
+    p.party2 = ethers.Wallet.createRandom().address
+    p.contract = ethers.Wallet.createRandom().address
+    p.judgeContract = ethers.Wallet.createRandom().address
+    p.token = ethers.Wallet.createRandom().address
     p.discount = 0
     p.ethPaid = 1
 
@@ -85,11 +85,11 @@ describe('PaymentCreatedEvent', () => {
     const p = new PaymentCreatedEvent({
       id: v4(),
       type: PaymentCreatedEventType.chargeback,
-      party1: stringHelper.generateRandomEthAddr(),
-      party2: stringHelper.generateRandomEthAddr(),
-      contract: stringHelper.generateRandomEthAddr(),
-      judgeContract: stringHelper.generateRandomEthAddr(),
-      token: stringHelper.generateRandomEthAddr(),
+      party1: ethers.Wallet.createRandom().address,
+      party2: ethers.Wallet.createRandom().address,
+      contract: ethers.Wallet.createRandom().address,
+      judgeContract: ethers.Wallet.createRandom().address,
+      token: ethers.Wallet.createRandom().address,
       discount: 50,
       ethPaid: 0.1,
     })
