@@ -67,7 +67,6 @@
     "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-vue": "^7.16.0",
     "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.5.1",
     "hardhat": "^2.6.6",
     "hardhat-contract-sizer": "^2.1.1",
     "hardhat-deploy": "^0.9.4",
@@ -105,12 +104,13 @@
     "vue-eslint-parser": "^8.0.0"
   },
   "dependencies": {
+    "@ethersproject/providers": "^5.5.0",
     "@mikro-orm/core": "^4.5.9",
     "@mikro-orm/sqlite": "^4.5.9",
     "@sampullman/vue3-fetch-api": "^0.5.0",
     "@types/fs-extra": "^9.0.13",
     "class-validator": "^0.13.1",
-    "date-fns": "^2.23.0",
+    "date-fns": "^2.24.0",
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "ethers": "^5.4.6",
@@ -119,6 +119,7 @@
     "fs-extra": "^10.0.0",
     "handlebars": "^4.7.7",
     "js-sha256": "^0.9.0",
+    "json-schema-to-typescript": "^10.1.5",
     "lodash": "^4.17.21",
     "mailgun.js": "^3.7.0",
     "mjml": "^4.10.4",
@@ -128,17 +129,9 @@
     "pkg-dir": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "tsconfig-paths": "^3.11.0",
-    "tslib": "^2.0.0",
-    "typescript": "^4.3.5",
     "uuid": "^8.3.2",
-    "vite": "^2.6.13",
-    "vite-plugin-vue-images": "^0.6.1",
-    "vitepress": "^0.20.0",
     "vue": "^3.2.20",
-    "vue-eslint-parser": "^8.0.0",
-    "vue-i18n": "^9.1.6"
-    "vue-router": "^4.0.12",
-    "@ethersproject/providers": "^5.5.0",
-    "json-schema-to-typescript": "^10.1.5",
+    "vue-i18n": "^9.1.6",
+    "vue-router": "^4.0.12"
   }
 }
