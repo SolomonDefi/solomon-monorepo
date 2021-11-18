@@ -114,7 +114,7 @@ export class EthService {
 
   async init() {
     let provider = new ethers.providers.JsonRpcProvider(envStore.ethNetworkUrl)
-    let wallet = new ethers.Wallet(envStore.walletPrivateKey, provider)
+    let wallet = ethers.Wallet.fromMnemonic(envStore.walletMnemonic)
     let contract = SlmFactory__factory.connect(envStore.contractAddress, wallet)
 
     this.provider = provider

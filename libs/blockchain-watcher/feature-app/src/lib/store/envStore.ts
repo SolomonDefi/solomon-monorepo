@@ -1,4 +1,4 @@
-import { stringHelper } from '../helper/stringHelper'
+import { ethers } from 'ethers'
 
 class EnvStore {
   get isTest(): boolean {
@@ -18,32 +18,32 @@ class EnvStore {
   }
 
   get envName() {
-    return process.env.NODE_ENV || 'unknown'
+    return process.env.NODE_ENV ?? 'unknown'
   }
 
   get infuraId(): string {
-    return process.env['INFURA_ID'] || ''
+    return process.env['INFURA_ID'] ?? ''
   }
 
   get ethNetworkUrl(): string {
     if (this.isTest) {
-      return process.env['ETH_NETWORK_URL_TEST'] || 'http://localhost:8545'
+      return process.env['ETH_NETWORK_URL_TEST'] ?? 'http://localhost:8545'
     }
 
     if (this.isDev) {
-      return process.env['ETH_NETWORK_URL_DEV'] || 'http://localhost:8545'
+      return process.env['ETH_NETWORK_URL_DEV'] ?? 'http://localhost:8545'
     }
 
     if (this.isStage) {
       return (
-        process.env['ETH_NETWORK_URL_STAGE'] ||
+        process.env['ETH_NETWORK_URL_STAGE'] ??
         `https://ropsten.infura.io/v3/${this.infuraId}`
       )
     }
 
     if (this.isProd) {
       return (
-        process.env['ETH_NETWORK_URL_PROD'] || `https://infura.io/v3/${this.infuraId}`
+        process.env['ETH_NETWORK_URL_PROD'] ?? `https://infura.io/v3/${this.infuraId}`
       )
     }
 
@@ -52,18 +52,18 @@ class EnvStore {
 
   get contractAddress(): string {
     if (this.isTest) {
-      return stringHelper.generateRandomEthAddr()
+      return ethers.Wallet.createRandom().address
     }
 
-    return process.env['CONTRACT_ADDRESS'] || ''
+    return process.env['CONTRACT_ADDRESS'] ?? ''
   }
 
-  get walletPrivateKey(): string {
+  get walletMnemonic(): string {
     if (this.isTest) {
-      return stringHelper.generateRandomEthPrivateKey()
+      return ethers.Wallet.createRandom().mnemonic.phrase
     }
 
-    return process.env['WALLET_PRIVATE_KEY'] || ''
+    return process.env['WALLET_MNEMONIC'] ?? ''
   }
 
   get mailgunApiKey(): string {
@@ -71,20 +71,20 @@ class EnvStore {
       return 'foo'
     }
 
-    return process.env['MAILGUN_API'] || ''
+    return process.env['MAILGUN_API'] ?? ''
   }
 
   // one of your domain names listed at your https://app.mailgun.com/app/sending/domains
   get mailgunDomain(): string {
-    return process.env['MAILGUN_DOMAIN'] || ''
+    return process.env['MAILGUN_DOMAIN'] ?? ''
   }
 
   get disputeApiUrl(): string {
-    return process.env['DISPUTE_API_URL'] || ''
+    return process.env['DISPUTE_API_URL'] ?? ''
   }
 
   get disputeApiSecretKey(): string {
-    return process.env['DISPUTE_API_SECRET_KEY'] || ''
+    return process.env['DISPUTE_API_SECRET_KEY'] ?? ''
   }
 }
 
