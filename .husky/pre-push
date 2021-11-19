@@ -11,20 +11,4 @@ if [[ ! $local_branch_name =~ $valid_branch_regex ]]; then
     exit 1
 fi
 
-# Generate contract TypeScript definition
-pnpm run contract:compile
-git add ./libs/shared/util-contract
-
-# Generate event JSON schema
-pnpm run nx -- affected --target=generate-event-schema
-git add ./libs/shared/util-event/schema
-
-# Generate event TypeScript interface
-pnpm run watcher:generate-event-interface
-git add ./libs/shared/util-event/interface
-git add ./libs/shared/util-event/src/index.ts
-
-# Format generated files
-pnpx nx format:write --base=main --head=HEAD
-
 exit 0
