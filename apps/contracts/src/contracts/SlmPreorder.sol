@@ -2,6 +2,7 @@
 pragma solidity 0.8.9;
 
 import "./library/SlmShared.sol";
+import "./library/SlmJudgement.sol";
 
 /// @title Solomon Preorder
 /// @author Solomon DeFi
@@ -60,7 +61,7 @@ contract SlmPreorder is SlmShared {
     /// Allow buyer to withdraw if eligible
     function buyerWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == buyer(), "Only buyer can withdraw");
-        require(judge.getVoteResults(address(this), encryptionKey) == 2, "Cannot withdraw");
+        require(judge.getVoteResults(address(this), encryptionKey) == SlmJudgement.VoteStates.BuyerWins, "Cannot withdraw");
         state = TransactionState.CompleteParty1;
         withdraw(buyer());
     }
@@ -68,7 +69,7 @@ contract SlmPreorder is SlmShared {
     /// Allow merchant to withdraw if eligible
     function merchantWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == merchant(), "Only merchant can withdraw");
-        require(judge.getVoteResults(address(this), encryptionKey) == 3, "Cannot withdraw");
+        require(judge.getVoteResults(address(this), encryptionKey) == SlmJudgement.VoteStates.MerchantWins, "Cannot withdraw");
         state = TransactionState.CompleteParty2;
         withdraw(merchant());
     }

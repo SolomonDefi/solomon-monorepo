@@ -2,6 +2,7 @@
 pragma solidity 0.8.9;
 
 import "./library/SlmShared.sol";
+import "./library/SlmJudgement.sol";
 
 /// @title Solomon Escrow
 /// @author Solomon DeFi
@@ -66,12 +67,18 @@ contract SlmEscrow is SlmShared {
     /// Allow either party to withdraw if eligible
     function withdrawFunds(bytes32 encryptionKey) external {
         require(msg.sender == _party1 || msg.sender == _party2, "Only parties can withdraw");
-        require(judge.getVoteResults(address(this), encryptionKey) == 2 || judge.getVoteResults(address(this), encryptionKey) == 3, "Cannot withdraw");
+
+        bool eligibleWithdrawal = false;
+        SlmJudgement.VoteStates voteResult = judge.getVoteResults(address(this), encryptionKey);
+        if(voteResult == SlmJudgement.VoteStates.BuyerWins || voteResult == SlmJudgement.VoteStates.MerchantWins) {
+            eligibleWithdrawal = true;
+        }
+        require(eligibleWithdrawal, "Cannot withdraw");
+        
         state = TransactionState.CompleteParty1;
-        uint8 voteResult = judge.getVoteResults(address(this), encryptionKey);
-        if (voteResult == 2) {
+        if (voteResult == SlmJudgement.VoteStates.BuyerWins) {
             withdraw(_party1);
-        } else if (voteResult == 3) {
+        } else if (voteResult == SlmJudgement.VoteStates.BuyerWins) {
             withdraw(_party2);
         }
     }

@@ -15,9 +15,19 @@ contract SlmJudgement is Ownable {
     uint16 public minJurorCount;
     uint256[] private selectedJurors;
 
+    enum VoteStates { 
+        Inactive,
+        InsufficientVotes,
+        BuyerWins,
+        MerchantWins,
+        Tie
+    }
+
+    VoteStates public states;
+
     mapping(address => bool) public adminList;
 
-    mapping(address => uint8) public voteResults;
+    mapping(address => VoteStates) public voteResults;
 
     /// Record of SLM contracts to chargeback/escrow votes
     mapping(address => Dispute) public disputes;
@@ -68,12 +78,19 @@ contract SlmJudgement is Ownable {
         bool tieBreakComplete;
     }
 
+    enum MemberRole {
+        Inactive,
+        Merchant,
+        Buyer,
+        Juror
+    }
+
     struct Role {
         // Member role
         //  1 == Merchant
         //  2 == Buyer
         //  3 == Juror
-        mapping(address => uint8) memberRoles;
+        mapping(address => MemberRole) memberRoles;
         mapping(address => bytes32) encryptedKeyList;
     }
 
@@ -107,7 +124,7 @@ contract SlmJudgement is Ownable {
         stakerManager.setVoteDetails(slmContract, endTime);
     }
 
-    function setDisputeAccess(address slmContract, uint8[] memory roles, address[] memory addressList, bytes32[] memory keyList) external onlyOwner {
+    function setDisputeAccess(address slmContract, MemberRole[] memory roles, address[] memory addressList, bytes32[] memory keyList) external onlyOwner {
         require(slmContract != address(0), "Zero addr");
         require(addressList.length == keyList.length && keyList.length == roles.length, "Invalid array length");
         require(roles.length > 0, "Empty array");
@@ -122,7 +139,7 @@ contract SlmJudgement is Ownable {
         require(slmContract != address(0), "Zero addr");
         require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
         Role storage roles = disputeRoles[slmContract];
-        require(roles.memberRoles[msg.sender] == 3, "Voter ineligible");
+        require(roles.memberRoles[msg.sender] == MemberRole.Juror, "Voter ineligible");
         if (roles.encryptedKeyList[msg.sender] == keccak256(abi.encodePacked(msg.sender, encryptionKey, _voteForBuyer))) {
             if (disputes[slmContract].votes[msg.sender] == 0) {
                 disputes[slmContract].buyerVoteCount += 1;
@@ -177,20 +194,20 @@ contract SlmJudgement is Ownable {
         tieBreakerEndTimes[slmContract] = block.timestamp + tieBreakerDuration;
     }
 
-    function tieBreaker(address slmContract, bool buyerWins) external {
+    function tieBreaker(address slmContract, bool voteForBuyer) external {
         require(slmContract != address(0), "Zero addr");
         require(disputes[slmContract].voteEndTime < block.timestamp, "Voting period still active");
         if (tieBreakerEndTimes[slmContract] < block.timestamp) {
-            voteResults[slmContract] = 2;
+            voteResults[slmContract] = VoteStates.BuyerWins;
         } else {
             require(tieBreakerEndTimes[slmContract] > block.timestamp, "Tie breaker has ended");
             require(adminList[msg.sender] == true, "Not an admin");
-            require(voteResults[slmContract] == 4, "Not a tie");
+            require(voteResults[slmContract] == VoteStates.Tie, "Not a tie");
 
-            if (buyerWins) {
-                voteResults[slmContract] = 2;
+            if (voteForBuyer) {
+                voteResults[slmContract] = VoteStates.BuyerWins;
             } else {
-                voteResults[slmContract] = 3;
+                voteResults[slmContract] = VoteStates.MerchantWins;
             }
         }        
     }
@@ -204,29 +221,29 @@ contract SlmJudgement is Ownable {
         uint16 buyerVotes = dispute.buyerVoteCount;
         // No vote exists
         if (dispute.quorum == 0) {
-            voteResults[slmContract] = 0;
+            voteResults[slmContract] = VoteStates.Inactive;
         // Vote not complete
         } else if (merchantVotes + buyerVotes < dispute.quorum) {
-            voteResults[slmContract] = 1;
+            voteResults[slmContract] = VoteStates.InsufficientVotes;
         } else if (buyerVotes > merchantVotes) {
-            voteResults[slmContract] = 2;
+            voteResults[slmContract] = VoteStates.BuyerWins;
         } else if (merchantVotes > buyerVotes) {
-            voteResults[slmContract] = 3;
+            voteResults[slmContract] = VoteStates.MerchantWins;
         // Tie breaker
         } else {
-            voteResults[slmContract] = 4;
+            voteResults[slmContract] = VoteStates.Tie;
             if (dispute.voteEndTime < block.timestamp) {
                 _startTieBreaker(slmContract);
             }
         }
     }
 
-    function getVoteResults(address slmContract, bytes32 encryptionKey) external view returns(uint8) {
+    function getVoteResults(address slmContract, bytes32 encryptionKey) external view returns(VoteStates) {
         require(slmContract != address(0), "Zero addr");
         Dispute storage dispute = disputes[slmContract];
         Role storage roles = disputeRoles[slmContract];
         if (dispute.voteEndTime > block.timestamp || tieBreakerEndTimes[slmContract] > block.timestamp) {
-            require(roles.memberRoles[msg.sender] == 1 || roles.memberRoles[msg.sender] == 2 || adminList[msg.sender] == true, "Unauthorized role");
+            require(roles.memberRoles[msg.sender] == MemberRole.Merchant || roles.memberRoles[msg.sender] == MemberRole.Buyer || adminList[msg.sender] == true, "Unauthorized role");
             require(roles.encryptedKeyList[msg.sender] == keccak256(abi.encodePacked(msg.sender, encryptionKey)), "Unauthorized access");
             return voteResults[slmContract];
         }
@@ -269,7 +286,7 @@ contract SlmJudgement is Ownable {
             selectedJurors.push(stakerPool[selectedStartCount]);
 
             userAddress = stakerManager.getUserAddress(selectedJurors[i]);
-            roles.memberRoles[userAddress] = 3;
+            roles.memberRoles[userAddress] = MemberRole.Juror;
 
             i += 1;
             selectedStartCount += 1;

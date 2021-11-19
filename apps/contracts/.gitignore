@@ -13,3 +13,4 @@ typechain/
 
 log
 *.env
+.pnpm-debug.log
