@@ -2,7 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # Check branch name
-
 local_branch_name="$(git rev-parse --abbrev-ref HEAD)"
 valid_branch_regex="^[0-9]+_[a-z0-9-]+$"
 
@@ -13,8 +12,15 @@ if [[ ! $local_branch_name =~ $valid_branch_regex ]]; then
 fi
 
 # Generate event JSON schema
-
 pnpm run nx -- affected --target=generate-event-schema
 git add ./libs/shared/util-event/schema
 
+# Generate event TypeScript interface
+pnpm run watcher:generate-event-interface
+git add ./libs/shared/util-event/interface
+git add ./libs/shared/util-event/index.ts
 
+# Format it again
+pnpx nx format:write --base=main --head=HEAD
+
+exit 0
