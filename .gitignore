@@ -58,3 +58,8 @@ __pycache__
 *.pyc
 .venv
 *~
+
+# generated files
+/libs/shared/util-contract/src
+/libs/shared/util-event/interface
+/libs/shared/util-event/schema
