@@ -11,7 +11,7 @@ import {
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
 import { dbService } from './dbService'
-import { loggerService } from "@monorepo/shared/util-logger";
+import { loggerService } from '@monorepo/shared/util-logger'
 
 export class EthService {
   provider: JsonRpcProvider | null = null
@@ -24,7 +24,10 @@ export class EthService {
     }
 
     try {
-      let slmChargeback = await SlmChargeback__factory.connect(chargebackAddress, this.wallet)
+      let slmChargeback = await SlmChargeback__factory.connect(
+        chargebackAddress,
+        this.wallet,
+      )
 
       await deliverService.sendChargebackEvent(slmChargeback)
       await mailService.sendChargebackCreatedEmail(slmChargeback)
