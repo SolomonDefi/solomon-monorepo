@@ -1,5 +1,5 @@
 import { LoggerServiceLevel } from './LoggerServiceLevel'
-import dayjs from 'dayjs'
+import { format } from 'date-fns'
 
 export class LoggerService {
   private _buffer: string[] = []
@@ -54,7 +54,7 @@ export class LoggerService {
 
   async addToBuffer(level: LoggerServiceLevel, ...data: unknown[]) {
     const str: string = JSON.stringify(data)
-    const time: string = dayjs().format(`YYYY-MM-DD HH:mm:ss:SSS`)
+    const time: string = format(new Date(), '`YYYY-MM-dd HH:mm:ss:SSS`')
     const log: string = `[${time}][${level}] ${str}`
 
     this._buffer.push(log)
