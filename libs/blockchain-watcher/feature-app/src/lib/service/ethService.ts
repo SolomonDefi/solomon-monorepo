@@ -11,6 +11,7 @@ import {
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
 import { dbService } from './dbService'
+import { loggerService } from "@monorepo/shared/util-logger";
 
 export class EthService {
   provider: JsonRpcProvider | null = null
@@ -18,39 +19,48 @@ export class EthService {
   contract: SlmFactory | null = null
 
   async onChargebackCreated(chargebackAddress: string) {
-    if (!this.provider) {
-      throw 'Provider is not defined.'
+    if (!this.wallet) {
+      throw 'Wallet is not defined.'
     }
 
-    let slmChargeback = await SlmChargeback__factory.connect(
-      chargebackAddress,
-      this.provider,
-    )
+    try {
+      let slmChargeback = await SlmChargeback__factory.connect(chargebackAddress, this.wallet)
 
-    await deliverService.sendChargebackEvent(slmChargeback)
-    await mailService.sendChargebackCreatedEmail(slmChargeback)
+      await deliverService.sendChargebackEvent(slmChargeback)
+      await mailService.sendChargebackCreatedEmail(slmChargeback)
+    } catch (err) {
+      loggerService.error(err)
+    }
   }
 
   async onPreorderCreated(preorderAddress: string) {
-    if (!this.provider) {
-      throw 'Provider is not defined.'
+    if (!this.wallet) {
+      throw 'Wallet is not defined.'
     }
 
-    let slmPreorder = await SlmPreorder__factory.connect(preorderAddress, this.provider)
+    try {
+      let slmPreorder = await SlmPreorder__factory.connect(preorderAddress, this.wallet)
 
-    await deliverService.sendPreorderEvent(slmPreorder)
-    await mailService.sendPreorderCreatedEmail(slmPreorder)
+      await deliverService.sendPreorderEvent(slmPreorder)
+      await mailService.sendPreorderCreatedEmail(slmPreorder)
+    } catch (err) {
+      loggerService.error(err)
+    }
   }
 
   async onEscrowCreated(escrowAddress: string) {
-    if (!this.provider) {
-      throw 'Provider is not defined.'
+    if (!this.wallet) {
+      throw 'Wallet is not defined.'
     }
 
-    let slmEscrow = await SlmEscrow__factory.connect(escrowAddress, this.provider)
+    try {
+      let slmEscrow = await SlmEscrow__factory.connect(escrowAddress, this.wallet)
 
-    await deliverService.sendEscrowEvent(slmEscrow)
-    await mailService.sendEscrowCreatedEmail(slmEscrow)
+      await deliverService.sendEscrowEvent(slmEscrow)
+      await mailService.sendEscrowCreatedEmail(slmEscrow)
+    } catch (err) {
+      loggerService.error(err)
+    }
   }
 
   async getChargebackCreatedLogs(fromBlockHash?: string) {
@@ -58,12 +68,17 @@ export class EthService {
       throw 'Contract is not defined.'
     }
 
-    let eventFilter = this.contract.filters.ChargebackCreated()
-    let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
+    try {
+      let eventFilter = this.contract.filters.ChargebackCreated()
+      let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-    await dbService.setLastScanned(events[events.length - 1].blockHash)
+      await dbService.setLastScanned(events[events.length - 1].blockHash)
 
-    return events
+      return events
+    } catch (err) {
+      loggerService.error(err)
+      return []
+    }
   }
 
   async getPreorderCreatedLogs(fromBlockHash?: string) {
@@ -71,12 +86,17 @@ export class EthService {
       throw 'Contract is not defined.'
     }
 
-    let eventFilter = this.contract.filters.PreorderCreated()
-    let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
+    try {
+      let eventFilter = this.contract.filters.PreorderCreated()
+      let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-    await dbService.setLastScanned(events[events.length - 1].blockHash)
+      await dbService.setLastScanned(events[events.length - 1].blockHash)
 
-    return events
+      return events
+    } catch (err) {
+      loggerService.error(err)
+      return []
+    }
   }
 
   async getEscrowCreatedLogs(fromBlockHash?: string) {
@@ -84,12 +104,17 @@ export class EthService {
       throw 'Contract is not defined.'
     }
 
-    let eventFilter = this.contract.filters.EscrowCreated()
-    let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
+    try {
+      let eventFilter = this.contract.filters.EscrowCreated()
+      let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-    await dbService.setLastScanned(events[events.length - 1].blockHash)
+      await dbService.setLastScanned(events[events.length - 1].blockHash)
 
-    return events
+      return events
+    } catch (err) {
+      loggerService.error(err)
+      return []
+    }
   }
 
   async start() {
@@ -120,8 +145,6 @@ export class EthService {
     this.provider = provider
     this.wallet = wallet
     this.contract = contract
-
-    this.contract.connect(this.provider)
   }
 }
 
