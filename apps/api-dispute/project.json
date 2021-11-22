@@ -19,6 +19,17 @@
     },
     "format": {
       "executor": "nx-python-fastapi:format"
+    },
+    "generate-event-schema": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "poetry install",
+          "poetry run python src/extract_schema.py -f ../../libs/shared/util-event/schema/event.schema.json"
+        ],
+        "cwd": "apps/api-dispute",
+        "parallel": false
+      }
     }
   },
   "tags": ["scope:api", "type:app"]
