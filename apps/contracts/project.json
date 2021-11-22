@@ -27,6 +27,13 @@
       "options": {
         "lintFilePatterns": ["apps/contracts/**/*.{js,ts}"]
       }
+    },
+    "generate-type": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "hardhat compile --force",
+        "cwd": "apps/contracts"
+      }
     }
   },
   "tags": ["scope:blockchain", "type:app"]
