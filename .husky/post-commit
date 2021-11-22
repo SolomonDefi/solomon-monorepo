@@ -2,13 +2,13 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # Generate contract TypeScript definition
-pnpm run contract:compile
+# pnpm run contract:compile
 
 # Generate event JSON schema
-pnpm run api-dispute:generate-event-schema
+# pnpm run api-dispute:generate-event-schema
 
 # Generate event TypeScript interface
-pnpm run watcher:generate-event-interface
+# pnpm run watcher:generate-event-interface
 
 exit 0
 
