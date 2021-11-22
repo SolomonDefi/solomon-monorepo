@@ -2,6 +2,7 @@ import argparse
 import inspect
 import json
 import typing
+import os
 
 from pydantic.schema import schema
 
@@ -19,6 +20,7 @@ def is_event(obj: typing.Any) -> bool:
 def extract_schema(file: str) -> None:
     models = [model for _, model in inspect.getmembers(event, is_event)]
     top_level_schema = schema(models, title='Event Schema')
+    os.makedirs(os.path.dirname(file), exist_ok=True)
     with open(file, 'w') as f:
         json.dump(top_level_schema, f, indent=2)
 
