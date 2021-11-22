@@ -149,8 +149,10 @@ jobs:
         run: pnpm i
       - name: Build plugin
         run: pnpx nx build plugin
-      - name: Compile contract and generate type
+      - name: Generate contract TypeScript definition
         run: pnpm run contract:compile
+      - name: Generate event JSON schema
+        run: pnpm run api-dispute:generate-event-schema
       - name: Generate event interface
         run: pnpm run watcher:generate-event-interface
       - name: Build apps
