@@ -132,6 +132,19 @@ A hosted frontend and backend will be provided by Solomon, based on this reposit
 
 ## Contribute
 
+### Generate scripts
+
+- `watcher:generate-mail-template`: Generate mail html templates for watcher.
+- `watcher:generate-event-interface`: Generate api events TypeScript interface for watcher. Should call `api-dispute:generate-event-schema` first.
+- `contract:generate-type`: Generate contracts type definitions.
+- `api-dispute:generate-event-schema`: Generate JSON schema from `api-dispute`.
+
+### Commit hooks
+
+- `commit-msg`: Check the commit msg, the naming rule as follows.
+- `pre-commit`: Format code with `nx format:write --base=main --head=HEAD` (use prettier).
+- `pre-push`: Check the branch name, the naming rule as follows.
+
 ### Branch name
 
 The branch name format is: `<issue-number>_<short-summary>`(`^[0-9]+_[a-z0-9-]+$`). For example: `17_some-fix`, `132_improve-core-performance`.
