@@ -12,7 +12,8 @@
     "skaffold": "(skaffold dev --cache-artifacts=true --force=false)",
     "watcher:generate-mail-template": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts",
     "watcher:generate-event-interface": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateEventInterface.ts",
-    "contract:compile": "cd apps/contracts && hardhat compile --force"
+    "contract:compile": "cd apps/contracts && hardhat compile --force",
+    "api-dispute:generate-event-schema": "cd apps/api-dispute && poetry install && poetry run python src/extract_schema.py -f ../../libs/shared/util-event/schema/event.schema.json"
   },
   "private": true,
   "devDependencies": {

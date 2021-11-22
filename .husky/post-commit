@@ -5,7 +5,7 @@
 pnpm run contract:compile
 
 # Generate event JSON schema
-pnpm run nx -- affected --target=generate-event-schema
+pnpm run api-dispute:generate-event-schema
 
 # Generate event TypeScript interface
 pnpm run watcher:generate-event-interface
