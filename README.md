@@ -142,8 +142,9 @@ A hosted frontend and backend will be provided by Solomon, based on this reposit
 ### Commit hooks
 
 - `commit-msg`: Check the commit msg, the naming rule as follows.
-- `pre-commit`: Format code with `nx format:write --base=main --head=HEAD` (use prettier).
-- `pre-push`: Check the branch name, the naming rule as follows.
+- `pre-push`:
+  - Format code with `nx format:write --base=main --head=HEAD` (use prettier)
+  - Check the branch name, the naming rule as follows.
 
 ### Branch name
 
