@@ -131,6 +131,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      # Setup Node.js env
       - name: Set up NodeJS (v14)
         uses: actions/setup-node@v2
         with:
@@ -149,12 +151,25 @@ jobs:
         run: pnpm i
       - name: Build plugin
         run: pnpx nx build plugin
+
+      # Setup Python env
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.7
+      - uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.1.11
+      - name: Install Python deps
+        run: cd apps/api-dispute && poetry install
+
+      # Generate files
       - name: Generate contract TypeScript definition
         run: pnpm run contract:generate-type
       - name: Generate event JSON schema
         run: pnpm run api-dispute:generate-event-schema
       - name: Generate event interface
         run: pnpm run watcher:generate-event-interface
+
       - name: Build apps
         run: pnpx nx affected:build --base=origin/main --parallel
 
