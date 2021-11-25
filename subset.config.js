@@ -61,6 +61,13 @@ module.exports = {
       'tslib',
       'reflect-metadata',
       'pkg-dir',
+      'class-validator',
+      'js-sha256',
+      '@ethersproject/providers',
+      '@types/express',
+      'express',
+      '@types/node-fetch',
+      'node-fetch',
     ],
   },
   'db-dev': {
