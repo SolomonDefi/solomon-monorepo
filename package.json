@@ -50,6 +50,7 @@
     "@types/mjml": "^4.7.0",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.2",
+    "@types/node-fetch": "^2.5.12",
     "@types/nodemailer": "^6.4.4",
     "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "~4.28.3",
