@@ -86,6 +86,17 @@ build:
       docker:
         dockerfile: apps/web-evidence/Dockerfile
         target: dev
+    - image: app-e2e.dev
+      context: .
+      sync:
+        manual:
+          - src: 'apps/app-e2e/src/**/*'
+            dest: '/usr/src'
+          - src: 'libs/shared/*/src/**/*'
+            dest: '/usr/src'
+      docker:
+        dockerfile: apps/app-e2e/Dockerfile
+        target: dev
 deploy:
   kubeContext: docker-desktop
   helm:
@@ -129,3 +140,6 @@ portForward:
   - resourceType: service
     resourceName: blockchain-watcher
     port: 4000
+  - resourceType: service
+    resourceName: app-e2e
+    port: 8485
