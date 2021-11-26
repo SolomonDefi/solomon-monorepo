@@ -3,6 +3,7 @@
   "projects": {
     "api-dispute": "apps/api-dispute",
     "api-evidence": "apps/api-evidence",
+    "app-e2e": "apps/app-e2e",
     "blockchain-watcher": "apps/blockchain-watcher",
     "blockchain-watcher-e2e": "apps/blockchain-watcher-e2e",
     "blockchain-watcher-feature-app": "libs/blockchain-watcher/feature-app",
