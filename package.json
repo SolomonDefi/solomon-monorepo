@@ -21,10 +21,10 @@
     "@babel/plugin-transform-modules-commonjs": "^7.15.4",
     "@babel/preset-env": "^7.15.8",
     "@cypress/code-coverage": "^3.9.11",
-    "@cypress/vite-dev-server": "^2.2.0",
-    "@cypress/vue": "^3.0.3",
-    "@intlify/eslint-plugin-vue-i18n": "^0.12.0",
-    "@intlify/vite-plugin-vue-i18n": "^2.4.0",
+    "@cypress/vite-dev-server": "^2.2.1",
+    "@cypress/vue": "^3.0.5",
+    "@intlify/eslint-plugin-vue-i18n": "^1.2.0",
+    "@intlify/vite-plugin-vue-i18n": "^3.2.1",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.6",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
@@ -62,7 +62,7 @@
     "chai": "^4.3.4",
     "chalk": "^4.1.2",
     "class-transformer": "^0.4.0",
-    "cypress": "^8.7.0",
+    "cypress": "^9.1.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.11.3",
@@ -80,7 +80,7 @@
     "jsdom": "^17.0.0",
     "nx-hardhat": "^0.1.0",
     "nx-python-fastapi": "^0.4.0",
-    "nx-vue3-vite": "^0.11.0",
+    "nx-vue3-vite": "^0.12.2",
     "postcss": "^8.3.6",
     "prettier": "^2.3.1",
     "pretty-quick": "^3.1.1",
@@ -100,9 +100,9 @@
     "typechain": "^6.0.2",
     "typescript": "4.4.4",
     "unplugin-vue-components": "^0.16.0",
-    "vite": "^2.6.13",
+    "vite": "^2.6.14",
     "vite-plugin-vue-images": "^0.6.1",
-    "vitepress": "^0.20.0",
+    "vitepress": "^0.20.1",
     "vue-eslint-parser": "^8.0.0"
   },
   "dependencies": {
@@ -132,7 +132,7 @@
     "tsconfig-paths": "^3.11.0",
     "uuid": "^8.3.2",
     "vue": "^3.2.20",
-    "vue-i18n": "^9.1.6",
+    "vue-i18n": "^9.2.0-beta.22",
     "vue-router": "^4.0.12"
   }
 }

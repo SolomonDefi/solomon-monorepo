@@ -10,6 +10,10 @@ Solomon's core technology is built around Ethereum, which is still the gold stan
 
 Aside from blockchain contracts guaranteeing buyer protection for online transactions, Solomon's core strength is its extensible frontend plugin. Using popular, modern, and light frameworks and development practices is key for growing a developer community and having the best chance of avoiding future tech stack obsolescence.
 
+## Monorepo
+
+We use [Nx](https://nx.dev/) for code organization and development workflows. Nx is aa opinionated framework for organizing a code base in reusable modules. See an overview of how we use Nx in the [architecture](/contributing/architecture) section.
+
 ### Vue3
 
 [Vue3](https://github.com/vuejs/vue-next) is a significant upgrade over Vue2, which is one of the most popular javascript frameworks. It enables more convenient Typescript integration, a composition API for better code organization and reuse, native Postcss integration, and numerous speed/build size improvements.

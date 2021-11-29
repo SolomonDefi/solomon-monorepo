@@ -28,7 +28,7 @@ Follow these steps to ensure a smooth process:
 
 ### Commits
 
-- Follow the commit message guidelines below
+- See the commit message [guidelines](/contributing/commit-format)
   - Use the present tense ("fix bug", not "fixed bug")
   - Use the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood) ("update packages", not "updates packages")
 - No merge commits, PRs must be rebased on `main` before merging

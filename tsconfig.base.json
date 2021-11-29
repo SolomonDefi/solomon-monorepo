@@ -19,7 +19,6 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
-      "@monorepo/shared/util-logger": ["libs/shared/util-logger/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-watcher/feature-app": [
@@ -35,6 +34,7 @@
       "@solomon/shared/util-core": ["libs/shared/util-core/src/index.ts"],
       "@solomon/shared/util-event": ["libs/shared/util-event/src/index.ts"],
       "@solomon/shared/util-i18n": ["libs/shared/util-i18n/src/index.ts"],
+      "@solomon/shared/util-logger": ["libs/shared/util-logger/src/index.ts"],
       "@solomon/shared/util-path-store": ["libs/shared/util-path-store/src/index.ts"],
       "@solomon/web/data-access-api": ["libs/web/data-access-api/src/index.ts"],
       "@solomon/web/data-access-state": ["libs/web/data-access-state/src/index.ts"],
