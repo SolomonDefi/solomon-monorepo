@@ -13,7 +13,7 @@ module.exports = {
       { text: 'Guide', link: '/guide/' },
       { text: 'Plugin', link: '/plugin/' },
       { text: 'Contracts', link: '/contracts/' },
-      { text: 'Utilities', link: '/utilities/' },
+      { text: 'Services', link: '/services/' },
       {
         text: 'Links',
         items: [
@@ -44,7 +44,6 @@ module.exports = {
         ],
       },
     ],
-
     sidebar: {
       // catch-all fallback
       '/': [
@@ -53,19 +52,33 @@ module.exports = {
           children: [
             {
               text: 'Why Solomon',
-              link: '/guide/why-solomon',
-            },
-            {
-              text: 'Getting Started',
               link: '/guide/',
             },
             {
               text: 'Technology',
               link: '/guide/technology',
             },
+          ],
+        },
+        {
+          text: 'Contributing',
+          link: '/contributing/',
+          children: [
             {
-              text: 'Contributing',
-              link: '/guide/contributing',
+              text: 'General',
+              link: '/contributing/general',
+            },
+            {
+              text: 'Commit Format',
+              link: '/contributing/commit-format',
+            },
+            {
+              text: 'Architecture',
+              link: '/contributing/architecture',
+            },
+            {
+              text: 'Code of Conduct',
+              link: '/contributing/code-of-conduct',
             },
           ],
         },
@@ -108,19 +121,24 @@ module.exports = {
           ],
         },
         {
-          text: 'Utilities',
+          text: 'Services',
+          link: '/services/',
           children: [
             {
+              text: 'Blockchain Watcher',
+              link: '/services/watcher',
+            },
+            {
+              text: 'Dispute API',
+              link: '/services/dispute',
+            },
+            {
               text: 'Evidence Upload',
-              link: '/utilities/',
+              link: '/services/evidence',
             },
             {
               text: 'Link Shortener',
-              link: '/utilities/shortener',
-            },
-            {
-              text: 'Blockchain wATCHER',
-              link: '/utilities/watcher',
+              link: '/services/shortener',
             },
           ],
         },

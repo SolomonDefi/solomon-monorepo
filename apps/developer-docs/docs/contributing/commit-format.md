@@ -8,7 +8,7 @@ Each commit message consists of a header, a body, and a footer.
 <scope> [<project>]: <short-summary> #<issue-number>
 ```
 
-Any line of the commit message cannot be longer than 100 characters.
+Each commit message cannot be longer than 100 characters.
 
 ## Commit Message Header
 
@@ -24,9 +24,24 @@ Any line of the commit message cannot be longer than 100 characters.
   └─⫸ Commit Scope: Emoji representing the type of work done
 ```
 
+All commit message header sections are required, and enforced by [husky](https://github.com/typicode/husky).
+
 ### Scopes
 
-TODO
+The following are `gitmoji` recommendations for the `scope`. These are not currently enforced, but may be in the future.
+
+- Release/tag - :bookmark: `:bookmark:`
+- Feature - :sparkles: `:sparkles:`
+- Docs - :books: `:books:`
+- Bugfix - :bug: `:bug:`
+- Testing - :white_check_mark: `:white_check_mark:`
+- Lint/format - :art: `:art:`
+- Refactor - :hammer: `:hammer:`
+- Code/file removal - :fire: `:fire:`
+- CI/CD - :green_heart: `:green_heart:`
+- Deps - :lock: `:lock:`
+- Breaking changes - :boom: `:boom:`
+- Config - :wrench: `:wrench:`
 
 ### Projects
 

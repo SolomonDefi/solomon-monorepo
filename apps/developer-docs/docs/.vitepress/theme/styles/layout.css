@@ -1,3 +1,7 @@
 header {
   background-color: black;
 }
+
+.page .container {
+  max-width: 840px;
+}

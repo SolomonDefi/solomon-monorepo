@@ -11,7 +11,7 @@ import {
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
 import { dbService } from './dbService'
-import { loggerService } from '@monorepo/shared/util-logger'
+import { loggerService } from '@solomon/shared/util-logger'
 
 export class EthService {
   provider: JsonRpcProvider | null = null
