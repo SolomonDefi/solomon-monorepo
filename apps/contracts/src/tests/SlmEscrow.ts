@@ -1,9 +1,9 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
 
-describe('SLM Chargebacks', function () {
-  let jurors, token, storage, manager, chargeback
-  let ChargebackFactory
+describe('SLM Escrow', function () {
+  let jurors, storage, manager, escrow
+  let EscrowFactory
   let owner,
     account1,
     account2
@@ -16,11 +16,11 @@ describe('SLM Chargebacks', function () {
     const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
     const TokenFactory = await ethers.getContractFactory('SlmToken')
     const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
-    ChargebackFactory = await ethers.getContractFactory('SlmChargeback')
+    EscrowFactory = await ethers.getContractFactory('SlmEscrow')
 
     // Deploy token contract and unlock tokens
     const initialSupply = ethers.utils.parseEther('100000000')
-    token = await TokenFactory.deploy(
+    const token = await TokenFactory.deploy(
       'SLMToken',
       'SLM',
       initialSupply,
@@ -43,41 +43,36 @@ describe('SLM Chargebacks', function () {
     await storage.setStakerManager(manager.address)
 
     // Deploy juror contract
-    const minJurorCount = 3
+    const minJurorCount = 4
     const tiebreakerDuration = 10;
     jurors = await JudgementFactory.deploy(manager.address, minJurorCount, tiebreakerDuration)
     await manager.setJudgementContract(jurors.address)
 
-    // Deploy chargeback contract
-    chargeback = await ChargebackFactory.deploy()
-    await chargeback.initializeChargeback(
+    // Deploy escrow contract
+    escrow = await EscrowFactory.deploy()
+    await escrow.initializeEscrow(
       jurors.address,
       token.address, 
       account1.address,
       account2.address,
-      0,
     )
 
-    // Test that buyer and merchant addresses are correct
-    chai.expect(await chargeback.buyer()).to.equal(account2.address)
-    chai.expect(await chargeback.merchant()).to.equal(account1.address)
+    // Test that party addresses are correct
+    chai.expect(await escrow.party1()).to.equal(account1.address)
+    chai.expect(await escrow.party2()).to.equal(account2.address)
   })
 
   it('Test evidence uploaders', async function () {
-
     // Test uploading of evidence by both parties
-    const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
-    await chai.expect(chargeback.connect(account1).requestChargeback(buyerEvidenceURL)).to.be.revertedWith('Only buyer can chargeback')
-    await chargeback.connect(account2).requestChargeback(buyerEvidenceURL)
-    await chai.expect(chargeback.connect(account2).requestChargeback(buyerEvidenceURL)).to.be.revertedWith('Evidence already provided')
-    chai.expect(await chargeback.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
+    const party1EvidenceURL = 'www.buyerEvidenceURL.com'
+    await escrow.connect(account1).initiateDispute(party1EvidenceURL)
+    await chai.expect(escrow.connect(account1).initiateDispute(party1EvidenceURL)).to.be.revertedWith('Evidence already provided')
+    chai.expect(await escrow.party1EvidenceURL()).to.equal(party1EvidenceURL)
 
-    const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
-    await chai.expect(chargeback.connect(account2).merchantEvidence(merchantEvidenceURL)).to.be.revertedWith('Invalid sender')
-    await chargeback.connect(account1).merchantEvidence(merchantEvidenceURL)
-    await chai.expect(chargeback.connect(account1).merchantEvidence(buyerEvidenceURL)).to.be.revertedWith('Evidence already provided')
-    chai.expect(await chargeback.merchantEvidenceURL()).to.equal(merchantEvidenceURL)
+    const party2EvidenceURL = 'www.merchantEvidenceURL.com'
+    await escrow.connect(account2).initiateDispute(party2EvidenceURL)
+    await chai.expect(escrow.connect(account2).initiateDispute(party2EvidenceURL)).to.be.revertedWith('Evidence already provided')
+    chai.expect(await escrow.party2EvidenceURL()).to.equal(party2EvidenceURL)
 
   })
-
 })

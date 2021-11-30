@@ -38,19 +38,19 @@ contract SlmStakerStorage is Ownable {
     mapping(uint256 => address) public addressLookup;
 
     /// Mapping for User wallet address to User ID and stake amount
-    mapping(address => mapping(uint256 => uint256)) public stakes;
+    mapping(address => uint256) public stakes;
 
     /// Mapping for User wallet address to User ID and unstake history
-    mapping(address => mapping(uint256 => unstakedInfo[])) public unstakedSLM;
+    mapping(address => unstakedInfo[]) public unstakedSLM;
 
     /// User address to outstanding votes a staker must submit
-    mapping(address => mapping(uint256 => uint256)) public outstandingVotes;
+    mapping(address => uint256) public outstandingVotes;
 
     /// Dispute Address to Staker votes a staker has outstanding
-    mapping(address => mapping(uint256 => uint256)) public disputeVoteCount;
+    mapping(address => mapping(address => uint256)) public disputeVoteCount;
 
     /// Dispute Address to Staker previous number of vote requirements
-    mapping(address => mapping(uint256 => uint256)) public voteHistoryCount;
+    mapping(address => uint256) public voteHistoryCount;
 
     /// Timestamp in seconds for voting end times for all disputes
     mapping(address => uint256) public voteEndTimes;
@@ -121,9 +121,9 @@ contract SlmStakerStorage is Ownable {
         return addressLookup[userId];
     }
 
-    function updateStakerPool(uint256[] memory newStakerPool) external onlyManager {
+    function updateStakerPool(uint256[] memory newStakerPool) external onlyOwnerOrManager {
         require(newStakerPool.length > 0, "Invalid staker pool");
-        stakerPool[msg.sender] = newStakerPool;
+        stakerPool[address(stakerManager)] = newStakerPool;
     }
 
     function getStakerPool(address managerAddress) external view returns(uint256[] memory) {
@@ -133,132 +133,116 @@ contract SlmStakerStorage is Ownable {
         return stakerPool[managerAddress];
     }
 
-    function getStake(address user, uint256 beneficiary) external view returns(uint256) {
+    function getStake(address user) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return stakes[user][beneficiary];
+        return stakes[user];
     }
 
-    function increaseStakeAmount(address user, uint256 beneficiary, uint256 amount) external onlyOwnerOrManager {
+    function increaseStakeAmount(address user, uint256 amount) external onlyOwnerOrManager {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
         require(amount > 0, "Invalid amount");
-        stakes[user][beneficiary] += amount;
+        stakes[user] += amount;
         totalStaked += amount;
     }
 
-    function decreaseStakeAmount(address user, uint256 beneficiary, uint256 amount) external onlyOwnerOrManager {
+    function decreaseStakeAmount(address user, uint256 amount) external onlyOwnerOrManager {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
         require(amount > 0, "Invalid amount");
-        stakes[user][beneficiary] -= amount;
+        stakes[user] -= amount;
         totalStaked -= amount;
     }
 
-    function increaseOutstandingVotes(uint256 amount, address user, uint256 beneficiary) external onlyOwnerOrManager {
+    function increaseOutstandingVotes(address user, uint256 amount) external onlyOwnerOrManager {
         require(amount > 0, "Invalid amount");
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        outstandingVotes[user][beneficiary] += amount;
+        outstandingVotes[user] += amount;
     }
 
-    function decreaseOutstandingVotes(uint256 amount, address user, uint256 beneficiary) external onlyOwnerOrManager {
+    function decreaseOutstandingVotes(address user, uint256 amount) external onlyOwnerOrManager {
         require(amount > 0, "Invalid amount");
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        outstandingVotes[user][beneficiary] -= amount;
+        outstandingVotes[user] -= amount;
     }
 
-    function getOutstandingVotes(address user, uint256 beneficiary) external view returns(uint256) {
+    function getOutstandingVotes(address user) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return outstandingVotes[user][beneficiary];
+        return outstandingVotes[user];
     }
 
-    function increaseDisputeVoteCount(uint256 amount, address dispute, uint256 beneficiary) external onlyOwnerOrManager {
+    function increaseDisputeVoteCount(address user, address dispute, uint256 amount) external onlyOwnerOrManager {
         require(amount > 0, "Invalid amount");
         require(dispute != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        disputeVoteCount[dispute][beneficiary] += amount;
+        require(user != address(0), "Zero addr");
+        disputeVoteCount[dispute][user] += amount;
     }
 
-    function decreaseDisputeVoteCount(uint256 amount, address dispute, uint256 beneficiary) external onlyOwnerOrManager {
+    function decreaseDisputeVoteCount(address user, address dispute, uint256 amount) external onlyOwnerOrManager {
         require(amount > 0, "Invalid amount");
         require(dispute != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        disputeVoteCount[dispute][beneficiary] -= amount;
+        require(user != address(0), "Zero addr");
+        disputeVoteCount[dispute][user] -= amount;
     }
 
-    function getDisputeVoteCount(address dispute, uint256 beneficiary) external view returns(uint256) {
+    function getDisputeVoteCount(address user, address dispute) external view returns(uint256) {
         require(dispute != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return disputeVoteCount[dispute][beneficiary];
+        require(user != address(0), "Zero addr");
+        return disputeVoteCount[dispute][user];
     }
 
-    function increaseVoteHistoryCount(uint256 amount, address user, uint256 beneficiary) external onlyOwnerOrManager {
+    function increaseVoteHistoryCount(address user, uint256 amount) external onlyOwnerOrManager {
         require(amount > 0, "Invalid amount");
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        voteHistoryCount[user][beneficiary] += amount;
+        voteHistoryCount[user] += amount;
     }
 
-    function decreaseVoteHistoryCount(uint256 amount, address user, uint256 beneficiary) external onlyOwnerOrManager {
+    function decreaseVoteHistoryCount(address user, uint256 amount) external onlyOwnerOrManager {
         require(amount > 0, "Invalid amount");
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        voteHistoryCount[user][beneficiary] -= amount;
+        voteHistoryCount[user] -= amount;
     }
 
-    function getVoteHistoryCount(address user, uint256 beneficiary) external view returns(uint256) {
+    function getVoteHistoryCount(address user) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return voteHistoryCount[user][beneficiary];
+        return voteHistoryCount[user];
     }
 
-    function pushUnstakedInfo(address user, uint256 beneficiary, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
+    function pushUnstakedInfo(address user, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
         require(timestamp > 0, "Invalid time");
-        unstakedSLM[user][beneficiary].push(unstakedInfo({amount: amount, time: timestamp}));
+        unstakedSLM[user].push(unstakedInfo({amount: amount, time: timestamp}));
     }
 
-    function deleteUnstakedInfo(address user, uint256 beneficiary, uint256 index) external onlyOwnerOrManager {
+    function deleteUnstakedInfo(address user, uint256 index) external onlyOwnerOrManager {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        delete unstakedSLM[user][beneficiary][index];
+        delete unstakedSLM[user][index];
     }
 
-    function updateUnstakedInfo(address user, uint256 beneficiary, uint256 index, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
+    function updateUnstakedInfo(address user, uint256 index, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
         require(timestamp > 0, "Invalid time");
-        unstakedSLM[user][beneficiary][index] = unstakedInfo({amount: amount, time: timestamp});
+        unstakedSLM[user][index] = unstakedInfo({amount: amount, time: timestamp});
     }
 
-    function getUnstakedAmount(address user, uint256 beneficiary, uint256 index) external view returns(uint256) {
+    function getUnstakedAmount(address user, uint256 index) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return unstakedSLM[user][beneficiary][index].amount;
+        return unstakedSLM[user][index].amount;
     }
 
-    function getUnstakedTime(address user, uint256 beneficiary, uint256 index) external view returns(uint256) {
+    function getUnstakedTime(address user, uint256 index) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return unstakedSLM[user][beneficiary][index].time;
+        return unstakedSLM[user][index].time;
     }
 
-    function getUnstakeCount(address user, uint256 beneficiary) external view returns(uint256) {
+    function getUnstakeCount(address user) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
-        return unstakedSLM[user][beneficiary].length;
+        return unstakedSLM[user].length;
     }
 
-    function getUnstakedSLM(address user, uint256 beneficiary) external view returns(uint256) {
+    function getUnstakedSLM(address user) external view returns(uint256) {
         require(user != address(0), "Zero addr");
-        require(beneficiary > 0, "Invalid account");
         uint256 currentUnstakedSLM = 0;
-        for (uint256 i = 0; i < unstakedSLM[user][beneficiary].length; i += 1) {
-            currentUnstakedSLM += unstakedSLM[user][beneficiary][i].amount;
+        for (uint256 i = 0; i < unstakedSLM[user].length; i += 1) {
+            currentUnstakedSLM += unstakedSLM[user][i].amount;
         }
         return currentUnstakedSLM;
     }
@@ -274,7 +258,7 @@ contract SlmStakerStorage is Ownable {
         return voteEndTimes[dispute];
     }
 
-    function sendFunds(address walletAddress, uint256 amount) external {
+    function sendFunds(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
         token.transfer(walletAddress, amount);

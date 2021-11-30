@@ -37,11 +37,11 @@ export const toSafeNumber = (value) => parseSci(value.toString())
 
 // End of temporary placeholders
 
-export function assertBN(bn1, bn2, msg) {
-  const s1 = toSafeNumber(bn1)
-  const s2 = toSafeNumber(bn2)
-  assert.strictEqual(s1, s2, `${msg}. ${s1} !== ${s2}`)
-}
+// export function assertBN(bn1, bn2, msg) {
+//   const s1 = toSafeNumber(bn1)
+//   const s2 = toSafeNumber(bn2)
+//   assert.strictEqual(s1, s2, `${msg}. ${s1} !== ${s2}`)
+// }
 
 export async function increaseTime(days, start) {
   const now = new Date(start * 1000)
@@ -51,19 +51,19 @@ export async function increaseTime(days, start) {
   return start + time
 }
 
-export async function assertBalance(Token, address, amount) {
-  const balance = await Token.balanceOf(address)
-  assertBN(balance, toBN(amount), 'Balance incorrect')
-}
+// export async function assertBalance(Token, address, amount) {
+//   const balance = await Token.balanceOf(address)
+//   assertBN(balance, toBN(amount), 'Balance incorrect')
+// }
 
-export const shouldRevert = async (action, expectedOutput, message) => {
-  try {
-    await action
-    assert.strictEqual(false, true, message)
-  } catch (error) {
-    assert.ok(
-      error.message.includes(expectedOutput),
-      `Expected: "${expectedOutput}"\n${message || error.message}`,
-    )
-  }
-}
+// export const shouldRevert = async (action, expectedOutput, message) => {
+//   try {
+//     await action
+//     assert.strictEqual(false, true, message)
+//   } catch (error) {
+//     assert.ok(
+//       error.message.includes(expectedOutput),
+//       `Expected: "${expectedOutput}"\n${message || error.message}`,
+//     )
+//   }
+// }

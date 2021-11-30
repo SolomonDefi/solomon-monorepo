@@ -12,9 +12,9 @@ import "./SlmStakerStorage.sol";
 /// @title SlmStakerManager allows users to stake SLM to become jurors and earn rewards
 contract SlmStakerManager is Ownable {
 
-    event StakedSLM(uint256 amount, uint256 beneficiary, address user);
+    event StakedSLM(uint256 amount, address user);
 
-    event UnstakeSLM(uint256 amount, uint256 beneficiary, address user);
+    event UnstakedSLM(uint256 amount, address user);
 
     uint256[] public stakerPool;
 
@@ -51,45 +51,46 @@ contract SlmStakerManager is Ownable {
     function stake(uint256 beneficiary, uint256 amount) public {
         address backer = msg.sender;
 
-        uint256 unstakeCount = stakerStorage.getUnstakeCount(backer, beneficiary);
+        uint256 unstakeCount = stakerStorage.getUnstakeCount(backer);
         if (unstakeCount > 0) {
-            uint256 unstakeTime = stakerStorage.getUnstakedTime(backer, beneficiary, unstakeCount-1);
+            uint256 unstakeTime = stakerStorage.getUnstakedTime(backer, unstakeCount-1);
             uint256 unstakePeriod = stakerStorage.unstakePeriod();
             require(block.timestamp > unstakeTime + unstakePeriod, "Unstake wait period has not ended");
         }
 
-        uint256 userStake = stakerStorage.getStake(backer, beneficiary);
+        uint256 userStake = stakerStorage.getStake(backer);
         if (userStake == 0) {
             stakerPool.push(beneficiary);
             stakerStorage.setUserId(backer, beneficiary);
             stakerStorage.updateStakerPool(stakerPool);
         }
 
-        stakerStorage.increaseStakeAmount(backer, beneficiary, amount);
+        stakerStorage.increaseStakeAmount(backer, amount);
 
         token.transferFrom(backer, address(stakerStorage), amount);
-        emit StakedSLM(amount, beneficiary, backer);
+        emit StakedSLM(amount, backer);
     }
 
-    function unstake(uint256 beneficiary) public returns(uint256) {
+    function unstake() public returns(uint256) {
         address backer = msg.sender;
 
-        uint256 userStake = stakerStorage.getStake(backer, beneficiary);
+        uint256 userStake = stakerStorage.getStake(backer);
         require(userStake > 0, "No stake");
 
-        stakerStorage.decreaseStakeAmount(backer, beneficiary, userStake);
+        stakerStorage.decreaseStakeAmount(backer, userStake);
 
-        stakerStorage.pushUnstakedInfo(backer, beneficiary, userStake, block.timestamp);
+        stakerStorage.pushUnstakedInfo(backer, userStake, block.timestamp);
         stakerStorage.sendFunds(backer, userStake);
 
         for (uint256 i = 0; i < stakerPool.length; i += 1) {
+            uint256 beneficiary = stakerStorage.getUserId(backer);
             if (stakerPool[i] == beneficiary) {
                 delete stakerPool[i];
             }
         }
         stakerStorage.updateStakerPool(stakerPool);
 
-        emit UnstakeSLM(userStake, beneficiary, backer);
+        emit UnstakedSLM(userStake, backer);
         return userStake;
     }
 
@@ -102,17 +103,26 @@ contract SlmStakerManager is Ownable {
         stakerStorage.setVoteEndTime(disputeAddress, endTime);
 
         for (uint256 i = 0; i < jurorList.length; i++) {
-            uint256 currentJuror = jurorList[i];
-            uint256 disputeVoteCount = stakerStorage.getDisputeVoteCount(disputeAddress, currentJuror);
+            uint256 jurorId = jurorList[i];
+            address currentJuror = stakerStorage.getUserAddress(jurorId);
+            uint256 disputeVoteCount = stakerStorage.getDisputeVoteCount(currentJuror, disputeAddress);
             if (disputeVoteCount == 0) {
-                stakerStorage.increaseOutstandingVotes(1, disputeAddress, currentJuror);
-                stakerStorage.increaseDisputeVoteCount(1, disputeAddress, currentJuror);
+                stakerStorage.increaseOutstandingVotes(currentJuror, 1);
+                stakerStorage.increaseDisputeVoteCount(currentJuror, disputeAddress, 1);
             } else {
-                stakerStorage.decreaseOutstandingVotes(disputeVoteCount, disputeAddress, currentJuror);
-                stakerStorage.increaseOutstandingVotes(1, disputeAddress, currentJuror);
-                stakerStorage.decreaseDisputeVoteCount(disputeVoteCount, disputeAddress, currentJuror);
-                stakerStorage.increaseDisputeVoteCount(1, disputeAddress, currentJuror);
+                stakerStorage.decreaseOutstandingVotes(currentJuror, disputeVoteCount);
+                stakerStorage.increaseOutstandingVotes(currentJuror, 1);
+                stakerStorage.decreaseDisputeVoteCount(currentJuror, disputeAddress, disputeVoteCount);
+                stakerStorage.increaseDisputeVoteCount(currentJuror, disputeAddress, 1);
             }
+        }
+    }
+
+    function managedVote(address walletAddress, address slmContract) external onlyOwnerOrJudgement {
+        if (this.getDisputeVoteCount(walletAddress, slmContract) == 1){
+            stakerStorage.decreaseOutstandingVotes(walletAddress, 1);
+            stakerStorage.decreaseDisputeVoteCount(walletAddress, slmContract, 1);
+            stakerStorage.increaseVoteHistoryCount(walletAddress, 1);
         }
     }
 
@@ -130,17 +140,15 @@ contract SlmStakerManager is Ownable {
         stakerStorage.announceReward(rewardPercent, rewardAmount);
     }
 
-    function withdrawRewards(address walletAddress) external {
-        require(walletAddress != address(0), "Zero addr");
-        uint256 stakeRewards = _calculateStakeRewards(walletAddress);
-        stakerStorage.sendFunds(walletAddress, stakeRewards);
+    function withdrawRewards() external {
+        uint256 stakeRewards = _calculateStakeRewards(msg.sender);
+        stakerStorage.sendFunds(msg.sender, stakeRewards);
     }
 
     function _calculateStakeRewards(address walletAddress) private returns(uint256) {
         require(walletAddress != address(0), "Zero addr");
 
-        uint256 userId = stakerStorage.getUserId(walletAddress);
-        uint256 userStake = stakerStorage.getStake(walletAddress, userId);
+        uint256 userStake = stakerStorage.getStake(walletAddress);
         uint256 stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
         uint256 currentRewardIndex = stakerStorage.getRewardPercentHistoryLength() - 1;
         uint256 totalStakeRewards = 0;
@@ -164,4 +172,43 @@ contract SlmStakerManager is Ownable {
         return totalStakeRewards;
     }
 
+    function getStake(address walletAddress) external view returns(uint256) {
+        return stakerStorage.getStake(walletAddress);
+    }
+
+    function getRewardPercentHistory(uint256 index) external view returns(uint256) {
+        return stakerStorage.getRewardPercentHistory(index);
+    }
+
+    function getRewardAmountHistory(uint256 index) external view returns(uint256) {
+        return stakerStorage.getRewardAmountHistory(index);
+    }
+
+    function getUnstakedAmount(address user, uint256 index) external view returns(uint256) {
+        return stakerStorage.getUnstakedAmount(user, index);
+    }
+
+    function getUnstakedTime(address user, uint256 index) external view returns(uint256) {
+        return stakerStorage.getUnstakedTime(user, index);
+    }
+
+    function getUnstakeCount(address user) external view returns(uint256) {
+        return stakerStorage.getUnstakeCount(user);
+    }
+
+    function getUnstakedSLM(address user) external view returns(uint256) {
+        return stakerStorage.getUnstakedSLM(user);
+    }
+
+    function getOutstandingVotes(address user) external view returns(uint256) {
+        return stakerStorage.getOutstandingVotes(user);
+    }
+
+    function getDisputeVoteCount(address user, address dispute) external view returns(uint256) {
+        return stakerStorage.getDisputeVoteCount(user, dispute);
+    }
+
+    function getVoteHistoryCount(address user) external view returns(uint256) {
+        return stakerStorage.getVoteHistoryCount(user);
+    }
 }

@@ -11,6 +11,7 @@ import "../SlmStakerManager.sol";
 contract SlmJudgement is Ownable {
 
     // TODO - Add events for certain actions
+    // TODO - Reassess how to handle tiebreakers or just let it be
     
     uint16 public minJurorCount;
     uint256[] private selectedJurors;
@@ -64,8 +65,6 @@ contract SlmJudgement is Ownable {
         //  1 == Vote in favor of buyer
         //  2 == Vote in favor of merchant
         mapping(address => uint8) votes;
-        // How many times a certain user voted
-        mapping(address => uint16) voteCount;
         // Number of votes in favor of merchant
         uint16 merchantVoteCount;
         // Number of votes in favor of buyer
@@ -74,7 +73,7 @@ contract SlmJudgement is Ownable {
         uint16 quorum;
         // Voting end time
         uint256 voteEndTime;
-
+        // Status of the tiebreaker if needed
         bool tieBreakComplete;
     }
 
@@ -115,8 +114,8 @@ contract SlmJudgement is Ownable {
 
     function initializeDispute(address slmContract, uint16 quorum, uint256 endTime) external onlyOwner {
         require(slmContract != address(0), "Zero addr");
-        require(quorum > 0, "Invalid number");
-        require(endTime > 0, "Invalid number");
+        require(quorum > 0, "Invalid quorum");
+        require(endTime > 0, "Invalid endTime");
         
         _setJurors(slmContract);
         disputes[slmContract].quorum = quorum;
@@ -135,32 +134,29 @@ contract SlmJudgement is Ownable {
         }
     }
 
-    function vote(address slmContract, bytes32 encryptionKey, uint8 _voteForBuyer) external {
+    function vote(address slmContract, bytes32 encryptionKey, bytes32 vote) external {
         require(slmContract != address(0), "Zero addr");
         require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
+        stakerManager.managedVote(msg.sender, slmContract);
         Role storage roles = disputeRoles[slmContract];
         require(roles.memberRoles[msg.sender] == MemberRole.Juror, "Voter ineligible");
-        if (roles.encryptedKeyList[msg.sender] == keccak256(abi.encodePacked(msg.sender, encryptionKey, _voteForBuyer))) {
+        if (roles.encryptedKeyList[msg.sender] == vote) {
             if (disputes[slmContract].votes[msg.sender] == 0) {
                 disputes[slmContract].buyerVoteCount += 1;
             } else if (disputes[slmContract].votes[msg.sender] == 2) {
                 disputes[slmContract].merchantVoteCount -= 1;
                 disputes[slmContract].buyerVoteCount += 1;
             }
+            disputes[slmContract].votes[msg.sender] = 1;
         } else {
-            if (_voteForBuyer == 1) {
-                _voteForBuyer = 2;
-            }
-
             if (disputes[slmContract].votes[msg.sender] == 0) {
                 disputes[slmContract].merchantVoteCount += 1;
             } else if (disputes[slmContract].votes[msg.sender] == 1) {
                 disputes[slmContract].buyerVoteCount -= 1;
                 disputes[slmContract].merchantVoteCount += 1;
             }
+            disputes[slmContract].votes[msg.sender] = 2;
         }
-        disputes[slmContract].voteCount[msg.sender] += 1;
-        disputes[slmContract].votes[msg.sender] = _voteForBuyer;
     }
 
     function setAdminRights(address walletAddress) external onlyOwner {
@@ -238,13 +234,18 @@ contract SlmJudgement is Ownable {
         }
     }
 
+    function authorizeUser(address slmContract, address user, bytes32 encryptionKey) external view {
+        Role storage roles = disputeRoles[slmContract];
+        require(roles.encryptedKeyList[user] == keccak256(abi.encodePacked(user, encryptionKey)), "Unauthorized access");
+    }
+
     function getVoteResults(address slmContract, bytes32 encryptionKey) external view returns(VoteStates) {
         require(slmContract != address(0), "Zero addr");
         Dispute storage dispute = disputes[slmContract];
         Role storage roles = disputeRoles[slmContract];
         if (dispute.voteEndTime > block.timestamp || tieBreakerEndTimes[slmContract] > block.timestamp) {
             require(roles.memberRoles[msg.sender] == MemberRole.Merchant || roles.memberRoles[msg.sender] == MemberRole.Buyer || adminList[msg.sender] == true, "Unauthorized role");
-            require(roles.encryptedKeyList[msg.sender] == keccak256(abi.encodePacked(msg.sender, encryptionKey)), "Unauthorized access");
+            this.authorizeUser(slmContract, msg.sender, encryptionKey);
             return voteResults[slmContract];
         }
         return voteResults[slmContract];

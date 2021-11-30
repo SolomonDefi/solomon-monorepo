@@ -52,21 +52,10 @@ contract SlmEscrow is SlmShared {
         }
     }
 
-    /// First party dispute evidence
-    /// @param _evidenceURL Link to real-world evidence
-    function party1Evidence(string memory _evidenceURL) external {
-        super._party1Evidence(_evidenceURL);
-    }
-
-    /// Second party dispute evidence
-    /// @param _evidenceURL Link to real-world evidence
-    function party2Evidence(string memory _evidenceURL) external {
-        super._party2Evidence(_evidenceURL);
-    }
-
     /// Allow either party to withdraw if eligible
     function withdrawFunds(bytes32 encryptionKey) external {
         require(msg.sender == _party1 || msg.sender == _party2, "Only parties can withdraw");
+        judge.authorizeUser(address(this), msg.sender, encryptionKey);
 
         bool eligibleWithdrawal = false;
         SlmJudgement.VoteStates voteResult = judge.getVoteResults(address(this), encryptionKey);

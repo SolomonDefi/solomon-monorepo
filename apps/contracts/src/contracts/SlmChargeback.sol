@@ -3,7 +3,6 @@ pragma solidity 0.8.9;
 
 import "./library/SlmShared.sol";
 import "./library/SlmJudgement.sol";
-import "hardhat/console.sol";
 
 /// @title Solomon Chargeback
 /// @author Solomon DeFi
@@ -63,6 +62,7 @@ contract SlmChargeback is SlmShared {
     /// Allow buyer to withdraw if eligible
     function buyerWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == buyer(), "Only buyer can withdraw");
+        judge.authorizeUser(address(this), msg.sender, encryptionKey);
         require(judge.getVoteResults(address(this), encryptionKey) == SlmJudgement.VoteStates.BuyerWins, "Cannot withdraw");
         state = TransactionState.CompleteParty1;
         withdraw(buyer());
@@ -71,6 +71,7 @@ contract SlmChargeback is SlmShared {
     /// Allow merchant to withdraw if eligible
     function merchantWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == merchant(), "Only merchant can withdraw");
+        judge.authorizeUser(address(this), msg.sender, encryptionKey);
         require(judge.getVoteResults(address(this), encryptionKey) == SlmJudgement.VoteStates.MerchantWins, "Cannot withdraw");
         state = TransactionState.CompleteParty2;
         withdraw(merchant());
