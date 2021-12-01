@@ -1,9 +1,9 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
+import { deployContracts } from './testing'
 
 describe('SLM Staker Manager', function () {
-  let jurors, token, storage, manager, chargeback
-  let ChargebackFactory
+  let jurors, token, storage, manager, slmFactory
   let owner, account1, account2, account3, account4, account5
   let userId1, userId2
 
@@ -13,18 +13,7 @@ describe('SLM Staker Manager', function () {
   before(async () => {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
 
-    // Set up contract factories for deployment
-    const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
-    const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
-    const TokenFactory = await ethers.getContractFactory('SlmToken')
-    const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
-    ChargebackFactory = await ethers.getContractFactory('SlmChargeback')
-
-    // Deploy token contract and unlock tokens
-    const initialSupply = ethers.utils.parseEther('100000000')
-    token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
-    await token.deployed()
-    await token.unlock()
+    ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
     const defaultAmount = 200
@@ -34,34 +23,6 @@ describe('SLM Staker Manager', function () {
     await token.mint(account4.address, defaultAmount)
     await token.mint(account5.address, defaultAmount)
 
-    // Deploy staker storage contract
-    const unstakePeriod = 1
-    const minimumStake = 1
-    storage = await StorageFactory.deploy(token.address, unstakePeriod, minimumStake)
-
-    // Deploy staker manager contract
-    manager = await ManagerFactory.deploy(token.address, storage.address)
-    await storage.setStakerManager(manager.address)
-
-    // Deploy juror contract
-    const minJurorCount = 3
-    const tieBreakerDuration = 1
-    jurors = await JudgementFactory.deploy(
-      manager.address,
-      minJurorCount,
-      tieBreakerDuration,
-    )
-    await manager.setJudgementContract(jurors.address)
-
-    // Deploy chargeback contract
-    chargeback = await ChargebackFactory.deploy()
-    await chargeback.initializeChargeback(
-      jurors.address,
-      token.address,
-      account1.address,
-      account2.address,
-      0,
-    )
   })
 
   it('Staking and unstaking', async () => {

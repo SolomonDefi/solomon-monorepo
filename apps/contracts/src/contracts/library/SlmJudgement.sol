@@ -116,7 +116,6 @@ contract SlmJudgement is Ownable {
         require(slmContract != address(0), "Zero addr");
         require(quorum > 0, "Invalid quorum");
         require(endTime > 0, "Invalid endTime");
-        
         _setJurors(slmContract);
         disputes[slmContract].quorum = quorum;
         disputes[slmContract].voteEndTime = endTime;
@@ -125,8 +124,8 @@ contract SlmJudgement is Ownable {
 
     function setDisputeAccess(address slmContract, MemberRole[] memory roles, address[] memory addressList, bytes32[] memory keyList) external onlyOwner {
         require(slmContract != address(0), "Zero addr");
-        require(addressList.length == keyList.length && keyList.length == roles.length, "Invalid array length");
         require(roles.length > 0, "Empty array");
+        require(addressList.length == keyList.length && keyList.length == roles.length, "Invalid array length");
         Role storage disputeRole = disputeRoles[slmContract];
         for (uint32 i = 0; i < roles.length; i++) {
             disputeRole.memberRoles[addressList[i]] = roles[i];
@@ -134,10 +133,9 @@ contract SlmJudgement is Ownable {
         }
     }
 
-    function vote(address slmContract, bytes32 encryptionKey, bytes32 vote) external {
+    function vote(address slmContract, bytes32 vote) external {
         require(slmContract != address(0), "Zero addr");
         require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
-        stakerManager.managedVote(msg.sender, slmContract);
         Role storage roles = disputeRoles[slmContract];
         require(roles.memberRoles[msg.sender] == MemberRole.Juror, "Voter ineligible");
         if (roles.encryptedKeyList[msg.sender] == vote) {
@@ -157,18 +155,17 @@ contract SlmJudgement is Ownable {
             }
             disputes[slmContract].votes[msg.sender] = 2;
         }
+        stakerManager.managedVote(msg.sender, slmContract);
     }
 
     function setAdminRights(address walletAddress) external onlyOwner {
         require(walletAddress != address(0), "Zero addr");
-
         adminList[walletAddress] = true;
     }
 
     function removeAdminRights(address walletAddress) external onlyOwner {
         require(walletAddress != address(0), "Zero addr");
         require(this.adminList(walletAddress) == true, "Not an admin");
-
         adminList[walletAddress] = false;
     }
 
@@ -235,6 +232,8 @@ contract SlmJudgement is Ownable {
     }
 
     function authorizeUser(address slmContract, address user, bytes32 encryptionKey) external view {
+        require(slmContract != address(0), "Zero addr");
+        require(user != address(0), "Zero addr");
         Role storage roles = disputeRoles[slmContract];
         require(roles.encryptedKeyList[user] == keccak256(abi.encodePacked(user, encryptionKey)), "Unauthorized access");
     }
@@ -267,7 +266,6 @@ contract SlmJudgement is Ownable {
 
     function _selectJurorList(address slmContract) private returns(uint256[] memory) {
         require(slmContract != address(0), "Zero addr");
-
         Role storage roles = disputeRoles[slmContract];
         // TODO -- Find better alternative to round robin selection
         uint256 stakerCount = stakerPool.length;

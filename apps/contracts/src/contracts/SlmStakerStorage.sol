@@ -107,7 +107,6 @@ contract SlmStakerStorage is Ownable {
 
     function setUserId(address walletAddress, uint256 userId) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
-        require(userId > 0, "Invalid user ID");
         userIdList[walletAddress] = userId;
         addressLookup[userId] = walletAddress;
     }
@@ -127,122 +126,125 @@ contract SlmStakerStorage is Ownable {
     }
 
     function getStakerPool(address managerAddress) external view returns(uint256[] memory) {
+        require(managerAddress != address(0), "Zero addr");
         if (managerAddress == address(0)) {
             return stakerPool[stakerManager];
         }
         return stakerPool[managerAddress];
     }
 
-    function getStake(address user) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
-        return stakes[user];
+    function getStake(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakes[walletAddress];
     }
 
-    function increaseStakeAmount(address user, uint256 amount) external onlyOwnerOrManager {
-        require(user != address(0), "Zero addr");
+    function increaseStakeAmount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        stakes[user] += amount;
+        stakes[walletAddress] += amount;
         totalStaked += amount;
     }
 
-    function decreaseStakeAmount(address user, uint256 amount) external onlyOwnerOrManager {
-        require(user != address(0), "Zero addr");
+    function decreaseStakeAmount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        stakes[user] -= amount;
+        stakes[walletAddress] -= amount;
         totalStaked -= amount;
     }
 
-    function increaseOutstandingVotes(address user, uint256 amount) external onlyOwnerOrManager {
+    function increaseOutstandingVotes(address walletAddress, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        require(user != address(0), "Zero addr");
-        outstandingVotes[user] += amount;
+        outstandingVotes[walletAddress] += amount;
     }
 
-    function decreaseOutstandingVotes(address user, uint256 amount) external onlyOwnerOrManager {
+    function decreaseOutstandingVotes(address walletAddress, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        require(user != address(0), "Zero addr");
-        outstandingVotes[user] -= amount;
+        outstandingVotes[walletAddress] -= amount;
     }
 
-    function getOutstandingVotes(address user) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
-        return outstandingVotes[user];
+    function getOutstandingVotes(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return outstandingVotes[walletAddress];
     }
 
-    function increaseDisputeVoteCount(address user, address dispute, uint256 amount) external onlyOwnerOrManager {
-        require(amount > 0, "Invalid amount");
+    function increaseDisputeVoteCount(address walletAddress, address dispute, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(dispute != address(0), "Zero addr");
-        require(user != address(0), "Zero addr");
-        disputeVoteCount[dispute][user] += amount;
+        require(amount > 0, "Invalid amount");
+        disputeVoteCount[dispute][walletAddress] += amount;
     }
 
-    function decreaseDisputeVoteCount(address user, address dispute, uint256 amount) external onlyOwnerOrManager {
-        require(amount > 0, "Invalid amount");
+    function decreaseDisputeVoteCount(address walletAddress, address dispute, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(dispute != address(0), "Zero addr");
-        require(user != address(0), "Zero addr");
-        disputeVoteCount[dispute][user] -= amount;
+        require(amount > 0, "Invalid amount");
+        disputeVoteCount[dispute][walletAddress] -= amount;
     }
 
-    function getDisputeVoteCount(address user, address dispute) external view returns(uint256) {
+    function getDisputeVoteCount(address walletAddress, address dispute) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
         require(dispute != address(0), "Zero addr");
-        require(user != address(0), "Zero addr");
-        return disputeVoteCount[dispute][user];
+        return disputeVoteCount[dispute][walletAddress];
     }
 
-    function increaseVoteHistoryCount(address user, uint256 amount) external onlyOwnerOrManager {
+    function increaseVoteHistoryCount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        require(user != address(0), "Zero addr");
-        voteHistoryCount[user] += amount;
+        voteHistoryCount[walletAddress] += amount;
     }
 
-    function decreaseVoteHistoryCount(address user, uint256 amount) external onlyOwnerOrManager {
+    function decreaseVoteHistoryCount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
-        require(user != address(0), "Zero addr");
-        voteHistoryCount[user] -= amount;
+        voteHistoryCount[walletAddress] -= amount;
     }
 
-    function getVoteHistoryCount(address user) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
-        return voteHistoryCount[user];
+    function getVoteHistoryCount(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return voteHistoryCount[walletAddress];
     }
 
-    function pushUnstakedInfo(address user, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
-        require(user != address(0), "Zero addr");
+    function pushUnstakedInfo(address walletAddress, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
+        require(amount > 0, "Invalid amount");
         require(timestamp > 0, "Invalid time");
-        unstakedSLM[user].push(unstakedInfo({amount: amount, time: timestamp}));
+        unstakedSLM[walletAddress].push(unstakedInfo({amount: amount, time: timestamp}));
     }
 
-    function deleteUnstakedInfo(address user, uint256 index) external onlyOwnerOrManager {
-        require(user != address(0), "Zero addr");
-        delete unstakedSLM[user][index];
+    function deleteUnstakedInfo(address walletAddress, uint256 index) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
+        delete unstakedSLM[walletAddress][index];
     }
 
-    function updateUnstakedInfo(address user, uint256 index, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
-        require(user != address(0), "Zero addr");
+    function updateUnstakedInfo(address walletAddress, uint256 index, uint256 amount, uint256 timestamp) external onlyOwnerOrManager {
+        require(walletAddress != address(0), "Zero addr");
+        require(amount > 0, "Invalid amount");
         require(timestamp > 0, "Invalid time");
-        unstakedSLM[user][index] = unstakedInfo({amount: amount, time: timestamp});
+        unstakedSLM[walletAddress][index] = unstakedInfo({amount: amount, time: timestamp});
     }
 
-    function getUnstakedAmount(address user, uint256 index) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
-        return unstakedSLM[user][index].amount;
+    function getUnstakedAmount(address walletAddress, uint256 index) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return unstakedSLM[walletAddress][index].amount;
     }
 
-    function getUnstakedTime(address user, uint256 index) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
-        return unstakedSLM[user][index].time;
+    function getUnstakedTime(address walletAddress, uint256 index) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return unstakedSLM[walletAddress][index].time;
     }
 
-    function getUnstakeCount(address user) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
-        return unstakedSLM[user].length;
+    function getUnstakeCount(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return unstakedSLM[walletAddress].length;
     }
 
-    function getUnstakedSLM(address user) external view returns(uint256) {
-        require(user != address(0), "Zero addr");
+    function getUnstakedSLM(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
         uint256 currentUnstakedSLM = 0;
-        for (uint256 i = 0; i < unstakedSLM[user].length; i += 1) {
-            currentUnstakedSLM += unstakedSLM[user][i].amount;
+        for (uint256 i = 0; i < unstakedSLM[walletAddress].length; i += 1) {
+            currentUnstakedSLM += unstakedSLM[walletAddress][i].amount;
         }
         return currentUnstakedSLM;
     }
