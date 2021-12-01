@@ -23,7 +23,6 @@ describe('SLM Preorders', function () {
     // Set up current time variable
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
@@ -37,7 +36,14 @@ describe('SLM Preorders', function () {
     // Create new preorder contract
     const disputeID = 125
     const preorderAmount = 100
-    preorder = await deployPreorder(slmFactory, token, disputeID, account1, account2, preorderAmount)
+    preorder = await deployPreorder(
+      slmFactory,
+      token,
+      disputeID,
+      account1,
+      account2,
+      preorderAmount,
+    )
     await token.mint(preorder.address, defaultAmount)
 
     // Test that buyer and merchant addresses are correct
@@ -207,7 +213,14 @@ describe('SLM Preorders', function () {
     const defaultAmount = 100
     const disputeID = 126
     const preorderAmount = 100
-    const preorder2 = await deployPreorder(slmFactory, token, disputeID, account1, account2, preorderAmount)
+    const preorder2 = await deployPreorder(
+      slmFactory,
+      token,
+      disputeID,
+      account1,
+      account2,
+      preorderAmount,
+    )
     await token.mint(preorder2.address, defaultAmount)
 
     // Setup end time and dispute address

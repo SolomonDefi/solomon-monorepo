@@ -42,7 +42,6 @@ describe('SLM Jurors', function () {
     // Sets up current time variable
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
@@ -60,13 +59,27 @@ describe('SLM Jurors', function () {
     // Deploy chargeback contract
     let disputeID = 125
     const chargebackAmount = 100
-    chargeback = await deployChargeback(slmFactory, token, disputeID, account9, account8, chargebackAmount)
+    chargeback = await deployChargeback(
+      slmFactory,
+      token,
+      disputeID,
+      account9,
+      account8,
+      chargebackAmount,
+    )
     await token.mint(chargeback.address, defaultAmount)
 
     // Deploy escrow contract
     disputeID = 126
     const escrowAmount = 100
-    escrow = await deployEscrow(slmFactory, token, disputeID, account9, account8, escrowAmount)
+    escrow = await deployEscrow(
+      slmFactory,
+      token,
+      disputeID,
+      account9,
+      account8,
+      escrowAmount,
+    )
     await token.mint(escrow.address, defaultAmount)
   })
 
@@ -404,7 +417,14 @@ describe('SLM Jurors', function () {
     // Deploy a new chargeback contract
     let disputeID = 127
     const chargebackAmount = 100
-    const chargeback2 = await deployChargeback(slmFactory, token, disputeID, account9, account8, chargebackAmount)
+    const chargeback2 = await deployChargeback(
+      slmFactory,
+      token,
+      disputeID,
+      account9,
+      account8,
+      chargebackAmount,
+    )
     disputeAddress = chargeback2.address
     await token.mint(chargeback2.address, 100)
 

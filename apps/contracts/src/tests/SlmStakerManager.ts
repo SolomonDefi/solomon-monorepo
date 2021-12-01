@@ -12,7 +12,6 @@ describe('SLM Staker Manager', function () {
 
   before(async () => {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
-
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
@@ -22,7 +21,6 @@ describe('SLM Staker Manager', function () {
     await token.mint(account3.address, defaultAmount)
     await token.mint(account4.address, defaultAmount)
     await token.mint(account5.address, defaultAmount)
-
   })
 
   it('Staking and unstaking', async () => {

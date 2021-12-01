@@ -16,7 +16,6 @@ describe('SLM Staker Storage', function () {
     // Set up current time variable
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
@@ -30,7 +29,14 @@ describe('SLM Staker Storage', function () {
     // Deploy chargeback contract
     const disputeID = 125
     const chargebackAmount = 100
-    chargeback = await deployChargeback(slmFactory, token, disputeID, account1, account2, chargebackAmount)
+    chargeback = await deployChargeback(
+      slmFactory,
+      token,
+      disputeID,
+      account1,
+      account2,
+      chargebackAmount,
+    )
   })
 
   it('Sets min stake', async () => {

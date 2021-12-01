@@ -14,7 +14,14 @@ describe('SLM Chargebacks', function () {
     // Create new chargeback contract
     const disputeID = 125
     const chargebackAmount = 100
-    chargeback = await deployChargeback(slmFactory, token, disputeID, account1, account2, chargebackAmount)
+    chargeback = await deployChargeback(
+      slmFactory,
+      token,
+      disputeID,
+      account1,
+      account2,
+      chargebackAmount,
+    )
 
     // Test that buyer and merchant addresses are correct
     chai.expect(await chargeback.buyer()).to.equal(account2.address)

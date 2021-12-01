@@ -45,7 +45,14 @@ export async function increaseTime(days, start) {
   return start + time
 }
 
-export async function deployContracts(supplyAmount=100000000, unstakePeriod=1, minimumStake=1, minJurorCount=3, tieBreakerDuration=1, discount=0) {
+export async function deployContracts(
+  supplyAmount = 100000000,
+  unstakePeriod = 1,
+  minimumStake = 1,
+  minJurorCount = 3,
+  tieBreakerDuration = 1,
+  discount = 0,
+) {
   const [owner] = await ethers.getSigners()
 
   // Set up contract factories for deployment
@@ -60,12 +67,7 @@ export async function deployContracts(supplyAmount=100000000, unstakePeriod=1, m
 
   // Deploy token contract and unlock tokens
   const initialSupply = ethers.utils.parseEther(supplyAmount.toString())
-  const token = await TokenFactory.deploy(
-    'SLMToken',
-    'SLM',
-    initialSupply,
-    owner.address,
-  )
+  const token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
   await token.deployed()
   await token.unlock()
 
@@ -100,38 +102,52 @@ export async function deployContracts(supplyAmount=100000000, unstakePeriod=1, m
     chargebackMaster.address,
     preorderMaster.address,
     escrowMaster.address,
-    discount
+    discount,
   )
 
   return [token, manager, storage, jurors, slmFactory]
 }
 
-export async function deployChargeback(slmFactory, token, disputeID, merchant, buyer, amount) {
+export async function deployChargeback(
+  slmFactory,
+  token,
+  disputeID,
+  merchant,
+  buyer,
+  amount,
+) {
   // Create allowance for transfer of funds into chargeback contract
-  await token.approve(slmFactory.address, amount);
+  await token.approve(slmFactory.address, amount)
 
   // Create new chargeback contract
   await slmFactory.createChargeback(
     disputeID,
     merchant.address,
     buyer.address,
-    token.address
+    token.address,
   )
   const chargebackAddress = await slmFactory.getChargebackAddress(disputeID)
   const chargeback = await ethers.getContractAt('SlmChargeback', chargebackAddress)
   return chargeback
 }
 
-export async function deployPreorder(slmFactory, token, disputeID, merchant, buyer, amount) {
+export async function deployPreorder(
+  slmFactory,
+  token,
+  disputeID,
+  merchant,
+  buyer,
+  amount,
+) {
   // Create allowance for transfer of funds into preorder contract
-  await token.approve(slmFactory.address, amount);
+  await token.approve(slmFactory.address, amount)
 
   // Create new preorder contract
   await slmFactory.createPreorder(
     disputeID,
     merchant.address,
     buyer.address,
-    token.address
+    token.address,
   )
   const preorderAddress = await slmFactory.getPreorderAddress(disputeID)
   const preorder = await ethers.getContractAt('SlmPreorder', preorderAddress)
@@ -140,15 +156,10 @@ export async function deployPreorder(slmFactory, token, disputeID, merchant, buy
 
 export async function deployEscrow(slmFactory, token, disputeID, party1, party2, amount) {
   // Create allowance for transfer of funds into escrow contract
-  await token.approve(slmFactory.address, amount);
+  await token.approve(slmFactory.address, amount)
 
   // Create new escrow contract
-  await slmFactory.createEscrow(
-    disputeID,
-    party1.address,
-    party2.address,
-    token.address
-  )
+  await slmFactory.createEscrow(disputeID, party1.address, party2.address, token.address)
   const escrowAddress = await slmFactory.getEscrowAddress(disputeID)
   const escrow = await ethers.getContractAt('SlmEscrow', escrowAddress)
   return escrow

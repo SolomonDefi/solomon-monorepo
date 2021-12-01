@@ -13,7 +13,14 @@ describe('SLM Escrow', function () {
 
     const disputeID = 125
     const escrowAmount = 100
-    escrow = await deployEscrow(slmFactory, token, disputeID, account1, account2, escrowAmount)
+    escrow = await deployEscrow(
+      slmFactory,
+      token,
+      disputeID,
+      account1,
+      account2,
+      escrowAmount,
+    )
 
     // Test that party addresses are correct
     chai.expect(await escrow.party1()).to.equal(account1.address)
