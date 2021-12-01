@@ -1,59 +1,19 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
+import { deployContracts, deployEscrow } from './testing'
 
 describe('SLM Escrow', function () {
-  let jurors, storage, manager, escrow
-  let EscrowFactory
+  let escrow
   let owner, account1, account2
 
   before(async () => {
     ;[owner, account1, account2] = await ethers.getSigners()
 
-    // Set up contract factories for deployment
-    const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
-    const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
-    const TokenFactory = await ethers.getContractFactory('SlmToken')
-    const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
-    EscrowFactory = await ethers.getContractFactory('SlmEscrow')
+    const [token, manager, storage, jurors, slmFactory] = await deployContracts()
 
-    // Deploy token contract and unlock tokens
-    const initialSupply = ethers.utils.parseEther('100000000')
-    const token = await TokenFactory.deploy(
-      'SLMToken',
-      'SLM',
-      initialSupply,
-      owner.address,
-    )
-    await token.deployed()
-    await token.unlock()
-
-    // Deploy staker storage contract
-    const unstakePeriod = 1
-    const minimumStake = 1
-    storage = await StorageFactory.deploy(token.address, unstakePeriod, minimumStake)
-
-    // Deploy staker manager contract
-    manager = await ManagerFactory.deploy(token.address, storage.address)
-    await storage.setStakerManager(manager.address)
-
-    // Deploy juror contract
-    const minJurorCount = 4
-    const tiebreakerDuration = 10
-    jurors = await JudgementFactory.deploy(
-      manager.address,
-      minJurorCount,
-      tiebreakerDuration,
-    )
-    await manager.setJudgementContract(jurors.address)
-
-    // Deploy escrow contract
-    escrow = await EscrowFactory.deploy()
-    await escrow.initializeEscrow(
-      jurors.address,
-      token.address,
-      account1.address,
-      account2.address,
-    )
+    const disputeID = 125
+    const escrowAmount = 100
+    escrow = await deployEscrow(slmFactory, token, disputeID, account1, account2, escrowAmount)
 
     // Test that party addresses are correct
     chai.expect(await escrow.party1()).to.equal(account1.address)

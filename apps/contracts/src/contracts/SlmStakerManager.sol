@@ -49,6 +49,7 @@ contract SlmStakerManager is Ownable {
     }
 
     function stake(uint256 beneficiary, uint256 amount) public {
+        require(amount > 0, "Invalid amount");
         address backer = msg.sender;
 
         uint256 unstakeCount = stakerStorage.getUnstakeCount(backer);
@@ -95,6 +96,8 @@ contract SlmStakerManager is Ownable {
     }
 
     function setVoteDetails(address disputeAddress, uint256 endTime) public onlyOwnerOrJudgement {
+        require(disputeAddress != address(0), "Zero addr");
+        require(endTime >= block.timestamp, "Invalid end time");
         uint256 prevEndTime = stakerStorage.getVoteEndTime(disputeAddress);
         require(prevEndTime == 0 || block.timestamp > prevEndTime, "Dispute vote in progress");
 
@@ -119,6 +122,9 @@ contract SlmStakerManager is Ownable {
     }
 
     function managedVote(address walletAddress, address slmContract) external onlyOwnerOrJudgement {
+        require(walletAddress != address(0), "Zero addr");
+        require(slmContract != address(0), "Zero addr");
+
         if (this.getDisputeVoteCount(walletAddress, slmContract) == 1){
             stakerStorage.decreaseOutstandingVotes(walletAddress, 1);
             stakerStorage.decreaseDisputeVoteCount(walletAddress, slmContract, 1);
@@ -127,6 +133,7 @@ contract SlmStakerManager is Ownable {
     }
 
     function getUserId(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
         return stakerStorage.getUserId(walletAddress);
     }
 
@@ -173,6 +180,7 @@ contract SlmStakerManager is Ownable {
     }
 
     function getStake(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
         return stakerStorage.getStake(walletAddress);
     }
 
@@ -184,31 +192,39 @@ contract SlmStakerManager is Ownable {
         return stakerStorage.getRewardAmountHistory(index);
     }
 
-    function getUnstakedAmount(address user, uint256 index) external view returns(uint256) {
-        return stakerStorage.getUnstakedAmount(user, index);
+    function getUnstakedAmount(address walletAddress, uint256 index) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerStorage.getUnstakedAmount(walletAddress, index);
     }
 
-    function getUnstakedTime(address user, uint256 index) external view returns(uint256) {
-        return stakerStorage.getUnstakedTime(user, index);
+    function getUnstakedTime(address walletAddress, uint256 index) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerStorage.getUnstakedTime(walletAddress, index);
     }
 
-    function getUnstakeCount(address user) external view returns(uint256) {
-        return stakerStorage.getUnstakeCount(user);
+    function getUnstakeCount(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerStorage.getUnstakeCount(walletAddress);
     }
 
-    function getUnstakedSLM(address user) external view returns(uint256) {
-        return stakerStorage.getUnstakedSLM(user);
+    function getUnstakedSLM(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerStorage.getUnstakedSLM(walletAddress);
     }
 
-    function getOutstandingVotes(address user) external view returns(uint256) {
-        return stakerStorage.getOutstandingVotes(user);
+    function getOutstandingVotes(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerStorage.getOutstandingVotes(walletAddress);
     }
 
-    function getDisputeVoteCount(address user, address dispute) external view returns(uint256) {
-        return stakerStorage.getDisputeVoteCount(user, dispute);
+    function getDisputeVoteCount(address walletAddress, address dispute) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        require(dispute != address(0), "Zero addr");
+        return stakerStorage.getDisputeVoteCount(walletAddress, dispute);
     }
 
-    function getVoteHistoryCount(address user) external view returns(uint256) {
-        return stakerStorage.getVoteHistoryCount(user);
+    function getVoteHistoryCount(address walletAddress) external view returns(uint256) {
+        require(walletAddress != address(0), "Zero addr");
+        return stakerStorage.getVoteHistoryCount(walletAddress);
     }
 }

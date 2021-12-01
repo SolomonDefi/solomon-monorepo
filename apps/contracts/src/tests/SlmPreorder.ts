@@ -1,12 +1,11 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { increaseTime } from './testing'
+import { increaseTime, deployContracts, deployPreorder } from './testing'
 
 const { expect } = chai
 
 describe('SLM Preorders', function () {
-  let jurors, token, storage, manager, preorder
-  let PreorderFactory
+  let jurors, token, storage, manager, slmFactory, preorder
   let disputeAddress
   let owner, account1, account2, account3, account4, account5
   let userId3, userId4, userId5
@@ -25,18 +24,7 @@ describe('SLM Preorders', function () {
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
 
-    // Set up contract factories for deployment
-    const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
-    const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
-    const TokenFactory = await ethers.getContractFactory('SlmToken')
-    const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
-    PreorderFactory = await ethers.getContractFactory('SlmPreorder')
-
-    // Deploy token contract and unlock tokens
-    const initialSupply = ethers.utils.parseEther('100000000')
-    token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
-    await token.deployed()
-    await token.unlock()
+    ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
     const defaultAmount = 100
@@ -46,34 +34,10 @@ describe('SLM Preorders', function () {
     await token.mint(account4.address, defaultAmount)
     await token.mint(account5.address, defaultAmount)
 
-    // Deploy staker storage contract
-    const unstakePeriod = 1
-    const minimumStake = 1
-    storage = await StorageFactory.deploy(token.address, unstakePeriod, minimumStake)
-
-    // Deploy staker manager contract
-    manager = await ManagerFactory.deploy(token.address, storage.address)
-    await storage.setStakerManager(manager.address)
-
-    // Deploy juror contract
-    const minJurorCount = 3
-    const tiebreakerDuration = 1
-    jurors = await JudgementFactory.deploy(
-      manager.address,
-      minJurorCount,
-      tiebreakerDuration,
-    )
-    await manager.setJudgementContract(jurors.address)
-
-    // Deploy preorder contract
-    preorder = await PreorderFactory.deploy()
-    await preorder.initializePreorder(
-      jurors.address,
-      token.address,
-      account1.address,
-      account2.address,
-      0,
-    )
+    // Create new preorder contract
+    const disputeID = 125
+    const preorderAmount = 100
+    preorder = await deployPreorder(slmFactory, token, disputeID, account1, account2, preorderAmount)
     await token.mint(preorder.address, defaultAmount)
 
     // Test that buyer and merchant addresses are correct
@@ -189,7 +153,7 @@ describe('SLM Preorders', function () {
       ['address', 'bytes32', 'uint8'],
       [account3.address, encryptionKey, 1],
     )
-    await jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account3).vote(disputeAddress, encryptedVote)
 
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
@@ -201,13 +165,13 @@ describe('SLM Preorders', function () {
       ['address', 'bytes32', 'uint8'],
       [account4.address, encryptionKey, 1],
     )
-    await jurors.connect(account5).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
 
     encryptedVote = ethers.utils.solidityKeccak256(
       ['address', 'bytes32', 'uint8'],
       [account5.address, encryptionKey, 1],
     )
-    await jurors.connect(account5).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
 
     // Count up votes and fast forward to the end of the voting process
     await jurors.voteStatus(disputeAddress)
@@ -229,26 +193,21 @@ describe('SLM Preorders', function () {
       .expect(preorder.connect(account2).buyerWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
 
-    chai.expect(await token.balanceOf(account2.address)).to.equal(100)
-    await preorder.connect(account2).buyerWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account2.address)).to.equal(200)
+    await preorder.connect(account2).buyerWithdraw(encryptionKey)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
 
     // Test that subsequent withdrawals will result in nothing
     await preorder.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
   })
 
   it('Test merchant withdrawals', async function () {
     // Create new preorder contract
     const defaultAmount = 100
-    const preorder2 = await PreorderFactory.deploy()
-    await preorder2.initializePreorder(
-      jurors.address,
-      token.address,
-      account1.address,
-      account2.address,
-      0,
-    )
+    const disputeID = 126
+    const preorderAmount = 100
+    const preorder2 = await deployPreorder(slmFactory, token, disputeID, account1, account2, preorderAmount)
     await token.mint(preorder2.address, defaultAmount)
 
     // Setup end time and dispute address
@@ -314,7 +273,7 @@ describe('SLM Preorders', function () {
       ['address', 'bytes32', 'uint8'],
       [account3.address, encryptionKey, 1],
     )
-    await jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account3).vote(disputeAddress, encryptedVote)
 
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
@@ -326,13 +285,13 @@ describe('SLM Preorders', function () {
       ['address', 'bytes32', 'uint8'],
       [account4.address, encryptionKey, 1],
     )
-    await jurors.connect(account5).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
 
     encryptedVote = ethers.utils.solidityKeccak256(
       ['address', 'bytes32', 'uint8'],
       [account5.address, encryptionKey, 1],
     )
-    await jurors.connect(account5).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
 
     // Count up votes and fast forward to the end of the voting period
     await jurors.voteStatus(disputeAddress)

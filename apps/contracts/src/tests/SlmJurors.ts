@@ -1,11 +1,11 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { increaseTime } from './testing'
+import { increaseTime, deployContracts, deployChargeback, deployEscrow } from './testing'
 
 describe('SLM Jurors', function () {
-  let jurors, token, storage, manager, chargeback, escrow
-  let ChargebackFactory, EscrowFactory
+  let jurors, token, storage, manager, slmFactory, chargeback, escrow
   let disputeAddress
+  let ChargebackFactory, EscrowFactory
   let owner,
     account1,
     account2,
@@ -43,19 +43,7 @@ describe('SLM Jurors', function () {
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
 
-    // Sets up contract factories for deployment
-    const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
-    const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
-    const TokenFactory = await ethers.getContractFactory('SlmToken')
-    const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
-    ChargebackFactory = await ethers.getContractFactory('SlmChargeback')
-    EscrowFactory = await ethers.getContractFactory('SlmEscrow')
-
-    // Deploy token contract and unlock tokens
-    const initialSupply = ethers.utils.parseEther('100000000')
-    token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
-    await token.deployed()
-    await token.unlock()
+    ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
     const defaultAmount = 100
@@ -69,47 +57,16 @@ describe('SLM Jurors', function () {
     await token.mint(account8.address, defaultAmount)
     await token.mint(account9.address, defaultAmount)
 
-    // Deploy staker storage contract
-    const unstakePeriod = 1
-    const minimumStake = 1
-    storage = await StorageFactory.deploy(token.address, unstakePeriod, minimumStake)
-
-    // Deploy staker manager contract
-    manager = await ManagerFactory.deploy(token.address, storage.address)
-    await storage.setStakerManager(manager.address)
-
-    // Deploy juror contract
-    const minJurorCount = 4
-    const tieBreakerDuration = 1
-    jurors = await JudgementFactory.deploy(
-      manager.address,
-      minJurorCount,
-      tieBreakerDuration,
-    )
-    await manager.setJudgementContract(jurors.address)
-
     // Deploy chargeback contract
-    const discount = 0
-    chargeback = await ChargebackFactory.deploy()
-    await chargeback.initializeChargeback(
-      jurors.address,
-      token.address,
-      account9.address,
-      account8.address,
-      discount,
-    )
-
+    let disputeID = 125
+    const chargebackAmount = 100
+    chargeback = await deployChargeback(slmFactory, token, disputeID, account9, account8, chargebackAmount)
     await token.mint(chargeback.address, defaultAmount)
 
     // Deploy escrow contract
-    escrow = await EscrowFactory.deploy()
-    await escrow.initializeEscrow(
-      jurors.address,
-      token.address,
-      account8.address,
-      account9.address,
-    )
-
+    disputeID = 126
+    const escrowAmount = 100
+    escrow = await deployEscrow(slmFactory, token, disputeID, account9, account8, escrowAmount)
     await token.mint(escrow.address, defaultAmount)
   })
 
@@ -120,14 +77,14 @@ describe('SLM Jurors', function () {
     disputeAddress = escrow.address
 
     // Have stakers submit their stakes
-    await token.connect(account2).increaseAllowance(manager.address, 100)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(defaultAmount)
+    await token.connect(account2).increaseAllowance(manager.address, stakeAmount)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(100)
     userId2 = 2
     await manager.connect(account2).stake(userId2, 100)
     chai.expect(await token.balanceOf(account2.address)).to.equal(0)
 
     await token.connect(account1).increaseAllowance(manager.address, stakeAmount)
-    chai.expect(await token.balanceOf(account1.address)).to.equal(defaultAmount)
+    chai.expect(await token.balanceOf(account1.address)).to.equal(100)
     userId1 = 1
     await manager.connect(account1).stake(userId1, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(0)
@@ -139,31 +96,31 @@ describe('SLM Jurors', function () {
       .expect(jurors.initializeDispute(disputeAddress, quorum, endTime))
       .to.be.revertedWith('Not enough stakers')
 
-    await token.connect(account3).increaseAllowance(manager.address, 100)
+    await token.connect(account3).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
     userId3 = 3
     await manager.connect(account3).stake(userId3, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(0)
 
-    await token.connect(account4).increaseAllowance(manager.address, 100)
+    await token.connect(account4).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account4.address)).to.equal(defaultAmount)
     userId4 = 4
     await manager.connect(account4).stake(userId4, 100)
     chai.expect(await token.balanceOf(account4.address)).to.equal(0)
 
-    await token.connect(account5).increaseAllowance(manager.address, 100)
+    await token.connect(account5).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account5.address)).to.equal(defaultAmount)
     userId5 = 5
     await manager.connect(account5).stake(userId5, 100)
     chai.expect(await token.balanceOf(account5.address)).to.equal(0)
 
-    await token.connect(account6).increaseAllowance(manager.address, 100)
+    await token.connect(account6).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account6.address)).to.equal(defaultAmount)
     userId6 = 6
     await manager.connect(account6).stake(userId6, 100)
     chai.expect(await token.balanceOf(account6.address)).to.equal(0)
 
-    await token.connect(account7).increaseAllowance(manager.address, 100)
+    await token.connect(account7).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account7.address)).to.equal(defaultAmount)
     userId7 = 7
     await manager.connect(account7).stake(userId7, 100)
@@ -240,7 +197,7 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account1.address, fakeEncryptionKey, 1],
     )
-    await jurors.connect(account1).vote(disputeAddress, fakeEncryptionKey, encryptedVote)
+    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
 
     await jurors.voteStatus(disputeAddress)
 
@@ -261,7 +218,7 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account7.address, fakeEncryptionKey, 1],
     )
-    await jurors.connect(account7).vote(disputeAddress, fakeEncryptionKey, encryptedVote)
+    await jurors.connect(account7).vote(disputeAddress, encryptedVote)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
@@ -272,7 +229,7 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account7.address, encryptionKey, 2],
     )
-    await jurors.connect(account7).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account7).vote(disputeAddress, encryptedVote)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
@@ -283,7 +240,7 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account7.address, encryptionKey, 1],
     )
-    await jurors.connect(account7).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account7).vote(disputeAddress, encryptedVote)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
@@ -298,7 +255,7 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account2.address, encryptionKey, 1],
     )
-    await jurors.connect(account2).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
 
     // Ensure that votes cannot be submitted after the voting end date has passed
     currentTime = await increaseTime(1, currentTime)
@@ -309,7 +266,7 @@ describe('SLM Jurors', function () {
       [account3.address, encryptionKey, 2],
     )
     await chai
-      .expect(jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote))
+      .expect(jurors.connect(account3).vote(disputeAddress, encryptedVote))
       .to.be.revertedWith('Voting has ended')
 
     // Check that anyone can access the results of the vote after voting has ended
@@ -325,10 +282,10 @@ describe('SLM Jurors', function () {
       .to.be.revertedWith('Only parties can withdraw')
 
     // Loser of the escrow dispute can call the withdraw function, however funds are transferred to the winner
-    chai.expect(await token.balanceOf(account9.address)).to.equal(100)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(100)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account8.address)).to.equal(200)
     await escrow.connect(account9).withdrawFunds(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(100)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(300)
 
     // The winner can call the withdraw function afterwards, but nothing will happen
     chai.expect(await token.balanceOf(account8.address)).to.equal(200)
@@ -397,12 +354,12 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account1.address, encryptionKey, 1],
     )
-    await jurors.connect(account1).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
     encryptedVote = ethers.utils.solidityKeccak256(
       ['address', 'bytes32', 'uint8'],
       [account2.address, encryptionKey, 2],
     )
-    await jurors.connect(account2).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
 
     // Fast forward to the end of the vote and confirm that the result is a tie
     currentTime = await increaseTime(4, currentTime)
@@ -445,14 +402,9 @@ describe('SLM Jurors', function () {
 
   it('Checks normal tiebreaker situations', async function () {
     // Deploy a new chargeback contract
-    const chargeback2 = await ChargebackFactory.deploy()
-    await chargeback2.initializeChargeback(
-      jurors.address,
-      token.address,
-      account9.address,
-      account8.address,
-      0,
-    )
+    let disputeID = 127
+    const chargebackAmount = 100
+    const chargeback2 = await deployChargeback(slmFactory, token, disputeID, account9, account8, chargebackAmount)
     disputeAddress = chargeback2.address
     await token.mint(chargeback2.address, 100)
 
@@ -511,12 +463,12 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account1.address, encryptionKey, 1],
     )
-    await jurors.connect(account1).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
     encryptedVote = ethers.utils.solidityKeccak256(
       ['address', 'bytes32', 'uint8'],
       [account2.address, encryptionKey, 2],
     )
-    await jurors.connect(account2).vote(disputeAddress, encryptionKey, encryptedVote)
+    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
 
     // Fast forward to the end of the voting process
     currentTime = await increaseTime(3, currentTime)
@@ -549,13 +501,13 @@ describe('SLM Jurors', function () {
     await chai
       .expect(chargeback2.connect(account9).merchantWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
-    chai.expect(await token.balanceOf(account9.address)).to.equal(100)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(300)
     await chargeback2.connect(account9).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(400)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback2.connect(account9).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(400)
 
     // Check outstanding votes and vote history for users
     chai.expect(await manager.getOutstandingVotes(account1.address)).to.equal(0)
