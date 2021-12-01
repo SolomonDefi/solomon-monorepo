@@ -135,7 +135,9 @@ describe('SLM Jurors', function () {
     // Check that dispute cannot be initialized until there are at least 7 stakers
     const quorum = 1
     await jurors.setStakerPool()
-    await chai.expect(jurors.initializeDispute(disputeAddress, quorum, endTime)).to.be.revertedWith('Not enough stakers')
+    await chai
+      .expect(jurors.initializeDispute(disputeAddress, quorum, endTime))
+      .to.be.revertedWith('Not enough stakers')
 
     await token.connect(account3).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
@@ -168,7 +170,9 @@ describe('SLM Jurors', function () {
     chai.expect(await token.balanceOf(account7.address)).to.equal(0)
 
     // Checks that the minimum juror count must be 3
-    await chai.expect(jurors.setMinJurorCount(2)).to.be.revertedWith('Invalid juror count')
+    await chai
+      .expect(jurors.setMinJurorCount(2))
+      .to.be.revertedWith('Invalid juror count')
     await jurors.setMinJurorCount(3)
 
     await jurors.setStakerPool()
@@ -241,8 +245,12 @@ describe('SLM Jurors', function () {
     await jurors.voteStatus(disputeAddress)
 
     // Check that the results of active votes cannot be accessed by anyone except the buyer or merchant
-    await chai.expect(jurors.getVoteResults(disputeAddress, encryptionKey)).to.be.revertedWith('Unauthorized role')
-    await chai.expect(jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey)).to.be.revertedWith('Unauthorized role')
+    await chai
+      .expect(jurors.getVoteResults(disputeAddress, encryptionKey))
+      .to.be.revertedWith('Unauthorized role')
+    await chai
+      .expect(jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey))
+      .to.be.revertedWith('Unauthorized role')
 
     let voteResult = await jurors
       .connect(account8)
@@ -300,24 +308,28 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account3.address, encryptionKey, 2],
     )
-    await chai.expect(jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote)).to.be.revertedWith('Voting has ended')
-    
+    await chai
+      .expect(jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote))
+      .to.be.revertedWith('Voting has ended')
+
     // Check that anyone can access the results of the vote after voting has ended
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors.getVoteResults(disputeAddress, fakeEncryptionKey)
-    
+
     // Check that the result is in favor of the buyer
     chai.expect(voteResult).to.equal(2)
 
     // Confirm that only parties involved in the escrow dispute can withdraw funds
-    await chai.expect(escrow.connect(account1).withdrawFunds(encryptionKey)).to.be.revertedWith('Only parties can withdraw')
+    await chai
+      .expect(escrow.connect(account1).withdrawFunds(encryptionKey))
+      .to.be.revertedWith('Only parties can withdraw')
 
     // Loser of the escrow dispute can call the withdraw function, however funds are transferred to the winner
     chai.expect(await token.balanceOf(account9.address)).to.equal(100)
     chai.expect(await token.balanceOf(account8.address)).to.equal(100)
     await escrow.connect(account9).withdrawFunds(encryptionKey)
     chai.expect(await token.balanceOf(account9.address)).to.equal(100)
-    
+
     // The winner can call the withdraw function afterwards, but nothing will happen
     chai.expect(await token.balanceOf(account8.address)).to.equal(200)
     await escrow.connect(account8).withdrawFunds(encryptionKey)
@@ -412,10 +424,16 @@ describe('SLM Jurors', function () {
     chai.expect(voteResult).to.equal(2)
 
     // Check that only the buyer can withdraw and that balance changes are properly reflected
-    await chai.expect(chargeback.connect(account9).merchantWithdraw(encryptionKey)).to.be.revertedWith('Cannot withdraw')
-    await chai.expect(chargeback.connect(account9).buyerWithdraw(encryptionKey)).to.be.revertedWith('Only buyer can withdraw')
-    await chai.expect(chargeback.connect(account8).buyerWithdraw(fakeEncryptionKey)).to.be.revertedWith('Unauthorized access')
-    
+    await chai
+      .expect(chargeback.connect(account9).merchantWithdraw(encryptionKey))
+      .to.be.revertedWith('Cannot withdraw')
+    await chai
+      .expect(chargeback.connect(account9).buyerWithdraw(encryptionKey))
+      .to.be.revertedWith('Only buyer can withdraw')
+    await chai
+      .expect(chargeback.connect(account8).buyerWithdraw(fakeEncryptionKey))
+      .to.be.revertedWith('Unauthorized access')
+
     chai.expect(await token.balanceOf(account8.address)).to.equal(200)
     await chargeback.connect(account8).buyerWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account8.address)).to.equal(300)
@@ -522,9 +540,15 @@ describe('SLM Jurors', function () {
     chai.expect(voteResult).to.equal(3)
 
     // Ensure that only the merchant can withdraw and that balance changes are properly reflected
-    await chai.expect(chargeback2.connect(account8).buyerWithdraw(encryptionKey)).to.be.revertedWith('Cannot withdraw')
-    await chai.expect(chargeback2.connect(account8).merchantWithdraw(encryptionKey)).to.be.revertedWith('Only merchant can withdraw')
-    await chai.expect(chargeback2.connect(account9).merchantWithdraw(fakeEncryptionKey)).to.be.revertedWith('Unauthorized access')
+    await chai
+      .expect(chargeback2.connect(account8).buyerWithdraw(encryptionKey))
+      .to.be.revertedWith('Cannot withdraw')
+    await chai
+      .expect(chargeback2.connect(account8).merchantWithdraw(encryptionKey))
+      .to.be.revertedWith('Only merchant can withdraw')
+    await chai
+      .expect(chargeback2.connect(account9).merchantWithdraw(fakeEncryptionKey))
+      .to.be.revertedWith('Unauthorized access')
     chai.expect(await token.balanceOf(account9.address)).to.equal(100)
     await chargeback2.connect(account9).merchantWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account9.address)).to.equal(200)
@@ -535,11 +559,15 @@ describe('SLM Jurors', function () {
 
     // Check outstanding votes and vote history for users
     chai.expect(await manager.getOutstandingVotes(account1.address)).to.equal(0)
-    chai.expect(await manager.getDisputeVoteCount(account1.address, disputeAddress)).to.equal(0)
+    chai
+      .expect(await manager.getDisputeVoteCount(account1.address, disputeAddress))
+      .to.equal(0)
     chai.expect(await manager.getVoteHistoryCount(account1.address)).to.equal(3)
 
     chai.expect(await manager.getOutstandingVotes(account3.address)).to.equal(3)
-    chai.expect(await manager.getDisputeVoteCount(account3.address, disputeAddress)).to.equal(1)
+    chai
+      .expect(await manager.getDisputeVoteCount(account3.address, disputeAddress))
+      .to.equal(1)
     chai.expect(await manager.getVoteHistoryCount(account3.address)).to.equal(0)
   })
 })

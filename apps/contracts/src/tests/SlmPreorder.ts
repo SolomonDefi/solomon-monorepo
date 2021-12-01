@@ -8,12 +8,7 @@ describe('SLM Preorders', function () {
   let jurors, token, storage, manager, preorder
   let PreorderFactory
   let disputeAddress
-  let owner,
-    account1,
-    account2,
-    account3,
-    account4,
-    account5
+  let owner, account1, account2, account3, account4, account5
   let userId3, userId4, userId5
 
   let latestBlock
@@ -23,7 +18,7 @@ describe('SLM Preorders', function () {
   const fakeEncryptionKey =
     '0xb09801392a302964432a10a884f08df4c301b6bd5980df91b107afd2a8cc1abc'
 
-  before(async () =>{
+  before(async () => {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
 
     // Set up current time variable
@@ -39,12 +34,7 @@ describe('SLM Preorders', function () {
 
     // Deploy token contract and unlock tokens
     const initialSupply = ethers.utils.parseEther('100000000')
-    token = await TokenFactory.deploy(
-      'SLMToken',
-      'SLM',
-      initialSupply,
-      owner.address,
-    )
+    token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
     await token.deployed()
     await token.unlock()
 
@@ -59,11 +49,7 @@ describe('SLM Preorders', function () {
     // Deploy staker storage contract
     const unstakePeriod = 1
     const minimumStake = 1
-    storage = await StorageFactory.deploy(
-      token.address,
-      unstakePeriod,
-      minimumStake,
-    )
+    storage = await StorageFactory.deploy(token.address, unstakePeriod, minimumStake)
 
     // Deploy staker manager contract
     manager = await ManagerFactory.deploy(token.address, storage.address)
@@ -71,15 +57,19 @@ describe('SLM Preorders', function () {
 
     // Deploy juror contract
     const minJurorCount = 3
-    const tiebreakerDuration = 1;
-    jurors = await JudgementFactory.deploy(manager.address, minJurorCount, tiebreakerDuration)
+    const tiebreakerDuration = 1
+    jurors = await JudgementFactory.deploy(
+      manager.address,
+      minJurorCount,
+      tiebreakerDuration,
+    )
     await manager.setJudgementContract(jurors.address)
 
     // Deploy preorder contract
     preorder = await PreorderFactory.deploy()
     await preorder.initializePreorder(
       jurors.address,
-      token.address, 
+      token.address,
       account1.address,
       account2.address,
       0,
@@ -123,20 +113,26 @@ describe('SLM Preorders', function () {
   })
 
   it('Test evidence uploaders', async function () {
-
     // Test uploading of evidence by both parties
     const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
-    await chai.expect(preorder.connect(account1).requestRefund(buyerEvidenceURL)).to.be.revertedWith('Only buyer can chargeback')
+    await chai
+      .expect(preorder.connect(account1).requestRefund(buyerEvidenceURL))
+      .to.be.revertedWith('Only buyer can chargeback')
     await preorder.connect(account2).requestRefund(buyerEvidenceURL)
-    await chai.expect(preorder.connect(account2).requestRefund(buyerEvidenceURL)).to.be.revertedWith('Evidence already provided')
+    await chai
+      .expect(preorder.connect(account2).requestRefund(buyerEvidenceURL))
+      .to.be.revertedWith('Evidence already provided')
     chai.expect(await preorder.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
 
     const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
-    await chai.expect(preorder.connect(account2).merchantEvidence(merchantEvidenceURL)).to.be.revertedWith('Invalid sender')
+    await chai
+      .expect(preorder.connect(account2).merchantEvidence(merchantEvidenceURL))
+      .to.be.revertedWith('Invalid sender')
     await preorder.connect(account1).merchantEvidence(merchantEvidenceURL)
-    await chai.expect(preorder.connect(account1).merchantEvidence(buyerEvidenceURL)).to.be.revertedWith('Evidence already provided')
+    await chai
+      .expect(preorder.connect(account1).merchantEvidence(buyerEvidenceURL))
+      .to.be.revertedWith('Evidence already provided')
     chai.expect(await preorder.merchantEvidenceURL()).to.equal(merchantEvidenceURL)
-
   })
 
   it('Test buyer withdrawals', async function () {
@@ -184,7 +180,9 @@ describe('SLM Preorders', function () {
     )
 
     // Have jurors submit their votes
-    let voteResult = await jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey)
+    let voteResult = await jurors
+      .connect(account1)
+      .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(0)
 
     let encryptedVote = ethers.utils.solidityKeccak256(
@@ -194,7 +192,9 @@ describe('SLM Preorders', function () {
     await jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote)
 
     await jurors.voteStatus(disputeAddress)
-    voteResult = await jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey)
+    voteResult = await jurors
+      .connect(account1)
+      .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
     encryptedVote = ethers.utils.solidityKeccak256(
@@ -219,10 +219,16 @@ describe('SLM Preorders', function () {
     chai.expect(voteResult).to.equal(2)
 
     // Ensure that the buyer can withdraw and that the balance is properly updated
-    await chai.expect(preorder.connect(account1).merchantWithdraw(encryptionKey)).to.be.revertedWith('Cannot withdraw')
-    await chai.expect(preorder.connect(account1).buyerWithdraw(encryptionKey)).to.be.revertedWith('Only buyer can withdraw')
-    await chai.expect(preorder.connect(account2).buyerWithdraw(fakeEncryptionKey)).to.be.revertedWith('Unauthorized access')
-    
+    await chai
+      .expect(preorder.connect(account1).merchantWithdraw(encryptionKey))
+      .to.be.revertedWith('Cannot withdraw')
+    await chai
+      .expect(preorder.connect(account1).buyerWithdraw(encryptionKey))
+      .to.be.revertedWith('Only buyer can withdraw')
+    await chai
+      .expect(preorder.connect(account2).buyerWithdraw(fakeEncryptionKey))
+      .to.be.revertedWith('Unauthorized access')
+
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
     await preorder.connect(account2).buyerWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account2.address)).to.equal(200)
@@ -234,11 +240,11 @@ describe('SLM Preorders', function () {
 
   it('Test merchant withdrawals', async function () {
     // Create new preorder contract
-    const defaultAmount = 100;
+    const defaultAmount = 100
     const preorder2 = await PreorderFactory.deploy()
     await preorder2.initializePreorder(
       jurors.address,
-      token.address, 
+      token.address,
       account1.address,
       account2.address,
       0,
@@ -299,7 +305,9 @@ describe('SLM Preorders', function () {
     )
 
     // Have juror submit their votes
-    let voteResult = await jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey)
+    let voteResult = await jurors
+      .connect(account1)
+      .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(0)
 
     let encryptedVote = ethers.utils.solidityKeccak256(
@@ -309,7 +317,9 @@ describe('SLM Preorders', function () {
     await jurors.connect(account3).vote(disputeAddress, encryptionKey, encryptedVote)
 
     await jurors.voteStatus(disputeAddress)
-    voteResult = await jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey)
+    voteResult = await jurors
+      .connect(account1)
+      .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
     encryptedVote = ethers.utils.solidityKeccak256(
@@ -334,10 +344,16 @@ describe('SLM Preorders', function () {
     chai.expect(voteResult).to.equal(3)
 
     // Check that merchant can withdraw and balance is properly updated
-    await chai.expect(preorder2.connect(account2).buyerWithdraw(encryptionKey)).to.be.revertedWith('Cannot withdraw')
-    await chai.expect(preorder2.connect(account2).merchantWithdraw(encryptionKey)).to.be.revertedWith('Only merchant can withdraw')
-    await chai.expect(preorder2.connect(account1).merchantWithdraw(fakeEncryptionKey)).to.be.revertedWith('Unauthorized access')
-    
+    await chai
+      .expect(preorder2.connect(account2).buyerWithdraw(encryptionKey))
+      .to.be.revertedWith('Cannot withdraw')
+    await chai
+      .expect(preorder2.connect(account2).merchantWithdraw(encryptionKey))
+      .to.be.revertedWith('Only merchant can withdraw')
+    await chai
+      .expect(preorder2.connect(account1).merchantWithdraw(fakeEncryptionKey))
+      .to.be.revertedWith('Unauthorized access')
+
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
     await preorder2.connect(account1).merchantWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account1.address)).to.equal(200)
@@ -346,5 +362,4 @@ describe('SLM Preorders', function () {
     await preorder2.connect(account1).merchantWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account1.address)).to.equal(200)
   })
-
 })

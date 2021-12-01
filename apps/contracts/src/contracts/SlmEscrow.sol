@@ -9,6 +9,8 @@ import "./library/SlmJudgement.sol";
 /// @notice A contract that holds ETH or ERC20 tokens in escrow until both parties agree to disperse funds
 contract SlmEscrow is SlmShared {
 
+    bool disputeInitiated = false;
+
     /// Initialize the contract
     /// @param _judge Contract that assigns votes for chargeback disputes
     /// @param _token Token for ERC20 payments
@@ -44,12 +46,28 @@ contract SlmEscrow is SlmShared {
     /// @param _evidenceURL Link to real-world dispute evidence
     function initiateDispute(string memory _evidenceURL) external {
         require(msg.sender == _party1 || msg.sender == _party2, "Only parties can dispute");
+        require(!disputeInitiated, "Dispute has already been initiated");
         super._initiateDispute();
         if(msg.sender == _party1) {
             super._party1Evidence(_evidenceURL);
         } else {
             super._party2Evidence(_evidenceURL);
         }
+        disputeInitiated = true;
+    }
+
+    /// First party dispute evidence
+    /// @param _evidenceURL Link to real-world evidence
+    function party1Evidence(string memory _evidenceURL) external {
+        require(disputeInitiated, "Please first initiate dispute");
+        super._party1Evidence(_evidenceURL);
+    }
+
+    /// Second party dispute evidence
+    /// @param _evidenceURL Link to real-world evidence
+    function party2Evidence(string memory _evidenceURL) external {
+        require(disputeInitiated, "Please first initiate dispute");
+        super._party2Evidence(_evidenceURL);
     }
 
     /// Allow either party to withdraw if eligible
