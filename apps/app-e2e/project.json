@@ -3,35 +3,6 @@
   "sourceRoot": "apps/app-e2e/src",
   "projectType": "application",
   "targets": {
-    "build": {
-      "executor": "@nrwl/node:build",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/app-e2e",
-        "main": "apps/app-e2e/src/main.ts",
-        "tsConfig": "apps/app-e2e/tsconfig.app.json",
-        "assets": ["apps/app-e2e/src/assets"]
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/app-e2e/src/environments/environment.ts",
-              "with": "apps/app-e2e/src/environments/environment.prod.ts"
-            }
-          ]
-        }
-      }
-    },
-    "serve": {
-      "executor": "@nrwl/node:execute",
-      "options": {
-        "buildTarget": "app-e2e:build"
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
