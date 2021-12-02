@@ -23,7 +23,13 @@ contract SlmFactory is CloneFactory, Ownable {
 
     address public slmToken;
 
+    address public stakerStorage;
+
     uint8 public slmDiscount;
+
+    uint32 public jurorFees;
+
+    uint32 public upkeepFees;
 
     mapping(uint256 => address) public chargebackAddressList;
      
@@ -37,15 +43,19 @@ contract SlmFactory is CloneFactory, Ownable {
 
     event EscrowCreated(address escrowAddress);
 
-    constructor(address _judge, address _slmToken, address _chargebackMasterContract, address _preorderMasterContract, address _escrowMasterContract, uint8 _slmDiscount) {
+    constructor(address _judge, address _slmToken, address _stakerStorage, address _chargebackMasterContract, address _preorderMasterContract, address _escrowMasterContract, uint32 _jurorFees, uint32 _upkeepFees, uint8 _slmDiscount) {
         require(_judge != address(0), "Zero addr");
         require(_slmToken != address(0), "Zero addr");
+        require(_stakerStorage != address(0), "Zero addr");
         require(_chargebackMasterContract != address(0), "Zero addr");
         require(_preorderMasterContract != address(0), "Zero addr");
         require(_escrowMasterContract != address(0), "Zero addr");
         judge = _judge;
         slmToken = _slmToken;
         slmDiscount = _slmDiscount;
+        jurorFees = _jurorFees;
+        upkeepFees = _upkeepFees;
+        stakerStorage = _stakerStorage;
         chargebackMasterContract = _chargebackMasterContract;
         preorderMasterContract = _preorderMasterContract;
         escrowMasterContract = _escrowMasterContract;
@@ -96,7 +106,7 @@ contract SlmFactory is CloneFactory, Ownable {
         } else {
             require(msg.value > 0, "Payment not provided");
         }
-        chargeback.initializeChargeback{ value: msg.value }(judge, paymentToken, merchant, buyer, discount);
+        chargeback.initializeChargeback{ value: msg.value }(judge, paymentToken, stakerStorage, owner, merchant, buyer, jurorFees, upkeepFees, discount);
         chargebackAddressList[disputeID] = address(chargeback);
         emit ChargebackCreated(chargebackAddressList[disputeID]);
     }
@@ -117,7 +127,7 @@ contract SlmFactory is CloneFactory, Ownable {
         } else {
             require(msg.value > 0, "Payment not provided");
         }
-        preorder.initializePreorder{ value: msg.value }(judge, paymentToken, merchant, buyer, discount);
+        preorder.initializePreorder{ value: msg.value }(judge, paymentToken, stakerStorage,owner, merchant, buyer, jurorFees, upkeepFees, discount);
         preorderAddressList[disputeID] = address(preorder);
         emit PreorderCreated(preorderAddressList[disputeID]);
     }
@@ -134,7 +144,7 @@ contract SlmFactory is CloneFactory, Ownable {
         } else {
             require(msg.value > 0, "Payment not provided");
         }
-        escrow.initializeEscrow{ value: msg.value }(judge, paymentToken, party1, party2);
+        escrow.initializeEscrow{ value: msg.value }(judge, paymentToken, stakerStorage, owner, party1, party2, jurorFees, upkeepFees);
         escrowAddressList[disputeID] = address(escrow);
         emit EscrowCreated(escrowAddressList[disputeID]);
     }

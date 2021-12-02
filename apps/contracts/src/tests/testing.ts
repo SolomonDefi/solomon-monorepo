@@ -51,7 +51,9 @@ export async function deployContracts(
   minimumStake = 1,
   minJurorCount = 3,
   tieBreakerDuration = 1,
-  discount = 0,
+  jurorFees = 0,
+  upkeepFees = 0,
+  discount = 10,
 ) {
   const [owner] = await ethers.getSigners()
 
@@ -99,9 +101,12 @@ export async function deployContracts(
   const slmFactory = await SLMFactory.deploy(
     jurors.address,
     token.address,
+    storage.address,
     chargebackMaster.address,
     preorderMaster.address,
     escrowMaster.address,
+    jurorFees,
+    upkeepFees,
     discount,
   )
 

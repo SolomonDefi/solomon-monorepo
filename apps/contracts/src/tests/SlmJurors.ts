@@ -4,7 +4,7 @@ import { increaseTime, deployContracts, deployChargeback, deployEscrow } from '.
 
 describe('SLM Jurors', function () {
   let jurors, token, storage, manager, slmFactory, chargeback, escrow
-  let disputeAddress
+  let disputeAddress, jurorFeePercent, upkeepFeesPercent, discount
   let ChargebackFactory, EscrowFactory
   let owner,
     account1,
@@ -42,7 +42,10 @@ describe('SLM Jurors', function () {
     // Sets up current time variable
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
+    jurorFeePercent = 3000
+    upkeepFeesPercent = 2000
+    discount = 10
+    ;[token, manager, storage, jurors, slmFactory] = await deployContracts(100000000,1,1,3,1,jurorFeePercent,upkeepFeesPercent,discount)
 
     // Allocate tokens to user accounts
     const defaultAmount = 100
@@ -295,10 +298,27 @@ describe('SLM Jurors', function () {
       .to.be.revertedWith('Only parties can withdraw')
 
     // Loser of the escrow dispute can call the withdraw function, however funds are transferred to the winner
-    chai.expect(await token.balanceOf(account9.address)).to.equal(200)
+    const disputeBalance = await token.balanceOf(disputeAddress)
+    const account9Balance = await token.balanceOf(account9.address)
+    const storageBalance = await token.balanceOf(storage.address)
+    const ownerBalance = await token.balanceOf(owner.address)
+    chai.expect(account9Balance).to.equal(200)
     chai.expect(await token.balanceOf(account8.address)).to.equal(200)
     await escrow.connect(account9).withdrawFunds(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(300)
+    const jurorFees = Math.round((disputeBalance * jurorFeePercent) / 100000)
+    const upkeepFees = Math.round((disputeBalance * upkeepFeesPercent) / 100000)
+    const transferredAmount = disputeBalance - jurorFees - upkeepFees
+    let expectedValue = account9Balance.add(ethers.BigNumber.from(transferredAmount))
+    chai.expect(await token.balanceOf(account9.address)).to.equal(expectedValue)
+
+    // Ensure fees were calculated correctly and distributed to the correct parties
+    chai.expect(await token.balanceOf(disputeAddress)).to.equal(0)
+    
+    expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
+    chai.expect(expectedValue).to.equal(upkeepFees)
+
+    expectedValue = storageBalance.add(ethers.BigNumber.from(jurorFees))
+    chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
     // The winner can call the withdraw function afterwards, but nothing will happen
     chai.expect(await token.balanceOf(account8.address)).to.equal(200)
@@ -404,13 +424,34 @@ describe('SLM Jurors', function () {
       .expect(chargeback.connect(account8).buyerWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
 
-    chai.expect(await token.balanceOf(account8.address)).to.equal(200)
+    const disputeBalance = await token.balanceOf(disputeAddress)
+    const account8Balance = await token.balanceOf(account8.address)
+    const storageBalance = await token.balanceOf(storage.address)
+    const ownerBalance = await token.balanceOf(owner.address)
+    chai.expect(account8Balance).to.equal(200)  
+    chai.expect(await token.balanceOf(account9.address)).to.equal(295)
+
     await chargeback.connect(account8).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(300)
+
+    const jurorFees = Math.floor(((disputeBalance * jurorFeePercent) * (100 - discount) / ( 100000 * 100)))
+    const upkeepFees = Math.floor(((disputeBalance * upkeepFeesPercent) * (100 - discount) / ( 100000 * 100)))
+    const transferredAmount = disputeBalance - jurorFees - upkeepFees
+    let account8BalanceAfter = account8Balance.add(ethers.BigNumber.from(transferredAmount))
+    chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
+
+    // Ensure fees were calculated correctly and distributed to the correct parties
+    chai.expect(await token.balanceOf(disputeAddress)).to.equal(0)
+
+    let expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
+    chai.expect(expectedValue).to.equal(upkeepFees)
+
+    const remainingBalance = disputeBalance.sub(ethers.BigNumber.from(transferredAmount)).sub(ethers.BigNumber.from(upkeepFees))
+    expectedValue = storageBalance.add(remainingBalance)
+    chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback.connect(account8).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
   })
 
   it('Checks normal tiebreaker situations', async function () {
@@ -521,13 +562,35 @@ describe('SLM Jurors', function () {
     await chai
       .expect(chargeback2.connect(account9).merchantWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
-    chai.expect(await token.balanceOf(account9.address)).to.equal(300)
+  
+    const disputeBalance = await token.balanceOf(disputeAddress)
+    const account9Balance = await token.balanceOf(account9.address)
+    const storageBalance = await token.balanceOf(storage.address)
+    const ownerBalance = await token.balanceOf(owner.address)
+    chai.expect(account9Balance).to.equal(295)  
+    chai.expect(await token.balanceOf(account8.address)).to.equal(397)
+
     await chargeback2.connect(account9).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(400)
+
+    const jurorFees = Math.floor(((disputeBalance * jurorFeePercent) * (100 - discount) / ( 100000 * 100)))
+    const upkeepFees = Math.floor(((disputeBalance * upkeepFeesPercent) * (100 - discount) / ( 100000 * 100)))
+    const transferredAmount = disputeBalance - jurorFees - upkeepFees
+    let account9BalanceAfter = account9Balance.add(ethers.BigNumber.from(transferredAmount))
+    chai.expect(await token.balanceOf(account9.address)).to.equal(account9BalanceAfter)
+
+    // Ensure fees were calculated correctly and distributed to the correct parties
+    chai.expect(await token.balanceOf(disputeAddress)).to.equal(0)
+
+    let expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
+    chai.expect(expectedValue).to.equal(upkeepFees)
+
+    const remainingBalance = disputeBalance.sub(ethers.BigNumber.from(transferredAmount)).sub(ethers.BigNumber.from(upkeepFees))
+    expectedValue = storageBalance.add(remainingBalance)
+    chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback2.connect(account9).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(400)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(account9BalanceAfter)
 
     // Check outstanding votes and vote history for users
     chai.expect(await manager.getOutstandingVotes(account1.address)).to.equal(0)

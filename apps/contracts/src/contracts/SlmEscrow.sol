@@ -14,16 +14,26 @@ contract SlmEscrow is SlmShared {
     /// Initialize the contract
     /// @param _judge Contract that assigns votes for chargeback disputes
     /// @param _token Token for ERC20 payments
+    /// @param _stakerStorage Contract that handles staker balances
     /// @param _p1 The address of the first party to the escrow agreement
     /// @param _p2 The address of the second party to the escrow agreement
+    /// @param _jurorFees Part of transaction fee going to jurors
+    /// @param _upkeepFees Part of transaction fee going to contract owner
     function initializeEscrow(
         address _judge,
         address _token,
+        address _stakerStorage,
+        address _owner,
         address _p1,
-        address _p2
+        address _p2,
+        uint32 _jurorFees,
+        uint32 _upkeepFees
     ) external payable {
-        super.initialize(_judge, _token, _p1, _p2);
+        super.initialize(_judge, _token, _stakerStorage, _owner, _p1, _p2);
         disputePeriod = 180 days;
+        jurorFees = _jurorFees;
+        upkeepFees = _upkeepFees;
+        discount = 0;
     }
 
     function party1() public view returns (address) {
@@ -84,9 +94,9 @@ contract SlmEscrow is SlmShared {
         
         state = TransactionState.CompleteParty1;
         if (voteResult == SlmJudgement.VoteStates.BuyerWins) {
-            withdraw(_party1);
+            withdraw(_party1, owner);
         } else if (voteResult == SlmJudgement.VoteStates.BuyerWins) {
-            withdraw(_party2);
+            withdraw(_party2, owner);
         }
     }
 
