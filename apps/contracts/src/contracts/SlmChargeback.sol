@@ -9,23 +9,32 @@ import "./library/SlmJudgement.sol";
 /// @notice A contract that holds ETH or ERC20 tokens until purchase conditions are met
 contract SlmChargeback is SlmShared {
     
-    uint8 public discount;
     SlmJudgement public judgement;
 
     /// Initialize the contract
     /// @param _judge Contract that assigns votes for chargeback disputes
     /// @param _token Token for ERC20 payments
+    /// @param _stakerStorage Contract that handles staker balances
     /// @param _merchant The merchant's address
     /// @param _buyer The buyer's address
+    /// @param _jurorFees Part of transaction fee going to jurors
+    /// @param _upkeepFees Part of transaction fee going to contract owner
     /// @param _discount Discount for transaction fee
     function initializeChargeback(
         address _judge,
         address _token,
+        address _stakerStorage,
+        address _owner,
         address _merchant,
         address _buyer,
+        uint32 _jurorFees,
+        uint32 _upkeepFees,
         uint8 _discount
     ) external payable {
-        super.initialize(_judge, _token, _buyer, _merchant);
+        super.initialize(_judge, _token, _stakerStorage, _owner, _buyer, _merchant);
+        disputePeriod = 7 days;
+        jurorFees = _jurorFees;
+        upkeepFees = _upkeepFees;
         discount = _discount;
     }
 
@@ -65,7 +74,7 @@ contract SlmChargeback is SlmShared {
         judge.authorizeUser(address(this), msg.sender, encryptionKey);
         require(judge.getVoteResults(address(this), encryptionKey) == SlmJudgement.VoteStates.BuyerWins, "Cannot withdraw");
         state = TransactionState.CompleteParty1;
-        withdraw(buyer());
+        withdraw(buyer(), owner);
     }
 
     /// Allow merchant to withdraw if eligible
@@ -74,6 +83,6 @@ contract SlmChargeback is SlmShared {
         judge.authorizeUser(address(this), msg.sender, encryptionKey);
         require(judge.getVoteResults(address(this), encryptionKey) == SlmJudgement.VoteStates.MerchantWins, "Cannot withdraw");
         state = TransactionState.CompleteParty2;
-        withdraw(merchant());
+        withdraw(merchant(), owner);
     }
 }
