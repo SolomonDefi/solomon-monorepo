@@ -113,7 +113,6 @@ abstract contract SlmShared is Ownable {
         require(recipient != address(0), "Zero addr");
         require(owner != address(0), "Zero addr");
         require(block.timestamp > (disputeTime + disputePeriod), "Cannot withdraw yet");
-        // TODO -- transfer fee
         uint256 totalBalance;
         if(address(token) == address(0)) {
             totalBalance = address(this).balance;
