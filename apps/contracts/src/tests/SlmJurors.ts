@@ -45,7 +45,16 @@ describe('SLM Jurors', function () {
     jurorFeePercent = 3000
     upkeepFeesPercent = 2000
     discount = 10
-    ;[token, manager, storage, jurors, slmFactory] = await deployContracts(100000000,1,1,3,1,jurorFeePercent,upkeepFeesPercent,discount)
+    ;[token, manager, storage, jurors, slmFactory] = await deployContracts(
+      100000000,
+      1,
+      1,
+      3,
+      1,
+      jurorFeePercent,
+      upkeepFeesPercent,
+      discount,
+    )
 
     // Allocate tokens to user accounts
     const defaultAmount = 100
@@ -313,7 +322,7 @@ describe('SLM Jurors', function () {
 
     // Ensure fees were calculated correctly and distributed to the correct parties
     chai.expect(await token.balanceOf(disputeAddress)).to.equal(0)
-    
+
     expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
     chai.expect(expectedValue).to.equal(upkeepFees)
 
@@ -428,15 +437,21 @@ describe('SLM Jurors', function () {
     const account8Balance = await token.balanceOf(account8.address)
     const storageBalance = await token.balanceOf(storage.address)
     const ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account8Balance).to.equal(200)  
+    chai.expect(account8Balance).to.equal(200)
     chai.expect(await token.balanceOf(account9.address)).to.equal(295)
 
     await chargeback.connect(account8).buyerWithdraw(encryptionKey)
 
-    const jurorFees = Math.floor(((disputeBalance * jurorFeePercent) * (100 - discount) / ( 100000 * 100)))
-    const upkeepFees = Math.floor(((disputeBalance * upkeepFeesPercent) * (100 - discount) / ( 100000 * 100)))
+    const jurorFees = Math.floor(
+      (disputeBalance * jurorFeePercent * (100 - discount)) / (100000 * 100),
+    )
+    const upkeepFees = Math.floor(
+      (disputeBalance * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
+    )
     const transferredAmount = disputeBalance - jurorFees - upkeepFees
-    let account8BalanceAfter = account8Balance.add(ethers.BigNumber.from(transferredAmount))
+    let account8BalanceAfter = account8Balance.add(
+      ethers.BigNumber.from(transferredAmount),
+    )
     chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
 
     // Ensure fees were calculated correctly and distributed to the correct parties
@@ -445,7 +460,9 @@ describe('SLM Jurors', function () {
     let expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
     chai.expect(expectedValue).to.equal(upkeepFees)
 
-    const remainingBalance = disputeBalance.sub(ethers.BigNumber.from(transferredAmount)).sub(ethers.BigNumber.from(upkeepFees))
+    const remainingBalance = disputeBalance
+      .sub(ethers.BigNumber.from(transferredAmount))
+      .sub(ethers.BigNumber.from(upkeepFees))
     expectedValue = storageBalance.add(remainingBalance)
     chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
@@ -562,20 +579,26 @@ describe('SLM Jurors', function () {
     await chai
       .expect(chargeback2.connect(account9).merchantWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
-  
+
     const disputeBalance = await token.balanceOf(disputeAddress)
     const account9Balance = await token.balanceOf(account9.address)
     const storageBalance = await token.balanceOf(storage.address)
     const ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account9Balance).to.equal(295)  
+    chai.expect(account9Balance).to.equal(295)
     chai.expect(await token.balanceOf(account8.address)).to.equal(397)
 
     await chargeback2.connect(account9).merchantWithdraw(encryptionKey)
 
-    const jurorFees = Math.floor(((disputeBalance * jurorFeePercent) * (100 - discount) / ( 100000 * 100)))
-    const upkeepFees = Math.floor(((disputeBalance * upkeepFeesPercent) * (100 - discount) / ( 100000 * 100)))
+    const jurorFees = Math.floor(
+      (disputeBalance * jurorFeePercent * (100 - discount)) / (100000 * 100),
+    )
+    const upkeepFees = Math.floor(
+      (disputeBalance * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
+    )
     const transferredAmount = disputeBalance - jurorFees - upkeepFees
-    let account9BalanceAfter = account9Balance.add(ethers.BigNumber.from(transferredAmount))
+    let account9BalanceAfter = account9Balance.add(
+      ethers.BigNumber.from(transferredAmount),
+    )
     chai.expect(await token.balanceOf(account9.address)).to.equal(account9BalanceAfter)
 
     // Ensure fees were calculated correctly and distributed to the correct parties
@@ -584,7 +607,9 @@ describe('SLM Jurors', function () {
     let expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
     chai.expect(expectedValue).to.equal(upkeepFees)
 
-    const remainingBalance = disputeBalance.sub(ethers.BigNumber.from(transferredAmount)).sub(ethers.BigNumber.from(upkeepFees))
+    const remainingBalance = disputeBalance
+      .sub(ethers.BigNumber.from(transferredAmount))
+      .sub(ethers.BigNumber.from(upkeepFees))
     expectedValue = storageBalance.add(remainingBalance)
     chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
