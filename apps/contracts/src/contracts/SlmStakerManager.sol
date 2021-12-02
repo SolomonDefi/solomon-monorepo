@@ -133,7 +133,6 @@ contract SlmStakerManager is Ownable {
     }
 
     function getUserId(address walletAddress) external view returns(uint256) {
-        require(walletAddress != address(0), "Zero addr");
         return stakerStorage.getUserId(walletAddress);
     }
 
