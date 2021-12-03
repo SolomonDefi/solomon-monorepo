@@ -148,34 +148,27 @@ contract SlmStakerManager is Ownable {
 
     function withdrawRewards() external {
         uint256 stakeRewards = _calculateStakeRewards(msg.sender);
-        stakerStorage.sendFunds(msg.sender, stakeRewards);
+        if (stakeRewards > 0) {
+            stakerStorage.sendFunds(msg.sender, stakeRewards);
+        }
     }
 
     function _calculateStakeRewards(address walletAddress) private returns(uint256) {
         require(walletAddress != address(0), "Zero addr");
 
         uint256 userStake = stakerStorage.getStake(walletAddress);
+        uint256 lastWithdrawal = stakerStorage.getLastWithdrawalTime(walletAddress);
+        uint256 latestIndex = stakerStorage.getRewardPercentHistoryLength() - 1;
+        uint256 rewardAmount = this.getRewardAmountHistory(latestIndex);
         uint256 stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
-        uint256 currentRewardIndex = stakerStorage.getRewardPercentHistoryLength() - 1;
-        uint256 totalStakeRewards = 0;
+        uint256 stakeRewards;
 
-        if (stakerLatestIndex <= currentRewardIndex) {
-            uint diff = currentRewardIndex - stakerLatestIndex;
-            for (uint i = 0; i <= diff; i++) {
-                uint256 lastWithdrawal = stakerStorage.getLastWithdrawalTime(walletAddress);
-                if (block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime()) {
-                    stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
-
-                    uint256 stakeRewards = (userStake * stakerStorage.getRewardAmountHistory(stakerLatestIndex)) / (stakerStorage.totalStaked());
-                    totalStakeRewards += stakeRewards;
-                    stakerLatestIndex++;
-                    stakerStorage.setLastRewardIndex(walletAddress, stakerLatestIndex);
-                }
-            }
+        if (block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime() && stakerLatestIndex < latestIndex) {
+            stakeRewards = (userStake * rewardAmount) / (stakerStorage.totalStaked());
             stakerStorage.setLastWithdrawalTime(walletAddress, block.timestamp);
+            stakerStorage.setLastRewardIndex(walletAddress, latestIndex);
         }
-
-        return totalStakeRewards;
+        return stakeRewards;
     }
 
     function getStake(address walletAddress) external view returns(uint256) {

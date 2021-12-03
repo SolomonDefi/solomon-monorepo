@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { deployContracts } from './testing'
+import { increaseTime, deployContracts } from './testing'
 
 describe('SLM Staker Manager', function () {
   let jurors, token, storage, manager, slmFactory
@@ -13,6 +13,9 @@ describe('SLM Staker Manager', function () {
   before(async () => {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
+
+    // Set minimum time user has to wait between reward withdrawals
+    storage.setMinWithdrawalWaitTime(10)
 
     // Allocate tokens to user accounts
     const defaultAmount = 200
@@ -96,29 +99,31 @@ describe('SLM Staker Manager', function () {
     const storageBalance = await token.balanceOf(storage.address)
     const totalStaked = await storage.totalStaked()
 
-    // Check that balance changes are correctly reflected
+    // Check that balance changes are correctly reflected - only latest reward will be able to be withdrawn if there are missed rewards
     chai.expect(await manager.getRewardPercentHistory(0)).to.equal(rewardPercent1)
     chai
       .expect(await manager.getRewardAmountHistory(0))
       .to.equal((rewardPercent1 * storageBalance) / 100)
 
-    const account1Balance = await token.balanceOf(account1.address)
+    let account1Balance = await token.balanceOf(account1.address)
     await manager.connect(account1).withdrawRewards()
     const acc1Stake = 100
     const account1Rewards = ethers.BigNumber.from(
-      (acc1Stake * rewardPercent1 * storageBalance) / (totalStaked * 100) +
-        (acc1Stake * rewardPercent2 * storageBalance) / (totalStaked * 100),
+      (acc1Stake * rewardPercent2 * storageBalance) / (totalStaked * 100),
     )
 
     let expectedBalance = account1Balance.add(account1Rewards)
     chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)
 
+    // Multiple consecutive withdrawals don't impact balance
+    await manager.connect(account1).withdrawRewards()
+    chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)  
+
     const account2Balance = await token.balanceOf(account2.address)
     await manager.connect(account2).withdrawRewards()
     const acc2Stake = 200
     const account2Rewards = ethers.BigNumber.from(
-      (acc2Stake * rewardPercent1 * storageBalance) / (totalStaked * 100) +
-        (acc2Stake * rewardPercent2 * storageBalance) / (totalStaked * 100),
+      (acc2Stake * rewardPercent2 * storageBalance) / (totalStaked * 100),
     )
     expectedBalance = account2Balance.add(account2Rewards)
     chai.expect(await token.balanceOf(account2.address)).to.equal(expectedBalance)
@@ -139,5 +144,14 @@ describe('SLM Staker Manager', function () {
     }
     chai.expect(timeFlag).to.equal(true)
     chai.expect(await manager.getUnstakedSLM(account1.address)).to.equal(200)
+
+    // Check to ensure that withdrawals after the minimum wait period during the same reward interval does not reward extra interest
+    currentTime = await increaseTime(2, currentTime)
+    await ethers.provider.send('evm_mine', [])
+
+    account1Balance = await token.balanceOf(account1.address)
+    await manager.connect(account1).withdrawRewards()
+    chai.expect(await token.balanceOf(account1.address)).to.equal(account1Balance)  
+
   })
 })
