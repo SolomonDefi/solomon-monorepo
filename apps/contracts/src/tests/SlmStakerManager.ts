@@ -117,7 +117,7 @@ describe('SLM Staker Manager', function () {
 
     // Multiple consecutive withdrawals don't impact balance
     await manager.connect(account1).withdrawRewards()
-    chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)  
+    chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)
 
     const account2Balance = await token.balanceOf(account2.address)
     await manager.connect(account2).withdrawRewards()
@@ -151,7 +151,6 @@ describe('SLM Staker Manager', function () {
 
     account1Balance = await token.balanceOf(account1.address)
     await manager.connect(account1).withdrawRewards()
-    chai.expect(await token.balanceOf(account1.address)).to.equal(account1Balance)  
-
+    chai.expect(await token.balanceOf(account1.address)).to.equal(account1Balance)
   })
 })
