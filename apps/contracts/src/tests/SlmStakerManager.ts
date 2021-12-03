@@ -5,7 +5,7 @@ import { increaseTime, deployContracts } from './testing'
 describe('SLM Staker Manager', function () {
   let jurors, token, storage, manager, slmFactory
   let owner, account1, account2, account3, account4, account5
-  let userId1, userId2
+  let userId1, userId2, userId3, userId4, userId5
 
   let latestBlock
   let currentTime
@@ -50,15 +50,21 @@ describe('SLM Staker Manager', function () {
 
     chai.expect(await token.balanceOf(storage.address)).to.equal(200)
 
-    const stakerPool = await manager.getStakerPool()
+    let stakerPool = await manager.getStakerPool()
 
     chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId1))
     chai.expect(stakerPool[1]).to.equal(ethers.BigNumber.from(userId2))
+    chai.expect(stakerPool.length).to.equal(2)
 
     // Test unstaking and retrieval of unstake data & balance changes
     await manager.connect(account1).unstake()
     chai.expect(await manager.getUnstakedAmount(account1.address, 0)).to.equal(100)
     chai.expect(await manager.getUnstakeCount(account1.address)).to.equal(1)
+
+    // Check that the stakerPool array has been adjusted after the unstake
+    stakerPool = await manager.getStakerPool()
+    chai.expect(stakerPool.length).to.equal(1)
+    chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId2))
 
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
@@ -152,5 +158,54 @@ describe('SLM Staker Manager', function () {
     account1Balance = await token.balanceOf(account1.address)
     await manager.connect(account1).withdrawRewards()
     chai.expect(await token.balanceOf(account1.address)).to.equal(account1Balance)
+  })
+
+  it('Check updates on staker pool after unstaking', async () => {
+    // Add more stakers
+    await token.connect(account1).increaseAllowance(manager.address, 100)
+    userId1 = 1
+    await manager.connect(account1).stake(userId1, 100)
+
+    await token.connect(account3).increaseAllowance(manager.address, 100)
+    userId3 = 3
+    await manager.connect(account3).stake(userId3, 100)
+
+    await token.connect(account4).increaseAllowance(manager.address, 100)
+    userId4 = 4
+    await manager.connect(account4).stake(userId4, 100)
+
+    await token.connect(account5).increaseAllowance(manager.address, 100)
+    userId5 = 5
+    await manager.connect(account5).stake(userId5, 100)
+
+    // Check staker pool ordering
+    let stakerPool = await manager.getStakerPool()
+    chai.expect(stakerPool.length).to.equal(5)
+    chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId2))
+    chai.expect(stakerPool[1]).to.equal(ethers.BigNumber.from(userId1))
+    chai.expect(stakerPool[2]).to.equal(ethers.BigNumber.from(userId3))
+    chai.expect(stakerPool[3]).to.equal(ethers.BigNumber.from(userId4))
+    chai.expect(stakerPool[4]).to.equal(ethers.BigNumber.from(userId5))
+
+    // Unstake last member of staker pool
+    await manager.connect(account5).unstake()
+
+    // Check that the stakerPool array has been adjusted after the unstake
+    stakerPool = await manager.getStakerPool()
+    chai.expect(stakerPool.length).to.equal(4)
+    chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId2))
+    chai.expect(stakerPool[1]).to.equal(ethers.BigNumber.from(userId1))
+    chai.expect(stakerPool[2]).to.equal(ethers.BigNumber.from(userId3))
+    chai.expect(stakerPool[3]).to.equal(ethers.BigNumber.from(userId4))
+
+    // Unstake a member in the middle of the staker pool
+    await manager.connect(account1).unstake()
+
+    // Check that the stakerPool array has been adjusted after the unstake
+    stakerPool = await manager.getStakerPool()
+    chai.expect(stakerPool.length).to.equal(3)
+    chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId2))
+    chai.expect(stakerPool[1]).to.equal(ethers.BigNumber.from(userId4))
+    chai.expect(stakerPool[2]).to.equal(ethers.BigNumber.from(userId3))
   })
 })

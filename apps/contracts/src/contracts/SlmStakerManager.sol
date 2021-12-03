@@ -87,6 +87,13 @@ contract SlmStakerManager is Ownable {
             uint256 beneficiary = stakerStorage.getUserId(backer);
             if (stakerPool[i] == beneficiary) {
                 delete stakerPool[i];
+
+                if (stakerPool.length > 1 && i != (stakerPool.length - 1)) {
+                    stakerPool[i] = stakerPool[stakerPool.length - 1];
+                    stakerPool.pop();
+                }  else if (stakerPool.length > 1 && i == (stakerPool.length - 1)) {
+                    stakerPool.pop();
+                }
             }
         }
         stakerStorage.updateStakerPool(stakerPool);
