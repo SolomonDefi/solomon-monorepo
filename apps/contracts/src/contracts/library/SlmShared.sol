@@ -46,8 +46,10 @@ abstract contract SlmShared is Ownable {
         VotePending,
         // Party1 received funds, contract complete
         CompleteParty1,
-        // Party received funds, contract complete
-        CompleteParty2
+        // Party2 received funds, contract complete
+        CompleteParty2,
+        // Both parties received funds, contract completed
+        CompleteTie
     }
 
     event DisputeInitiated(address indexed party1, address indexed party2);
@@ -109,27 +111,63 @@ abstract contract SlmShared is Ownable {
 
     /// Internal function for dispersing funds
     /// @param recipient Recipient of funds
-    function withdraw(address recipient, address owner) internal {
+    function withdraw(address recipient, address owner, bool isTie, bool finalWithdrawal) internal {
         require(recipient != address(0), "Zero addr");
         require(owner != address(0), "Zero addr");
         require(block.timestamp > (disputeTime + disputePeriod), "Cannot withdraw yet");
         uint256 totalBalance;
-        if(address(token) == address(0)) {
-            totalBalance = address(this).balance;
+        if (isTie) {
+            if (!finalWithdrawal) {
+                if (address(token) == address(0)) {
+                    totalBalance = (address(this).balance / 2);
+                } else {
+                    totalBalance = (token.balanceOf(address(this)) / 2);
+                }
+                if (totalBalance > 0) {
+                    _transferFunds(totalBalance, recipient, owner, isTie, finalWithdrawal);
+                }
+            } else {
+                if (address(token) == address(0)) {
+                    totalBalance = address(this).balance;
+                } else {
+                    totalBalance = token.balanceOf(address(this));
+                }
+                if (totalBalance > 0) {
+                    _transferFunds(totalBalance, recipient, owner, isTie, finalWithdrawal);
+                }
+                }
         } else {
-            totalBalance = token.balanceOf(address(this));
+            if (address(token) == address(0)) {
+                totalBalance = address(this).balance;
+            } else {
+                totalBalance = token.balanceOf(address(this));
+            }
+            if (totalBalance > 0) {
+                _transferFunds(totalBalance, recipient, owner, isTie, finalWithdrawal);
+            }
         }
+    }
+
+    function _transferFunds(uint256 totalBalance, address recipient, address owner, bool isTie, bool finalWithdrawal) private {
         uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100);
         uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100);
         uint256 transferAmount = totalBalance - jurorFeeAmount - upkeepFeeAmount;
-        if(address(token) == address(0)) {
+        if (address(token) == address(0)) {
             payable(recipient).transfer(transferAmount);
             payable(owner).transfer(upkeepFeeAmount);
-            payable(address(stakerStorage)).transfer(address(this).balance);
+            if (isTie && !finalWithdrawal) {
+                payable(address(stakerStorage)).transfer(jurorFeeAmount);
+            } else {
+                payable(address(stakerStorage)).transfer(address(this).balance);
+            }
         } else {
             token.transfer(recipient, transferAmount);
             token.transfer(owner, upkeepFeeAmount);
-            token.transfer(address(stakerStorage), token.balanceOf(address(this)));
+            if (isTie && !finalWithdrawal) {
+                token.transfer(address(stakerStorage), jurorFeeAmount);
+            } else {
+                token.transfer(address(stakerStorage), token.balanceOf(address(this)));
+            }
         }
     }
 }

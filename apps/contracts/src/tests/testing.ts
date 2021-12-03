@@ -84,7 +84,6 @@ export async function deployContracts(
   const jurors = await JudgementFactory.deploy(
     manager.address,
     minJurorCount,
-    tieBreakerDuration,
   )
   await manager.setJudgementContract(jurors.address)
 
