@@ -81,10 +81,7 @@ export async function deployContracts(
   await storage.setStakerManager(manager.address)
 
   // Deploy juror contract
-  const jurors = await JudgementFactory.deploy(
-    manager.address,
-    minJurorCount,
-  )
+  const jurors = await JudgementFactory.deploy(manager.address, minJurorCount)
   await manager.setJudgementContract(jurors.address)
 
   // Deploy chargeback contract
