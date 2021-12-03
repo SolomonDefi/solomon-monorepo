@@ -454,9 +454,8 @@ describe('SLM Jurors', function () {
     chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
 
     await chai
-    .expect(chargeback.connect(account9).merchantWithdraw(fakeEncryptionKey))
-    .to.be.revertedWith('Unauthorized access')
-
+      .expect(chargeback.connect(account9).merchantWithdraw(fakeEncryptionKey))
+      .to.be.revertedWith('Unauthorized access')
 
     // Merchant withdrawal
     disputeBalance = await token.balanceOf(disputeAddress)
