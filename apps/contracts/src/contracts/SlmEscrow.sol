@@ -11,6 +11,8 @@ contract SlmEscrow is SlmShared {
 
     bool disputeInitiated = false;
 
+    bool finalWithdrawal = false;
+
     /// Initialize the contract
     /// @param _judge Contract that assigns votes for chargeback disputes
     /// @param _token Token for ERC20 payments
@@ -86,17 +88,27 @@ contract SlmEscrow is SlmShared {
         judge.authorizeUser(address(this), msg.sender, encryptionKey);
 
         bool eligibleWithdrawal = false;
+        bool isTie = false;
         SlmJudgement.VoteStates voteResult = judge.getVoteResults(address(this), encryptionKey);
         if(voteResult == SlmJudgement.VoteStates.BuyerWins || voteResult == SlmJudgement.VoteStates.MerchantWins) {
             eligibleWithdrawal = true;
+        } else if (voteResult == SlmJudgement.VoteStates.Tie) {
+            isTie = true;
         }
-        require(eligibleWithdrawal, "Cannot withdraw");
-        
-        state = TransactionState.CompleteParty1;
+        require(eligibleWithdrawal || isTie, "Cannot withdraw");
         if (voteResult == SlmJudgement.VoteStates.BuyerWins) {
-            withdraw(_party1, owner);
-        } else if (voteResult == SlmJudgement.VoteStates.BuyerWins) {
-            withdraw(_party2, owner);
+            state = TransactionState.CompleteParty1;
+            withdraw(_party1, owner, isTie, finalWithdrawal);
+            finalWithdrawal = true;
+        } else if (voteResult == SlmJudgement.VoteStates.MerchantWins) {
+            state = TransactionState.CompleteParty2;
+            withdraw(_party2, owner, isTie, finalWithdrawal);
+            finalWithdrawal = true;
+        } else {
+            state = TransactionState.CompleteTie;
+            withdraw(_party1, owner, isTie, finalWithdrawal);
+            finalWithdrawal = true;
+            withdraw(_party2, owner, isTie, finalWithdrawal);
         }
     }
 
