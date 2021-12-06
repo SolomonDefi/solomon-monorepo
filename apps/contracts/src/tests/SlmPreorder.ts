@@ -85,24 +85,33 @@ describe('SLM Preorders', function () {
   it('Test evidence uploaders', async function () {
     // Test uploading of evidence by both parties
     const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
+    const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
+    await chai
+      .expect(preorder.connect(account2).buyerEvidence(buyerEvidenceURL))
+      .to.be.revertedWith('Please first initiate dispute')
+    await chai
+      .expect(preorder.connect(account1).merchantEvidence(merchantEvidenceURL))
+      .to.be.revertedWith('Please first initiate dispute')
     await chai
       .expect(preorder.connect(account1).requestRefund(buyerEvidenceURL))
       .to.be.revertedWith('Only buyer can chargeback')
     await preorder.connect(account2).requestRefund(buyerEvidenceURL)
-    await chai
-      .expect(preorder.connect(account2).requestRefund(buyerEvidenceURL))
-      .to.be.revertedWith('Evidence already provided')
     chai.expect(await preorder.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
 
-    const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
     await chai
       .expect(preorder.connect(account2).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Invalid sender')
     await preorder.connect(account1).merchantEvidence(merchantEvidenceURL)
-    await chai
-      .expect(preorder.connect(account1).merchantEvidence(buyerEvidenceURL))
-      .to.be.revertedWith('Evidence already provided')
     chai.expect(await preorder.merchantEvidenceURL()).to.equal(merchantEvidenceURL)
+
+    // Test that URLs can be resubmitted and replaced
+    const newBuyerEvidenceURL = 'www.buyerEvidenceURLv2.com'
+    const newMerchantEvidenceURL = 'www.merchantEvidenceURLv2.com'
+    await preorder.connect(account2).buyerEvidence(newBuyerEvidenceURL)
+    chai.expect(await preorder.buyerEvidenceURL()).to.equal(newBuyerEvidenceURL)
+
+    await preorder.connect(account1).merchantEvidence(newMerchantEvidenceURL)
+    chai.expect(await preorder.merchantEvidenceURL()).to.equal(newMerchantEvidenceURL)
   })
 
   it('Test buyer withdrawals', async function () {

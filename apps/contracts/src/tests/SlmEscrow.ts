@@ -42,17 +42,20 @@ describe('SLM Escrow', function () {
       .expect(escrow.connect(account1).initiateDispute(party1EvidenceURL))
       .to.be.revertedWith('Dispute has already been initiated')
     await chai
-      .expect(escrow.connect(account1).party1Evidence(party1EvidenceURL))
-      .to.be.revertedWith('Evidence already provided')
-    await chai
       .expect(escrow.connect(account2).initiateDispute(party2EvidenceURL))
       .to.be.revertedWith('Dispute has already been initiated')
     chai.expect(await escrow.party1EvidenceURL()).to.equal(party1EvidenceURL)
 
     await escrow.connect(account2).party2Evidence(party2EvidenceURL)
-    await chai
-      .expect(escrow.connect(account2).party2Evidence(party2EvidenceURL))
-      .to.be.revertedWith('Evidence already provided')
     chai.expect(await escrow.party2EvidenceURL()).to.equal(party2EvidenceURL)
+
+    // Test that URLs can be resubmitted and replaced
+    const newParty1EvidenceURL = 'www.p1EvidenceURLv2.com'
+    const newParty2EvidenceURL = 'www.p2EvidenceURLv2.com'
+    await escrow.connect(account2).party2Evidence(newParty2EvidenceURL)
+    chai.expect(await escrow.party2EvidenceURL()).to.equal(newParty2EvidenceURL)
+
+    await escrow.connect(account1).party1Evidence(newParty1EvidenceURL)
+    chai.expect(await escrow.party1EvidenceURL()).to.equal(newParty1EvidenceURL)
   })
 })

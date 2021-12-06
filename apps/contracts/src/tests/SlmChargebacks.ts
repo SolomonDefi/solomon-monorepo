@@ -31,23 +31,32 @@ describe('SLM Chargebacks', function () {
   it('Test evidence uploaders', async function () {
     // Test uploading of evidence by both parties
     const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
+    const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
+    await chai
+    .expect(chargeback.connect(account2).buyerEvidence(buyerEvidenceURL))
+    .to.be.revertedWith('Please first initiate dispute')
+  await chai
+    .expect(chargeback.connect(account1).merchantEvidence(merchantEvidenceURL))
+    .to.be.revertedWith('Please first initiate dispute')
     await chai
       .expect(chargeback.connect(account1).requestChargeback(buyerEvidenceURL))
       .to.be.revertedWith('Only buyer can chargeback')
     await chargeback.connect(account2).requestChargeback(buyerEvidenceURL)
-    await chai
-      .expect(chargeback.connect(account2).requestChargeback(buyerEvidenceURL))
-      .to.be.revertedWith('Evidence already provided')
     chai.expect(await chargeback.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
 
-    const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
     await chai
       .expect(chargeback.connect(account2).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Invalid sender')
     await chargeback.connect(account1).merchantEvidence(merchantEvidenceURL)
-    await chai
-      .expect(chargeback.connect(account1).merchantEvidence(buyerEvidenceURL))
-      .to.be.revertedWith('Evidence already provided')
     chai.expect(await chargeback.merchantEvidenceURL()).to.equal(merchantEvidenceURL)
+
+    // Test that URLs can be resubmitted and replaced
+    const newBuyerEvidenceURL = 'www.buyerEvidenceURLv2.com'
+    const newMerchantEvidenceURL = 'www.merchantEvidenceURLv2.com'
+    await chargeback.connect(account2).buyerEvidence(newBuyerEvidenceURL)
+    chai.expect(await chargeback.buyerEvidenceURL()).to.equal(newBuyerEvidenceURL)
+
+    await chargeback.connect(account1).merchantEvidence(newMerchantEvidenceURL)
+    chai.expect(await chargeback.merchantEvidenceURL()).to.equal(newMerchantEvidenceURL)
   })
 })
