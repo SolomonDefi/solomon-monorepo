@@ -1,3 +1,4 @@
+// https://github.com/nomiclabs/hardhat/issues/1137
 import { ethers } from 'hardhat'
 
 const getFactories = async () => {
