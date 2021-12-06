@@ -33,11 +33,11 @@ describe('SLM Chargebacks', function () {
     const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
     const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
     await chai
-    .expect(chargeback.connect(account2).buyerEvidence(buyerEvidenceURL))
-    .to.be.revertedWith('Please first initiate dispute')
-  await chai
-    .expect(chargeback.connect(account1).merchantEvidence(merchantEvidenceURL))
-    .to.be.revertedWith('Please first initiate dispute')
+      .expect(chargeback.connect(account2).buyerEvidence(buyerEvidenceURL))
+      .to.be.revertedWith('Please first initiate dispute')
+    await chai
+      .expect(chargeback.connect(account1).merchantEvidence(merchantEvidenceURL))
+      .to.be.revertedWith('Please first initiate dispute')
     await chai
       .expect(chargeback.connect(account1).requestChargeback(buyerEvidenceURL))
       .to.be.revertedWith('Only buyer can chargeback')
