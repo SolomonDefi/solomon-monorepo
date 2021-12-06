@@ -93,7 +93,6 @@ abstract contract SlmShared is Ownable {
         require(state == TransactionState.VotePending, "No dispute active");
         require(msg.sender == _party1, "Invalid sender");
         require(bytes(_evidenceURL).length > 0, "Evidence required");
-        require(bytes(_party1EvidenceURL).length == 0, "Evidence already provided");
         _party1EvidenceURL = _evidenceURL;
         emit Evidence(_party1, _evidenceURL);
     }
@@ -104,7 +103,6 @@ abstract contract SlmShared is Ownable {
         require(state == TransactionState.VotePending, "No dispute active");
         require(msg.sender == _party2, "Invalid sender");
         require(bytes(_evidenceURL).length > 0, "Evidence required");
-        require(bytes(_party2EvidenceURL).length == 0, "Evidence already provided");
         _party2EvidenceURL = _evidenceURL;
         emit Evidence(_party2, _evidenceURL);
     }

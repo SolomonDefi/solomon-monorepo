@@ -9,6 +9,8 @@ import "./library/SlmJudgement.sol";
 /// @notice A contract that holds ETH or ERC20 tokens for preorders/crowdfunding until release conditions are met
 contract SlmPreorder is SlmShared {
 
+    bool disputeInitiated = false;
+
     bool finalWithdrawal = false;
 
     bool merchantWithdrawalComplete = false;
@@ -61,14 +63,24 @@ contract SlmPreorder is SlmShared {
     /// Buyer initiated refund requests
     /// @param _evidenceURL Link to real-world refund reason
     function requestRefund(string memory _evidenceURL) external {
-        require(msg.sender == buyer(), "Only buyer can chargeback");
+        require(msg.sender == buyer(), "Only buyer can preorder");
+        require(!disputeInitiated, "Dispute has already been initiated");
         super._initiateDispute();
+        super._party1Evidence(_evidenceURL);
+        disputeInitiated = true;
+    }
+
+    /// Buyer evidence of completed transaction
+    /// @param _evidenceURL Link to real-world evidence
+    function buyerEvidence(string memory _evidenceURL) external {
+        require(disputeInitiated, "Please first initiate dispute");
         super._party1Evidence(_evidenceURL);
     }
 
     /// Merchant evidence of completed transaction
     /// @param _evidenceURL Link to real-world evidence
     function merchantEvidence(string memory _evidenceURL) external {
+        require(disputeInitiated, "Please first initiate dispute");
         super._party2Evidence(_evidenceURL);
     }
 
