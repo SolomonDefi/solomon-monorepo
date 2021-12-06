@@ -9,6 +9,8 @@ import "./library/SlmJudgement.sol";
 /// @notice A contract that holds ETH or ERC20 tokens until purchase conditions are met
 contract SlmChargeback is SlmShared {
 
+    bool disputeInitiated = false;
+
     bool finalWithdrawal = false;
 
     bool merchantWithdrawalComplete = false;
@@ -62,13 +64,23 @@ contract SlmChargeback is SlmShared {
     /// @param _evidenceURL Link to real-world chargeback evidence
     function requestChargeback(string memory _evidenceURL) external {
         require(msg.sender == buyer(), "Only buyer can chargeback");
+        require(!disputeInitiated, "Dispute has already been initiated");
         super._initiateDispute();
+        super._party1Evidence(_evidenceURL);
+        disputeInitiated = true;
+    }
+
+    /// Buyer evidence of completed transaction
+    /// @param _evidenceURL Link to real-world evidence
+    function buyerEvidence(string memory _evidenceURL) external {
+        require(disputeInitiated, "Please first initiate dispute");
         super._party1Evidence(_evidenceURL);
     }
 
     /// Merchant evidence of completed transaction
     /// @param _evidenceURL Link to real-world evidence
     function merchantEvidence(string memory _evidenceURL) external {
+        require(disputeInitiated, "Please first initiate dispute");
         super._party2Evidence(_evidenceURL);
     }
 
