@@ -86,16 +86,17 @@ build:
       docker:
         dockerfile: apps/web-evidence/Dockerfile
         target: dev
-    - image: app-e2e.dev
+    - image: contracts.dev
       context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
       sync:
         manual:
-          - src: 'apps/app-e2e/src/**/*'
-            dest: '/usr/src'
-          - src: 'libs/shared/*/src/**/*'
+          - src: 'apps/contracts/src/**/*'
             dest: '/usr/src'
       docker:
-        dockerfile: apps/app-e2e/Dockerfile
+        dockerfile: apps/contracts/Dockerfile
         target: dev
 deploy:
   kubeContext: docker-desktop
@@ -141,5 +142,5 @@ portForward:
     resourceName: blockchain-watcher
     port: 4000
   - resourceType: service
-    resourceName: app-e2e
+    resourceName: contracts
     port: 8485

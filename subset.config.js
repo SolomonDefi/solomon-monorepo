@@ -1,13 +1,20 @@
-const all = ['@nrwl/cli', '@nrwl/workspace', 'sqlite3', 'typescript']
+const all = [
+  '@nrwl/cli',
+  '@nrwl/workspace',
+  'sqlite3',
+  'ts-node',
+  'tsconfig-paths',
+  'tslib',
+  'typescript',
+  'pkg-dir',
+]
 
 const allPython = [
   ...all,
   // devDependencies
-  '@nrwl/cli',
   '@nrwl/cypress',
   'nx-python-fastapi',
   'shelljs',
-  'typescript',
 ]
 
 module.exports = {
@@ -68,6 +75,31 @@ module.exports = {
       'express',
       '@types/node-fetch',
       'node-fetch',
+    ],
+  },
+  contracts: {
+    include: [
+      ...all,
+      '@nomiclabs/hardhat-ethers',
+      '@nomiclabs/hardhat-etherscan',
+      '@nomiclabs/hardhat-solhint',
+      '@nomiclabs/hardhat-waffle',
+      '@typechain/ethers-v5',
+      '@typechain/hardhat',
+      '@types/chai',
+      '@types/mocha',
+      '@types/node',
+      'chai',
+      'dotenv',
+      'ethereum-waffle',
+      'ethers',
+      'hardhat',
+      'hardhat-contract-sizer',
+      'hardhat-deploy',
+      'hardhat-gas-reporter',
+      'solhint',
+      'solidity-coverage',
+      'typechain',
     ],
   },
   'db-dev': {
