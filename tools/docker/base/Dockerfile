@@ -11,7 +11,7 @@ ENV SHELL=/bin/sh
 
 WORKDIR /usr/src
 
-RUN apk add --no-cache make g++ nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
+RUN apk add --no-cache git make g++ nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
 RUN apk add --no-cache python3 py3-pip && ln -sf python3 /usr/bin/python
 
 RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
