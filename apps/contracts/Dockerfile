@@ -1,6 +1,6 @@
 ARG SOLOMON_BASE
 
-# WATCHER: DEV IMAGE (929.95 MB)
+# CONTRACTS: DEV IMAGE (? MB)
 # ------------------------------------------------------------------------------------
 FROM $SOLOMON_BASE as dev
 
