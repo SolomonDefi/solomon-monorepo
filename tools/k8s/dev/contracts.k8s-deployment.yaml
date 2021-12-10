@@ -4,18 +4,18 @@ metadata:
   name: contracts
   labels:
     component: contracts
-    tier: frontend
+    tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
       component: contracts
-      tier: frontend
+      tier: backend
   template:
     metadata:
       labels:
         component: contracts
-        tier: frontend
+        tier: backend
     spec:
       containers:
         - name: contracts
