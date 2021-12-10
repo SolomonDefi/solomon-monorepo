@@ -6,11 +6,11 @@ metadata:
   name: contracts
   labels:
     component: contracts
-    tier: frontend
+    tier: backend
 spec:
   selector:
     component: contracts
-    tier: frontend
+    tier: backend
   ports:
     - port: 8485
       targetPort: 8485
