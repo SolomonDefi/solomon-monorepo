@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contracts
+  labels:
+    component: contracts
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: contracts
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        component: contracts
+        tier: frontend
+    spec:
+      containers:
+        - name: contracts
+          image: contracts.dev
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8485

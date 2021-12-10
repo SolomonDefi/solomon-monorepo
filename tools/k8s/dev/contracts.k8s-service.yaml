@@ -1,0 +1,16 @@
+# Which API version to use
+# https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html
+apiVersion: v1
+kind: Service
+metadata:
+  name: contracts
+  labels:
+    component: contracts
+    tier: frontend
+spec:
+  selector:
+    component: contracts
+    tier: frontend
+  ports:
+    - port: 8485
+      targetPort: 8485
