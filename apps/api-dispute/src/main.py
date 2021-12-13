@@ -1,11 +1,36 @@
+from typing import Optional
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import api_router
 from app.config import config
 
+description = """
+Solomon Dispute API store and display all the dispute events.
+"""
+
+docs_urls: dict[str, Optional[str]] = {
+    'openapi_url': f'{config.API_PREFIX}/openapi.json',
+}
+if not config.DEBUG:
+    docs_urls = {
+        'openapi_url': None,
+        'docs_url': None,
+        'redoc_url': None,
+    }
+
 app = FastAPI(
-    title=config.PROJECT_NAME, openapi_url=f'{config.API_PREFIX}/openapi.json'
+    debug=config.DEBUG,
+    title=config.PROJECT_NAME,
+    version='1.0',
+    description=description,
+    contact={
+        'name': 'Solomon',
+        'url': 'https://solomondefi.com/',
+        'email': 'solomondefi@gmail.com',
+    },
+    **docs_urls,
 )
 
 # Set all CORS enabled origins

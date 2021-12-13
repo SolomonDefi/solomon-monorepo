@@ -5,6 +5,7 @@
     "module": "commonjs",
     "types": ["node"]
   },
+  "files": ["./hardhat.config.ts"],
   "exclude": ["**/*.spec.ts"],
   "include": ["**/*.ts"]
 }

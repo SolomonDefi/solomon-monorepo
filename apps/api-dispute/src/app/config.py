@@ -5,6 +5,7 @@ from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
 class Config(BaseSettings):
+    DEBUG: bool = False
     API_PREFIX: str = '/api'
     SECRET_KEY: str = secrets.token_urlsafe(32)
     SERVER_NAME: str

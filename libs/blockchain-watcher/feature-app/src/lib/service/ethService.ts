@@ -37,6 +37,8 @@ export class EthService {
   }
 
   async onPreorderCreated(preorderAddress: string) {
+    // TODO: Figure out why this isn't triggering properly in tests
+
     if (!this.wallet) {
       throw 'Wallet is not defined.'
     }
@@ -90,8 +92,12 @@ export class EthService {
     }
 
     try {
+      console.log('I am inside created logs')
+
       let eventFilter = this.contract.filters.PreorderCreated()
+      console.log('filter', eventFilter, fromBlockHash)
       let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
+      console.log('event', events)
 
       await dbService.setLastScanned(events[events.length - 1].blockHash)
 
@@ -125,6 +131,8 @@ export class EthService {
       throw 'Contract is not defined.'
     }
 
+    console.log('inside start')
+
     this.contract.on('ChargebackCreated', this.onChargebackCreated)
     this.contract.on('PreorderCreated', this.onPreorderCreated)
     this.contract.on('EscrowCreated', this.onEscrowCreated)
@@ -142,8 +150,16 @@ export class EthService {
 
   async init() {
     let provider = new ethers.providers.JsonRpcProvider(envStore.ethNetworkUrl)
-    let wallet = ethers.Wallet.fromMnemonic(envStore.walletMnemonic)
+    let wallet = ethers.Wallet.fromMnemonic(envStore.walletMnemonic).connect(provider)
     let contract = SlmFactory__factory.connect(envStore.contractAddress, wallet)
+
+    this.provider = provider
+    this.wallet = wallet
+    this.contract = contract
+  }
+
+  async testInit(provider: JsonRpcProvider, wallet: Wallet, contractAddress: string) {
+    let contract = SlmFactory__factory.connect(contractAddress, wallet)
 
     this.provider = provider
     this.wallet = wallet

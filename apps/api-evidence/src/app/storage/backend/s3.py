@@ -3,9 +3,12 @@ import typing
 
 import boto3
 from botocore.exceptions import ClientError
-from mypy_boto3_s3.client import S3Client
 
 from . import StorageBackend, StorageBackendError
+
+
+if typing.TYPE_CHECKING:
+    from mypy_boto3_s3.client import S3Client
 
 
 class GetObjectError(StorageBackendError):
@@ -18,7 +21,7 @@ class PutObjectError(StorageBackendError):
 
 class S3(StorageBackend):
     name: str = 'S3'
-    s3_client: S3Client
+    s3_client: "S3Client"
     bucket_name: str
 
     def __init__(

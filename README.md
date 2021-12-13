@@ -132,6 +132,10 @@ A hosted frontend and backend will be provided by Solomon, based on this reposit
 
 ## Contribute
 
+### E2E test
+
+Currently, e2e test is not integrated to CI/CD yet. Please run `skaffold dev` first, and run `pnpm test:e2e` in another console.
+
 ### Generate scripts
 
 - `blockchain-watcher:generate-mail-template`: Generate mail html templates for watcher.

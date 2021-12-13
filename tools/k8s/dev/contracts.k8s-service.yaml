@@ -12,5 +12,5 @@ spec:
     component: contracts
     tier: backend
   ports:
-    - port: 8485
-      targetPort: 8485
+    - port: 8545
+      targetPort: 8545
