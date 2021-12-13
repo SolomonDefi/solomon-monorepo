@@ -1,4 +1,5 @@
-import { ethers } from 'hardhat'
+import hardhat from 'hardhat'
+const ethers = hardhat['ethers']
 
 // Get contract factories for Slm contracts
 export const getFactories = async () => {

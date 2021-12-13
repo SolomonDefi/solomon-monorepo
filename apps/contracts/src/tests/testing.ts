@@ -1,5 +1,6 @@
 import assert from 'assert'
-import { ethers } from 'hardhat'
+import hardhat from 'hardhat'
+const ethers = hardhat['ethers']
 
 import {
   getFactories,

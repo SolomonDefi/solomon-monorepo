@@ -22,4 +22,4 @@ spec:
           image: contracts.dev
           imagePullPolicy: Never
           ports:
-            - containerPort: 8485
+            - containerPort: 8545

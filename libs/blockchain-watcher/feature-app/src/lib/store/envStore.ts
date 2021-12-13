@@ -27,11 +27,11 @@ class EnvStore {
 
   get ethNetworkUrl(): string {
     if (this.isTest) {
-      return process.env['ETH_NETWORK_URL_TEST'] ?? 'http://localhost:8545'
+      return process.env['ETH_NETWORK_URL_TEST'] ?? 'http://127.0.0.1:8545'
     }
 
     if (this.isDev) {
-      return process.env['ETH_NETWORK_URL_DEV'] ?? 'http://localhost:8545'
+      return process.env['ETH_NETWORK_URL_DEV'] ?? 'http://127.0.0.1:8545'
     }
 
     if (this.isStage) {
@@ -52,7 +52,7 @@ class EnvStore {
 
   get contractAddress(): string {
     if (this.isTest) {
-      return ethers.Wallet.createRandom().address
+      return process.env['CONTRACT_ADDRESS'] ?? ethers.Wallet.createRandom().address
     }
 
     return process.env['CONTRACT_ADDRESS'] ?? ''
@@ -60,7 +60,9 @@ class EnvStore {
 
   get walletMnemonic(): string {
     if (this.isTest) {
-      return ethers.Wallet.createRandom().mnemonic.phrase
+      return (
+        process.env['WALLET_MNEMONIC'] ?? ethers.Wallet.createRandom().mnemonic.phrase
+      )
     }
 
     return process.env['WALLET_MNEMONIC'] ?? ''

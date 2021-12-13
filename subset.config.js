@@ -7,6 +7,8 @@ const all = [
   'tslib',
   'typescript',
   'pkg-dir',
+  'date-fns', // logger
+  'js-base64',
 ]
 
 const allPython = [

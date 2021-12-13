@@ -26,6 +26,10 @@ export class PathStore {
     return path.resolve(this.apps, 'developer-docs')
   }
 
+  get e2e() {
+    return path.resolve(this.apps, 'app-e2e')
+  }
+
   get mailTemplates() {
     return path.resolve(this.libs, 'blockchain-watcher', 'feature-templates')
   }

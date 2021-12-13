@@ -150,4 +150,4 @@ portForward:
     port: 4000
   - resourceType: service
     resourceName: contracts
-    port: 8485
+    port: 8545

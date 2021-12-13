@@ -15,4 +15,4 @@ spec:
               service:
                 name: contracts
                 port:
-                  number: 8485
+                  number: 8545

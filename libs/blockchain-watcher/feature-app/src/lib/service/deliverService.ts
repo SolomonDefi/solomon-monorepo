@@ -55,11 +55,11 @@ export class DeliverService {
       type: PaymentCreatedEventType.preorder,
       party1: party1,
       party2: party2,
-      contract: '', // todo
+      contract: envStore.contractAddress,
       judgeContract: judge,
       token: token,
       discount: discount,
-      ethPaid: '', // todo
+      ethPaid: '1', // todo
     })
 
     await this.sendEventToDisputeApi(event)
