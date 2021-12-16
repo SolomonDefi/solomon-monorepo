@@ -9,12 +9,16 @@ import "./library/SlmJudgement.sol";
 /// @notice A contract that holds ETH or ERC20 tokens for preorders/crowdfunding until release conditions are met
 contract SlmPreorder is SlmShared {
 
+    /// @dev Flag to indicate if dispute has been initiated
     bool disputeInitiated = false;
 
+    /// @dev Flag to mark final withdrawal in case of ties
     bool finalWithdrawal = false;
 
+    /// @dev Flag to mark completion of merchant withdrawal
     bool merchantWithdrawalComplete = false;
 
+    /// @dev Flag to mark completion of buyer withdrawal
     bool buyerWithdrawalComplete = false;
 
     /// Initialize the contract
@@ -44,23 +48,27 @@ contract SlmPreorder is SlmShared {
         discount = _discount;
     }
 
+    /// Get buyer address
     function buyer() public view returns (address) {
         return _party1;
     }
 
+    /// Get merchant address
     function merchant() public view returns (address) {
         return _party2;
     }
 
+    /// Get buyer's preorder evidence URL
     function buyerEvidenceURL() external view returns (string memory) {
         return _party1EvidenceURL;
     }
 
+    /// Get merchant's preorder evidence URL
     function merchantEvidenceURL() external view returns (string memory) {
         return _party2EvidenceURL;
     }
 
-    /// Buyer initiated refund requests
+    /// Initiate preorder dispute & submit URL for buyer preorder evidence
     /// @param _evidenceURL Link to real-world refund reason
     function requestRefund(string memory _evidenceURL) external {
         require(msg.sender == buyer(), "Only buyer can preorder");
@@ -77,7 +85,7 @@ contract SlmPreorder is SlmShared {
         super._party1Evidence(_evidenceURL);
     }
 
-    /// Merchant evidence of completed transaction
+    /// Submit URL for merchant evidence of completed transaction
     /// @param _evidenceURL Link to real-world evidence
     function merchantEvidence(string memory _evidenceURL) external {
         require(disputeInitiated, "Please first initiate dispute");
@@ -85,6 +93,7 @@ contract SlmPreorder is SlmShared {
     }
 
     /// Allow buyer to withdraw if eligible
+    /// @param encryptionKey Secret key used for user authentication
     function buyerWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == buyer(), "Only buyer can withdraw");
         judge.authorizeUser(address(this), msg.sender, encryptionKey);
@@ -113,6 +122,7 @@ contract SlmPreorder is SlmShared {
     }
 
     /// Allow merchant to withdraw if eligible
+    /// @param encryptionKey Secret key used for user authentication
     function merchantWithdraw(bytes32 encryptionKey) external {
         require(msg.sender == merchant(), "Only merchant can withdraw");
         judge.authorizeUser(address(this), msg.sender, encryptionKey);
