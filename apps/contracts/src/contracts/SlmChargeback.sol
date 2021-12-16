@@ -106,8 +106,8 @@ contract SlmChargeback is SlmShared {
         }
         if (!buyerWithdrawalComplete) {
             withdraw(buyer(), owner, isTie, finalWithdrawal);
+            buyerWithdrawalComplete = true;
         }
-        buyerWithdrawalComplete = true;
         finalWithdrawal = true;
     }
 
@@ -134,8 +134,8 @@ contract SlmChargeback is SlmShared {
 
         if (!merchantWithdrawalComplete) {
             withdraw(merchant(), owner, isTie, finalWithdrawal);
+            merchantWithdrawalComplete = true;
         }
-        merchantWithdrawalComplete = true;
         finalWithdrawal = true;
     }
 }
