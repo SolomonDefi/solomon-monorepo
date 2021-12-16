@@ -660,6 +660,5 @@ describe('SLM Jurors', function () {
     await chai
       .expect(chargeback.connect(account9).merchantWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
-
   })
 })

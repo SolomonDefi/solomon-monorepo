@@ -17,7 +17,6 @@ describe('SLM Chargebacks', function () {
 
   before(async () => {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
-
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
@@ -27,7 +26,7 @@ describe('SLM Chargebacks', function () {
     await token.mint(account3.address, defaultAmount)
     await token.mint(account4.address, defaultAmount)
     await token.mint(account5.address, defaultAmount)
-    
+
     // Create new chargeback contract
     const disputeID = 125
     const chargebackAmount = 100
@@ -42,7 +41,7 @@ describe('SLM Chargebacks', function () {
     await token.mint(chargeback.address, defaultAmount)
 
     // Check slmFactory setters
-    const discount = 10;
+    const discount = 10
     await slmFactory.setDiscount(discount)
     chai.expect(await slmFactory.slmDiscount()).to.equal(discount)
 
