@@ -17,7 +17,6 @@ describe('SLM Chargebacks', function () {
 
   before(async () => {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
-
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
     // Allocate tokens to user accounts
@@ -27,7 +26,7 @@ describe('SLM Chargebacks', function () {
     await token.mint(account3.address, defaultAmount)
     await token.mint(account4.address, defaultAmount)
     await token.mint(account5.address, defaultAmount)
-    
+
     // Create new chargeback contract
     const disputeID = 125
     const chargebackAmount = 100
@@ -39,32 +38,9 @@ describe('SLM Chargebacks', function () {
       account2,
       chargebackAmount,
     )
-    await token.mint(chargeback.address, defaultAmount)
 
     // Check slmFactory setters
     const discount = 10
-    await slmFactory.setDiscount(discount)
-    chai.expect(await slmFactory.slmDiscount()).to.equal(discount)
-
-    await slmFactory.setJudgementContract(jurors.address)
-    chai.expect(await slmFactory.judge()).to.equal(jurors.address)
-
-    await slmFactory.setTokenContract(token.address)
-    chai.expect(await slmFactory.slmToken()).to.equal(token.address)
-
-    // Check slmFactory setters
-    const discount = 10;
-    await slmFactory.setDiscount(discount)
-    chai.expect(await slmFactory.slmDiscount()).to.equal(discount)
-
-    await slmFactory.setJudgementContract(jurors.address)
-    chai.expect(await slmFactory.judge()).to.equal(jurors.address)
-
-    await slmFactory.setTokenContract(token.address)
-    chai.expect(await slmFactory.slmToken()).to.equal(token.address)
-
-    // Check slmFactory setters
-    const discount = 10;
     await slmFactory.setDiscount(discount)
     chai.expect(await slmFactory.slmDiscount()).to.equal(discount)
 
