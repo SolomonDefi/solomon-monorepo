@@ -142,27 +142,26 @@ contract SlmStakerManager is Ownable {
         uint256 prevEndTime = stakerStorage.getVoteEndTime(disputeAddress);
         require(prevEndTime == 0 || block.timestamp > prevEndTime, "Dispute vote in progress");
 
-        uint256[] memory jurorList = judgement.getJurors(disputeAddress);
-
         stakerStorage.setVoteEndTime(disputeAddress, endTime);
+    }
 
-        for (uint256 i = 0; i < jurorList.length; i++) {
-            uint256 jurorId = jurorList[i];
-            address currentJuror = stakerStorage.getUserAddress(jurorId);
-            uint256 disputeVoteCount = stakerStorage.getDisputeVoteCount(currentJuror, disputeAddress);
-            if (disputeVoteCount == 0) {
-                stakerStorage.increaseOutstandingVotes(currentJuror, 1);
-                stakerStorage.increaseDisputeVoteCount(currentJuror, disputeAddress, 1);
-            } else {
-                stakerStorage.decreaseOutstandingVotes(currentJuror, disputeVoteCount);
-                stakerStorage.increaseOutstandingVotes(currentJuror, 1);
-                stakerStorage.decreaseDisputeVoteCount(currentJuror, disputeAddress, disputeVoteCount);
-                stakerStorage.increaseDisputeVoteCount(currentJuror, disputeAddress, 1);
-            }
+    /// Increase outstanding vote requirements for users as they are selected to be jurors of disputes
+    /// @param walletAddress User wallet address
+    /// @param slmContract Dispute contract address
+    function updateOutstandingVotes(address walletAddress, address slmContract) external onlyOwnerOrJudgement {
+        uint256 disputeVoteCount = stakerStorage.getDisputeVoteCount(walletAddress, slmContract);
+        if (disputeVoteCount == 0) {
+            stakerStorage.increaseOutstandingVotes(walletAddress, 1);
+            stakerStorage.increaseDisputeVoteCount(walletAddress, slmContract, 1);
+        } else {
+            stakerStorage.decreaseOutstandingVotes(walletAddress, disputeVoteCount);
+            stakerStorage.increaseOutstandingVotes(walletAddress, 1);
+            stakerStorage.decreaseDisputeVoteCount(walletAddress, slmContract, disputeVoteCount);
+            stakerStorage.increaseDisputeVoteCount(walletAddress, slmContract, 1);
         }
     }
 
-    /// Updates outstanding vote requirements for staker
+    /// Updates outstanding vote requirements for staker after a vote
     /// @param walletAddress User wallet address
     /// @param slmContract Dispute contract address
     function managedVote(address walletAddress, address slmContract) external onlyOwnerOrJudgement {
@@ -190,7 +189,7 @@ contract SlmStakerManager is Ownable {
 
     /// Sets reward percent of next reward payment
     /// @param rewardPercent Reward payment percent in whole numbers
-    function announceReward(uint32 rewardPercent) external onlyOwner {
+    function announceReward(uint8 rewardPercent) external onlyOwner {
         require(rewardPercent > 0, "Invalid percent");
         uint256 rewardAmount = (token.balanceOf(address(stakerStorage)) * rewardPercent) / 100;
         stakerStorage.announceReward(rewardPercent, rewardAmount);
