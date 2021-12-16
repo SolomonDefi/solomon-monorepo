@@ -530,7 +530,6 @@ describe('SLM Jurors', function () {
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
     let endTime = currentTime + 259200
-    console.log('END TIME', endTime)
     await jurors.initializeDispute(disputeAddress, 3, endTime)
 
     // Set access controls for merchant, buyer, and jurors
