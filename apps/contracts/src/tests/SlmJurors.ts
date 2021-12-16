@@ -508,4 +508,156 @@ describe('SLM Jurors', function () {
       .to.equal(1)
     chai.expect(await manager.getVoteHistoryCount(account3.address)).to.equal(0)
   })
+
+  it('Checks handling of voting reset', async function () {
+    // Deploy chargeback contract
+    let disputeID = 126
+    const chargebackAmount = 100
+    const chargeback2 = await deployChargeback(
+      slmFactory,
+      token,
+      disputeID,
+      account9,
+      account8,
+      chargebackAmount,
+    )
+
+    disputeAddress = chargeback2.address
+
+    await jurors.setMinJurorCount(5)
+
+    latestBlock = await ethers.provider.getBlock('latest')
+    currentTime = latestBlock.timestamp
+    let endTime = currentTime + 259200
+    console.log('END TIME', endTime)
+    await jurors.initializeDispute(disputeAddress, 3, endTime)
+
+    // Set access controls for merchant, buyer, and jurors
+    const roleArray = [2, 1, 3, 3, 3, 3]
+    const addressArray = [
+      account8.address,
+      account9.address,
+      account1.address,
+      account2.address,
+      account3.address,
+      account4.address,
+    ]
+    const encryptedStringBuyer = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32'],
+      [account8.address, encryptionKey],
+    )
+    const encryptedStringMerchant = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32'],
+      [account9.address, encryptionKey],
+    )
+    const encryptedStringAcc1 = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account1.address, encryptionKey, 1],
+    )
+    const encryptedStringAcc2 = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account2.address, encryptionKey, 1],
+    )
+    const encryptedStringAcc3 = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account3.address, encryptionKey, 1],
+    )
+    const encryptedStringAcc4 = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account4.address, encryptionKey, 1],
+    )
+    const encryptionKeyArray = [
+      encryptedStringBuyer,
+      encryptedStringMerchant,
+      encryptedStringAcc1,
+      encryptedStringAcc2,
+      encryptedStringAcc3,
+      encryptedStringAcc4,
+    ]
+    await jurors.setDisputeAccess(
+      disputeAddress,
+      roleArray,
+      addressArray,
+      encryptionKeyArray,
+    )
+
+    // Select jurors from list of stakers
+    const jurorList = await jurors.getJurors(disputeAddress)
+    chai.expect(await jurorList[0]).to.equal(userId2)
+    chai.expect(await jurorList[1]).to.equal(userId1)
+    chai.expect(await jurorList[2]).to.equal(userId3)
+
+    // Have jurors submit their votes
+    let encryptedVote = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account1.address, encryptionKey, 1],
+    )
+    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
+    encryptedVote = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account2.address, encryptionKey, 2],
+    )
+    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
+
+    // Fast forward to the end of the vote and confirm that there are not enough votes
+    currentTime = await increaseTime(4, currentTime)
+    await ethers.provider.send('evm_mine', [])
+    await jurors.voteStatus(disputeAddress)
+    let voteResult = await jurors
+      .connect(account8)
+      .getVoteResults(disputeAddress, encryptionKey)
+    chai.expect(voteResult).to.equal(1)
+
+    endTime = currentTime + 259200
+    await jurors.initializeDispute(disputeAddress, 4, endTime)
+
+    // Have next user fulfill the minimum vote requirement
+    encryptedVote = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account3.address, encryptionKey, 1],
+    )
+    await jurors.connect(account3).vote(disputeAddress, encryptedVote)
+
+    // Buyer withdrawal
+    let disputeBalance = await token.balanceOf(disputeAddress)
+    const firstHalf = Math.floor(disputeBalance / 2)
+    const account8Balance = await token.balanceOf(account8.address)
+    let storageBalance = await token.balanceOf(storage.address)
+    let ownerBalance = await token.balanceOf(owner.address)
+    // TODO -- fix this
+    chai.expect(account8Balance).to.equal(200)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(295)
+
+    await chargeback.connect(account8).buyerWithdraw(encryptionKey)
+
+    let jurorFees = Math.floor(
+      (firstHalf * jurorFeePercent * (100 - discount)) / (100000 * 100),
+    )
+    let upkeepFees = Math.floor(
+      (firstHalf * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
+    )
+    let transferredAmount = firstHalf - jurorFees - upkeepFees
+    const account8BalanceAfter = account8Balance.add(
+      ethers.BigNumber.from(transferredAmount),
+    )
+
+    chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
+
+    // Ensure fees were calculated correctly and distributed to the correct parties
+    chai.expect(await token.balanceOf(disputeAddress)).to.equal(51)
+
+    let expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
+    chai.expect(expectedValue).to.equal(upkeepFees)
+
+    expectedValue = storageBalance.add(jurorFees)
+    chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
+
+    // Test that subsequent withdrawals will not change balance
+    await chargeback.connect(account8).buyerWithdraw(encryptionKey)
+    chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
+
+    await chai
+      .expect(chargeback.connect(account9).merchantWithdraw(fakeEncryptionKey))
+      .to.be.revertedWith('Unauthorized access')
+  })
 })

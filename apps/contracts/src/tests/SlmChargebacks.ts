@@ -7,6 +7,7 @@ describe('SLM Chargebacks', function () {
   let owner, account1, account2
 
   before(async () => {
+    const defaultAmount = 100
     ;[owner, account1, account2] = await ethers.getSigners()
 
     const [token, manager, storage, jurors, slmFactory] = await deployContracts()
@@ -22,6 +23,18 @@ describe('SLM Chargebacks', function () {
       account2,
       chargebackAmount,
     )
+    await token.mint(chargeback.address, defaultAmount)
+
+    // Check slmFactory setters
+    const discount = 10
+    await slmFactory.setDiscount(discount)
+    chai.expect(await slmFactory.slmDiscount()).to.equal(discount)
+
+    await slmFactory.setJudgementContract(jurors.address)
+    chai.expect(await slmFactory.judge()).to.equal(jurors.address)
+
+    await slmFactory.setTokenContract(token.address)
+    chai.expect(await slmFactory.slmToken()).to.equal(token.address)
 
     // Test that buyer and merchant addresses are correct
     chai.expect(await chargeback.buyer()).to.equal(account2.address)
