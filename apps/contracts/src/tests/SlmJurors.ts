@@ -96,7 +96,7 @@ describe('SLM Jurors', function () {
   it('Checks selection and storage of jurors', async function () {
     const defaultAmount = 100
     const stakeAmount = 100
-    const endTime = Math.round(new Date().getTime() / 1000) + 259200
+    const endTime = currentTime + 259200
     disputeAddress = escrow.address
 
     // Have stakers submit their stakes
@@ -297,6 +297,11 @@ describe('SLM Jurors', function () {
 
     // Check that the result is in favor of the buyer
     chai.expect(voteResult).to.equal(2)
+
+    // Check that running voteStatus cannot be run again after dispute is resolved
+    await chai
+      .expect(jurors.voteStatus(disputeAddress))
+      .to.be.revertedWith('Dispute resolved')
 
     // Confirm that only parties involved in the escrow dispute can withdraw funds
     await chai
@@ -519,11 +524,10 @@ describe('SLM Jurors', function () {
 
     disputeAddress = chargeback2.address
 
-    await jurors.setMinJurorCount(5)
-
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
     let endTime = currentTime + 259200
+    await jurors.setMinJurorCount(5)
     await jurors.initializeDispute(disputeAddress, 3, endTime)
 
     // Set access controls for merchant, buyer, and jurors
@@ -619,7 +623,7 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
-    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(false);
+    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(false)
 
     // Have next user fulfill the minimum vote requirement
     encryptedVote = ethers.utils.solidityKeccak256(
@@ -658,7 +662,7 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(2)
 
-    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(true);
+    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(true)
 
     // Buyer withdrawal
     chai.expect(await token.balanceOf(chargeback2.address)).to.equal(100)

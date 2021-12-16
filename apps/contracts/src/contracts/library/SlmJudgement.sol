@@ -142,11 +142,9 @@ contract SlmJudgement is Ownable {
         disputes[slmContract].quorum = quorum;
         disputes[slmContract].voteEndTime = endTime;
         stakerManager.setVoteDetails(slmContract, endTime);
-<<<<<<< HEAD
-=======
+
         emit DisputeInitialized(slmContract, endTime);
         inactiveDispute[slmContract] = false;
->>>>>>> cbb0ecd (:sparkles: [blockchain]: gas optimizations #192)
     }
 
     /// Set access controls by user to the dispute contract
@@ -197,10 +195,7 @@ contract SlmJudgement is Ownable {
     /// @param slmContract Contract to check dispute status
     function voteStatus(address slmContract) public {
         require(slmContract != address(0), "Zero addr");
-<<<<<<< HEAD
-=======
         require(!inactiveDispute[slmContract], "Dispute resolved");
->>>>>>> cbb0ecd (:sparkles: [blockchain]: gas optimizations #192)
         Dispute storage dispute = disputes[slmContract];
         uint16 merchantVotes = dispute.merchantVoteCount;
         uint16 buyerVotes = dispute.buyerVoteCount;
@@ -218,14 +213,14 @@ contract SlmJudgement is Ownable {
         } else {
             voteResults[slmContract] = VoteStates.Tie;
         }
-<<<<<<< HEAD
-=======
 
-        if (dispute.voteEndTime < block.timestamp && !inactiveDispute[slmContract] && voteResults[slmContract] > VoteStates.InsufficientVotes) {
+        if (dispute.voteEndTime < block.timestamp &&
+            !inactiveDispute[slmContract] &&
+            voteResults[slmContract] > VoteStates.InsufficientVotes
+        ) {
             inactiveDispute[slmContract] = true;
             emit VoteResult(slmContract, voteResults[slmContract]);
         }
->>>>>>> cbb0ecd (:sparkles: [blockchain]: gas optimizations #192)
     }
 
     /// Check that user is authorized to access dispute

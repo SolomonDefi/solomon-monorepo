@@ -122,7 +122,9 @@ describe('SLM Staker Manager', function () {
     chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)
 
     // Check that subsequent withdrawals have to wait until minimum withdrawal wait period is over
-    await chai.expect(manager.connect(account1).withdrawRewards()).to.be.revertedWith('Cannot withdraw yet')
+    await chai
+      .expect(manager.connect(account1).withdrawRewards())
+      .to.be.revertedWith('Cannot withdraw yet')
 
     const account2Balance = await token.balanceOf(account2.address)
     await manager.connect(account2).withdrawRewards()
