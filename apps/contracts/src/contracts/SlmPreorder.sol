@@ -10,16 +10,16 @@ import "./library/SlmJudgement.sol";
 contract SlmPreorder is SlmShared {
 
     /// @dev Flag to indicate if dispute has been initiated
-    bool disputeInitiated = false;
+    bool disputeInitiated;
 
     /// @dev Flag to mark final withdrawal in case of ties
-    bool finalWithdrawal = false;
+    bool finalWithdrawal;
 
     /// @dev Flag to mark completion of merchant withdrawal
-    bool merchantWithdrawalComplete = false;
+    bool merchantWithdrawalComplete;
 
     /// @dev Flag to mark completion of buyer withdrawal
-    bool buyerWithdrawalComplete = false;
+    bool buyerWithdrawalComplete;
 
     /// Initialize the contract
     /// @param _judge Contract that assigns votes for refund requests

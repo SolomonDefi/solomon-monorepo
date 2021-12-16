@@ -102,13 +102,13 @@ describe('SLM Jurors', function () {
     // Have stakers submit their stakes
     await token.connect(account2).increaseAllowance(manager.address, stakeAmount)
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
-    userId2 = 2
+    userId2 = 132
     await manager.connect(account2).stake(userId2, 100)
     chai.expect(await token.balanceOf(account2.address)).to.equal(0)
 
     await token.connect(account1).increaseAllowance(manager.address, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
-    userId1 = 1
+    userId1 = 121
     await manager.connect(account1).stake(userId1, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(0)
 
@@ -121,31 +121,31 @@ describe('SLM Jurors', function () {
 
     await token.connect(account3).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
-    userId3 = 3
+    userId3 = 303
     await manager.connect(account3).stake(userId3, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(0)
 
     await token.connect(account4).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account4.address)).to.equal(defaultAmount)
-    userId4 = 4
+    userId4 = 400
     await manager.connect(account4).stake(userId4, 100)
     chai.expect(await token.balanceOf(account4.address)).to.equal(0)
 
     await token.connect(account5).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account5.address)).to.equal(defaultAmount)
-    userId5 = 5
+    userId5 = 501
     await manager.connect(account5).stake(userId5, 100)
     chai.expect(await token.balanceOf(account5.address)).to.equal(0)
 
     await token.connect(account6).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account6.address)).to.equal(defaultAmount)
-    userId6 = 6
+    userId6 = 620
     await manager.connect(account6).stake(userId6, 100)
     chai.expect(await token.balanceOf(account6.address)).to.equal(0)
 
     await token.connect(account7).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account7.address)).to.equal(defaultAmount)
-    userId7 = 7
+    userId7 = 763
     await manager.connect(account7).stake(userId7, 100)
     chai.expect(await token.balanceOf(account7.address)).to.equal(0)
 
@@ -161,14 +161,13 @@ describe('SLM Jurors', function () {
     await jurors.initializeDispute(disputeAddress, 1, endTime)
 
     // Check seleted juror list
-    const jurorList = await jurors.getJurors(disputeAddress)
-    chai.expect(await jurorList[0]).to.equal(userId2)
-    chai.expect(await jurorList[1]).to.equal(userId1)
-    chai.expect(await jurorList[2]).to.equal(userId3)
-    chai.expect(await jurorList[3]).to.equal(userId4)
-    chai.expect(await jurorList[4]).to.equal(userId5)
-    chai.expect(await jurorList[5]).to.equal(userId6)
-    chai.expect(await jurorList[6]).to.equal(userId7)
+    chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account1.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account3.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account4.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account5.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account6.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account7.address)).to.equal(true)
   })
 
   it('Checks voting', async function () {
@@ -388,10 +387,9 @@ describe('SLM Jurors', function () {
     )
 
     // Select jurors from list of stakers
-    const jurorList = await jurors.getJurors(disputeAddress)
-    chai.expect(await jurorList[0]).to.equal(userId2)
-    chai.expect(await jurorList[1]).to.equal(userId1)
-    chai.expect(await jurorList[2]).to.equal(userId3)
+    chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account1.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account3.address)).to.equal(true)
 
     // Have jurors submit their votes
     let encryptedVote = ethers.utils.solidityKeccak256(
@@ -582,10 +580,9 @@ describe('SLM Jurors', function () {
     )
 
     // Select jurors from list of stakers
-    const jurorList = await jurors.getJurors(disputeAddress)
-    chai.expect(await jurorList[0]).to.equal(userId2)
-    chai.expect(await jurorList[1]).to.equal(userId1)
-    chai.expect(await jurorList[2]).to.equal(userId3)
+    chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account1.address)).to.equal(true)
+    chai.expect(await jurors.checkJuror(disputeAddress, account3.address)).to.equal(true)
 
     // Have jurors submit their votes
     let encryptedVote = ethers.utils.solidityKeccak256(
@@ -624,6 +621,8 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
+    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(false);
+
     // Have next user fulfill the minimum vote requirement
     encryptedVote = ethers.utils.solidityKeccak256(
       ['address', 'bytes32', 'uint8'],
@@ -660,6 +659,8 @@ describe('SLM Jurors', function () {
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(2)
+
+    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(true);
 
     // Buyer withdrawal
     chai.expect(await token.balanceOf(chargeback2.address)).to.equal(100)

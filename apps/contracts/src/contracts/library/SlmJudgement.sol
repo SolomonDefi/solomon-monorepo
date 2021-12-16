@@ -17,16 +17,10 @@ contract SlmJudgement is Ownable {
     SlmStakerManager public stakerManager;
 
     /// @dev Minimum number of jurors required to start a dispute vote
-    uint16 public minJurorCount;
-
-    /// @dev Array to store selected jurors during selection process    
-    uint256[] private selectedJurors;
+    uint8 public minJurorCount;
 
     /// @dev Full list of stakers
-    uint256[] public stakerPool;
-
-    /// @dev Flag to mark dispute as inactive
-    bool inactiveDispute = false;
+    uint256[] private stakerPool;
 
     /// @dev List of VoteStates a dispute can have
     enum VoteStates { 
@@ -38,22 +32,25 @@ contract SlmJudgement is Ownable {
     }
 
     /// List of dispute to latest vote states
-    mapping(address => VoteStates) public voteResults;
+    mapping(address => VoteStates) private voteResults;
 
     /// Record of dispute contracts to dispute vote details
-    mapping(address => Dispute) public disputes;
+    mapping(address => Dispute) private disputes;
 
     /// List of user addresses to member role details
     mapping(address => Role) private disputeRoles;
 
     /// Map of available voters
-    mapping(address => bool) public voters;
+    mapping(address => bool) private voters;
 
-    /// List of juror list per dispute address
-    mapping(address => uint256[]) public jurorList;
+    /// Mapping of dispute address to staker address and juror status
+    mapping(address => mapping(address => bool)) private jurorList;
 
     /// Mapping of dispute address to latest index for Round Robin Mapping
-    mapping(address => uint32) public jurorSelectionIndex;
+    mapping(address => uint32) private jurorSelectionIndex;
+
+    /// Mapping to mark dispute as inactive
+    mapping(address => bool) public inactiveDispute;
 
     /// Event announcing the initialization of dispute
     /// @param slmContract Dispute contract address
@@ -79,11 +76,11 @@ contract SlmJudgement is Ownable {
         //  2 == Vote in favor of merchant
         mapping(address => uint8) votes;
         // Number of votes in favor of merchant
-        uint16 merchantVoteCount;
+        uint8 merchantVoteCount;
         // Number of votes in favor of buyer
-        uint16 buyerVoteCount;
+        uint8 buyerVoteCount;
         // Required votes for decision
-        uint16 quorum;
+        uint8 quorum;
         // Voting end time
         uint256 voteEndTime;
     }
@@ -109,7 +106,7 @@ contract SlmJudgement is Ownable {
     /// Initialize contract and set default values
     /// @param newStakerManager SlmStakerManager address
     /// @param newMinJurorCount Minimum juror count to start a dispute vote
-    constructor(address newStakerManager, uint16 newMinJurorCount) {
+    constructor(address newStakerManager, uint8 newMinJurorCount) {
         require(newStakerManager != address(0), "Zero addr");
         require(newMinJurorCount > 0, "Invalid juror count");
         stakerManager = SlmStakerManager(newStakerManager);
@@ -125,7 +122,7 @@ contract SlmJudgement is Ownable {
 
     /// Sets minimum juror count
     /// @param newMinJurorCount Minimum juror count to start a dispute vote
-    function setMinJurorCount(uint16 newMinJurorCount) external onlyOwner {
+    function setMinJurorCount(uint8 newMinJurorCount) external onlyOwner {
         require(newMinJurorCount >= 3, "Invalid juror count");
         minJurorCount = newMinJurorCount;
     }
@@ -134,7 +131,7 @@ contract SlmJudgement is Ownable {
     /// @param slmContract Dispute contract address
     /// @param quorum Required number of submitted votes to come to a resolution
     /// @param endTime End time of dispute vote
-    function initializeDispute(address slmContract, uint16 quorum, uint256 endTime) external onlyOwner {
+    function initializeDispute(address slmContract, uint8 quorum, uint256 endTime) external onlyOwner {
         require(slmContract != address(0), "Zero addr");
         require(quorum > 0, "Invalid quorum");
         require(endTime > 0, "Invalid endTime");
@@ -143,7 +140,7 @@ contract SlmJudgement is Ownable {
         disputes[slmContract].voteEndTime = endTime;
         stakerManager.setVoteDetails(slmContract, endTime);
         emit DisputeInitialized(slmContract, endTime);
-        inactiveDispute = false;
+        inactiveDispute[slmContract] = false;
     }
 
     /// Set access controls by user to the dispute contract
@@ -156,7 +153,7 @@ contract SlmJudgement is Ownable {
         require(roles.length > 0, "Empty array");
         require(addressList.length == keyList.length && keyList.length == roles.length, "Invalid array length");
         Role storage disputeRole = disputeRoles[slmContract];
-        for (uint32 i = 0; i < roles.length; i++) {
+        for (uint8 i = 0; i < roles.length; i++) {
             disputeRole.memberRoles[addressList[i]] = roles[i];
             disputeRole.encryptedKeyList[addressList[i]] = keyList[i];
         }
@@ -194,7 +191,7 @@ contract SlmJudgement is Ownable {
     /// @param slmContract Contract to check dispute status
     function voteStatus(address slmContract) public {
         require(slmContract != address(0), "Zero addr");
-        require(!inactiveDispute, "Dispute resolved");
+        require(!inactiveDispute[slmContract], "Dispute resolved");
         Dispute storage dispute = disputes[slmContract];
         uint16 merchantVotes = dispute.merchantVoteCount;
         uint16 buyerVotes = dispute.buyerVoteCount;
@@ -213,8 +210,8 @@ contract SlmJudgement is Ownable {
             voteResults[slmContract] = VoteStates.Tie;
         }
         
-        if (dispute.voteEndTime < block.timestamp && !inactiveDispute && voteResults[slmContract] > VoteStates.InsufficientVotes) {
-            inactiveDispute = true;
+        if (dispute.voteEndTime < block.timestamp && !inactiveDispute[slmContract] && voteResults[slmContract] > VoteStates.InsufficientVotes) {
+            inactiveDispute[slmContract] = true;
             emit VoteResult(slmContract, voteResults[slmContract]);
         }
     }
@@ -251,48 +248,35 @@ contract SlmJudgement is Ownable {
         stakerPool = stakerManager.getStakerPool();
     }
 
-    /// @dev Sets list of jurors
+    /// Check if a staker is a juror for dispute
     /// @param slmContract Dispute contract address
-    function _setJurors(address slmContract) private {
+    /// @param walletAddress User wallet address
+    function checkJuror(address slmContract, address walletAddress) external onlyOwnerOrManager view returns(bool) {
         require(slmContract != address(0), "Zero addr");
-        jurorList[slmContract] = _selectJurorList(slmContract);
-    }
-
-    /// Gets jurors for a specific dispute
-    /// @param slmContract Dispute contract address
-    function getJurors(address slmContract) external onlyOwnerOrManager view returns(uint256[] memory) {
-        require(slmContract != address(0), "Zero addr");
-        return jurorList[slmContract];
+        require(walletAddress != address(0), "Zero addr");
+        return jurorList[slmContract][walletAddress];
     }
 
     /// Juror selection from staker pool
     /// @param slmContract Dispute contract address
-    function _selectJurorList(address slmContract) private returns(uint256[] memory) {
+    function _setJurors(address slmContract) private {
         require(slmContract != address(0), "Zero addr");
-        Role storage roles = disputeRoles[slmContract];
-        // TODO -- Find better alternative to round robin selection
+
         uint256 stakerCount = stakerPool.length;
         require(stakerCount >= minJurorCount, "Not enough stakers");
 
-        uint32 selectedStartCount;
+        uint32 selectedStartCount = 0;
         if (jurorSelectionIndex[slmContract] > 0) {
             selectedStartCount = jurorSelectionIndex[slmContract];
-        } else {
-            selectedStartCount = 0;
         }
-        address userAddress;
 
-        uint32 i = 0;
+        for (uint8 i = 0; i < minJurorCount; i++) {
+            uint256 userId = stakerPool[selectedStartCount];
+            address userAddress = stakerManager.getUserAddress(userId);
+            jurorList[slmContract][userAddress] = true;
+            stakerManager.updateOutstandingVotes(userAddress, slmContract);
 
-        while (i < minJurorCount) {
-            selectedJurors.push(stakerPool[selectedStartCount]);
-
-            userAddress = stakerManager.getUserAddress(selectedJurors[i]);
-            roles.memberRoles[userAddress] = MemberRole.Juror;
-
-            i += 1;
             selectedStartCount += 1;
-
             if (selectedStartCount == stakerCount) {
                 selectedStartCount = 0;
             }
@@ -300,6 +284,5 @@ contract SlmJudgement is Ownable {
             jurorSelectionIndex[slmContract] = selectedStartCount;
         }
 
-        return selectedJurors;
     }
 }

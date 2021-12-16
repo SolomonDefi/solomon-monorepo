@@ -63,6 +63,17 @@ describe('SLM Chargebacks', function () {
     await slmFactory.setTokenContract(token.address)
     chai.expect(await slmFactory.slmToken()).to.equal(token.address)
 
+    // Check slmFactory setters
+    const discount = 10;
+    await slmFactory.setDiscount(discount)
+    chai.expect(await slmFactory.slmDiscount()).to.equal(discount)
+
+    await slmFactory.setJudgementContract(jurors.address)
+    chai.expect(await slmFactory.judge()).to.equal(jurors.address)
+
+    await slmFactory.setTokenContract(token.address)
+    chai.expect(await slmFactory.slmToken()).to.equal(token.address)
+
     // Test that buyer and merchant addresses are correct
     chai.expect(await chargeback.buyer()).to.equal(account2.address)
     chai.expect(await chargeback.merchant()).to.equal(account1.address)

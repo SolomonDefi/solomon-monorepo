@@ -27,43 +27,43 @@ contract SlmStakerStorage is Ownable {
     uint256 public minWithdrawalWaitTime;
 
     /// Mapping of staker wallet address to datestamp of last withdrawal
-    mapping(address => uint256) public stakerLastWithdrawalTime;
+    mapping(address => uint256) private stakerLastWithdrawalTime;
 
     /// Mapping of staker wallet address to latest reward index withdrawn
-    mapping(address => uint256) public stakerLastRewardIndex;
+    mapping(address => uint256) private stakerLastRewardIndex;
 
     /// Mapping of SlmStakerManager address to staker pool
-    mapping(address => uint256[]) public stakerPool;
+    mapping(address => uint256[]) private stakerPool;
 
     /// Mapping of staker wallet address to user ID
-    mapping(address => uint256) public userIdList;
+    mapping(address => uint256) private userIdList;
 
     /// Mapping to get staker wallet address from user ID
-    mapping(uint256 => address) public addressLookup;
+    mapping(uint256 => address) private addressLookup;
 
     /// Mapping for staker wallet address to stake amount
-    mapping(address => uint256) public stakes;
+    mapping(address => uint256) private stakes;
 
     /// Mapping for staker wallet address and unstake history
-    mapping(address => unstakedInfo[]) public unstakedSLM;
+    mapping(address => unstakedInfo[]) private unstakedSLM;
 
     /// Staker address to total outstanding dispute votes
-    mapping(address => uint256) public outstandingVotes;
+    mapping(address => uint256) private outstandingVotes;
 
     /// Mapping of dispute contract address to staker wallet address to number of outstanding dispute votes for specific dispute
-    mapping(address => mapping(address => uint256)) public disputeVoteCount;
+    mapping(address => mapping(address => uint256)) private disputeVoteCount;
 
     /// Mapping of staker address to previous voting history count
-    mapping(address => uint256) public voteHistoryCount;
+    mapping(address => uint256) private voteHistoryCount;
 
     /// Timestamp in seconds for voting end times for each dispute contract
-    mapping(address => uint256) public voteEndTimes;
+    mapping(address => uint256) private voteEndTimes;
 
     /// History of reward payment percentages (in whole numbers)
-    uint256[] public rewardPercentHistory;
+    uint8[] private rewardPercentHistory;
 
     /// History of reward payment amounts
-    uint256[] public rewardAmountHistory;
+    uint256[] private rewardAmountHistory;
 
     /// @dev Unstake information structure
     struct unstakedInfo {
@@ -155,7 +155,7 @@ contract SlmStakerStorage is Ownable {
 
     /// Get latest staker pool
     /// @param managerAddress SlmStakerManager contract address
-    function getStakerPool(address managerAddress) external view returns(uint256[] memory) {
+    function getStakerPool(address managerAddress) external view onlyOwnerOrManager returns(uint256[] memory) {
         require(managerAddress != address(0), "Zero addr");
         if (managerAddress == address(0)) {
             return stakerPool[stakerManager];
@@ -364,7 +364,7 @@ contract SlmStakerStorage is Ownable {
     /// Announce reward payment information
     /// @param rewardPercent Reward payment percentage in whole numbers
     /// @param rewardAmount Amount of reward payment
-    function announceReward(uint32 rewardPercent, uint256 rewardAmount) external onlyOwnerOrManager {
+    function announceReward(uint8 rewardPercent, uint256 rewardAmount) external onlyOwnerOrManager {
         require(rewardPercent > 0, "Invalid percent");
         require(rewardAmount > 0, "Invalid amount");
         rewardPercentHistory.push(rewardPercent);
