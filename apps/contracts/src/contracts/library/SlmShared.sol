@@ -6,35 +6,51 @@ import "./IERC20.sol";
 import "./SlmJudgement.sol";
 import "../SlmStakerStorage.sol";
 
+/// @title Solomon Shared
+/// @author Solomon DeFi
+/// @notice Underlying parent contract for dispute contracts
 abstract contract SlmShared is Ownable {
 
+    /// @dev IERC20 object
     IERC20 public token;
 
+    /// @dev SlmJudgement object
     SlmJudgement public judge;
 
+    /// @dev SlmStakerStorage object
     SlmStakerStorage public stakerStorage;
 
+    /// @dev Party 1 address
     address internal _party1;
 
+    /// @dev Party 2 address
     address internal _party2;
 
+    /// @dev Party 1 evidence URL
     string internal _party1EvidenceURL;
 
+    /// @dev Party 2 evidence URL
     string internal _party2EvidenceURL;
 
+    /// @dev Start of dispute
     uint256 public disputeTime;
 
+    /// @dev Default length of dispute voting period
     uint256 public disputePeriod = 7 days;
 
+    /// @dev Default juror fees representing one hundredth of a percent in whole numbers
     uint256 public jurorFees = 1500;
 
+    /// @dev Default upkeep fees representing one hundredth of a percent in whole numbers
     uint256 public upkeepFees = 500;
 
+    /// @dev Default discount percentage in whole numbers
     uint8 public discount = 0;
 
+    /// @dev Tracks dispute state
     TransactionState public state = TransactionState.Inactive;
 
-    // Dispute/Voting State
+    /// @dev Dispute/Voting State
     enum TransactionState {
         // Awaiting initial funds
         Inactive,
@@ -50,10 +66,19 @@ abstract contract SlmShared is Ownable {
         CompleteTie
     }
 
+    /// Event announcing the transfer of funds
+    /// @param party Party address
+    /// @param amount Amount transferred
     event FundsTransferred(address indexed party, uint256 amount);
 
+    /// Event announcing the initialization of the dispute
+    /// @param party1 Party 1 address
+    /// @param party2 Party 2 address
     event DisputeInitiated(address indexed party1, address indexed party2);
 
+    /// Event announcing the submission of evidence URL
+    /// @param party Party address
+    /// @param evidenceURL Link to real-world evidence
     event Evidence(address indexed party, string evidenceURL);
 
     /// Shared contract initialization
@@ -87,7 +112,7 @@ abstract contract SlmShared is Ownable {
         disputeTime = block.timestamp;
     }
 
-    /// Second party dispute evidence
+    /// Submit first party dispute evidence URL
     /// @param _evidenceURL Link to real-world evidence
     function _party1Evidence(string memory _evidenceURL) internal {
         require(state == TransactionState.VotePending, "No dispute active");
@@ -97,7 +122,7 @@ abstract contract SlmShared is Ownable {
         emit Evidence(_party1, _evidenceURL);
     }
 
-    /// Second party dispute evidence
+    /// Submit second party dispute evidence URL
     /// @param _evidenceURL Link to real-world evidence
     function _party2Evidence(string memory _evidenceURL) internal {
         require(state == TransactionState.VotePending, "No dispute active");
@@ -108,7 +133,10 @@ abstract contract SlmShared is Ownable {
     }
 
     /// Internal function for dispersing funds
-    /// @param recipient Recipient of funds
+    /// @param recipient Recipient address of funds
+    /// @param owner Owner/Admin address of the contract
+    /// @param isTie Flag indicating whether result is a tie
+    /// @param finalWithdrawal Flag indicating whether this is final withdrawal
     function withdraw(address recipient, address owner, bool isTie, bool finalWithdrawal) internal {
         require(recipient != address(0), "Zero addr");
         require(owner != address(0), "Zero addr");
@@ -146,6 +174,12 @@ abstract contract SlmShared is Ownable {
         }
     }
 
+    /// Transfer funds and fees to relevant parties
+    /// @param totalBalance Total balance to be split among parties
+    /// @param recipient Recipient address of funds
+    /// @param owner Owner/Admin address of the contract
+    /// @param isTie Flag indicating whether result is a tie
+    /// @param finalWithdrawal Flag indicating whether this is final withdrawal
     function _transferFunds(uint256 totalBalance, address recipient, address owner, bool isTie, bool finalWithdrawal) private {
         uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100);
         uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100);

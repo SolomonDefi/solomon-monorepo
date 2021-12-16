@@ -9,8 +9,10 @@ import "./library/SlmJudgement.sol";
 /// @notice A contract that holds ETH or ERC20 tokens in escrow until both parties agree to disperse funds
 contract SlmEscrow is SlmShared {
 
+    /// @dev Flag to indicate if dispute has been initiated
     bool disputeInitiated = false;
 
+    /// @dev Flag to mark final withdrawal in case of ties
     bool finalWithdrawal = false;
 
     /// Initialize the contract
@@ -38,23 +40,27 @@ contract SlmEscrow is SlmShared {
         discount = 0;
     }
 
+    /// Get party1 address
     function party1() public view returns (address) {
         return _party1;
     }
 
+    /// Get party2 address
     function party2() public view returns (address) {
         return _party2;
     }
 
+    /// Get party1 escrow evidence URL
     function party1EvidenceURL() external view returns (string memory) {
         return _party1EvidenceURL;
     }
 
+    /// Get party2 escrow evidence URL
     function party2EvidenceURL() external view returns (string memory) {
         return _party2EvidenceURL;
     }
 
-    /// Initiate escrow dispute dispute
+    /// Initiate escrow dispute dispute & submit URL for escrow evidence
     /// @param _evidenceURL Link to real-world dispute evidence
     function initiateDispute(string memory _evidenceURL) external {
         require(msg.sender == _party1 || msg.sender == _party2, "Only parties can dispute");
@@ -68,14 +74,14 @@ contract SlmEscrow is SlmShared {
         disputeInitiated = true;
     }
 
-    /// First party dispute evidence
+    /// Submit URL for party1 escrow dispute evidence
     /// @param _evidenceURL Link to real-world evidence
     function party1Evidence(string memory _evidenceURL) external {
         require(disputeInitiated, "Please first initiate dispute");
         super._party1Evidence(_evidenceURL);
     }
 
-    /// Second party dispute evidence
+    /// Submit URL for party2 escrow dispute evidence
     /// @param _evidenceURL Link to real-world evidence
     function party2Evidence(string memory _evidenceURL) external {
         require(disputeInitiated, "Please first initiate dispute");
@@ -83,6 +89,7 @@ contract SlmEscrow is SlmShared {
     }
 
     /// Allow either party to withdraw if eligible
+    /// @param encryptionKey Secret key used for user authentication
     function withdrawFunds(bytes32 encryptionKey) external {
         require(msg.sender == _party1 || msg.sender == _party2, "Only parties can withdraw");
         judge.authorizeUser(address(this), msg.sender, encryptionKey);
