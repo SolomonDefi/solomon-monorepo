@@ -70,7 +70,7 @@ describe('SLM Jurors', function () {
 
     // Deploy chargeback contract
     let disputeID = 125
-    const chargebackAmount = 100
+    const chargebackAmount = 101
     chargeback = await deployChargeback(
       slmFactory,
       token,
@@ -79,7 +79,6 @@ describe('SLM Jurors', function () {
       account8,
       chargebackAmount,
     )
-    await token.mint(chargeback.address, 101)
 
     // Deploy escrow contract
     disputeID = 126
@@ -92,7 +91,6 @@ describe('SLM Jurors', function () {
       account8,
       escrowAmount,
     )
-    await token.mint(escrow.address, defaultAmount)
   })
 
   it('Checks selection and storage of jurors', async function () {
@@ -311,8 +309,8 @@ describe('SLM Jurors', function () {
     const account9Balance = await token.balanceOf(account9.address)
     const storageBalance = await token.balanceOf(storage.address)
     const ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account9Balance).to.equal(200)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(200)
+    chai.expect(account9Balance).to.equal(100)
+    chai.expect(await token.balanceOf(account8.address)).to.equal(100)
     await escrow.connect(account9).withdrawFunds(encryptionKey)
     const jurorFees = Math.round((disputeBalance * jurorFeePercent) / 100000)
     const upkeepFees = Math.round((disputeBalance * upkeepFeesPercent) / 100000)
@@ -330,9 +328,8 @@ describe('SLM Jurors', function () {
     chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
     // The winner can call the withdraw function afterwards, but nothing will happen
-    chai.expect(await token.balanceOf(account8.address)).to.equal(200)
-    await escrow.connect(account8).withdrawFunds(encryptionKey)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(200)
+    await escrow.connect(account9).withdrawFunds(encryptionKey)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(195)
   })
 
   it('Checks tie behavior', async function () {
@@ -422,8 +419,8 @@ describe('SLM Jurors', function () {
     const account8Balance = await token.balanceOf(account8.address)
     let storageBalance = await token.balanceOf(storage.address)
     let ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account8Balance).to.equal(200)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(295)
+    chai.expect(account8Balance).to.equal(100)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(195)
 
     await chargeback.connect(account8).buyerWithdraw(encryptionKey)
 
@@ -462,8 +459,8 @@ describe('SLM Jurors', function () {
     const account9Balance = await token.balanceOf(account9.address)
     storageBalance = await token.balanceOf(storage.address)
     ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account9Balance).to.equal(295)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(249)
+    chai.expect(account9Balance).to.equal(195)
+    chai.expect(await token.balanceOf(account8.address)).to.equal(149)
 
     await chargeback.connect(account9).merchantWithdraw(encryptionKey)
 
@@ -521,7 +518,6 @@ describe('SLM Jurors', function () {
       account8,
       chargebackAmount,
     )
-    await token.mint(chargeback2.address, 100)
 
     disputeAddress = chargeback2.address
 
