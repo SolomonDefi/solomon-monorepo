@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { deployContracts, deployChargeback, increaseTime } from './testing'
+import { increaseTime, deployContracts, deployChargeback } from './testing'
 
 describe('SLM Chargebacks', function () {
   let chargeback, token, manager, storage, jurors, slmFactory
@@ -54,6 +54,37 @@ describe('SLM Chargebacks', function () {
     // Test that buyer and merchant addresses are correct
     chai.expect(await chargeback.buyer()).to.equal(account2.address)
     chai.expect(await chargeback.merchant()).to.equal(account1.address)
+
+    // Set up end time for vote and dispute address
+    latestBlock = await ethers.provider.getBlock('latest')
+    currentTime = latestBlock.timestamp
+    const endTime = currentTime + 259200
+    disputeAddress = chargeback.address
+
+    const quorum = 2
+
+    // Have stakers submit their stakes
+    await token.connect(account3).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
+    userId3 = 3
+    await manager.connect(account3).stake(userId3, 100)
+    chai.expect(await token.balanceOf(account3.address)).to.equal(0)
+
+    await token.connect(account4).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account4.address)).to.equal(defaultAmount)
+    userId4 = 4
+    await manager.connect(account4).stake(userId4, 100)
+    chai.expect(await token.balanceOf(account4.address)).to.equal(0)
+
+    await token.connect(account5).increaseAllowance(manager.address, 100)
+    chai.expect(await token.balanceOf(account5.address)).to.equal(defaultAmount)
+    userId5 = 5
+    await manager.connect(account5).stake(userId5, 100)
+    chai.expect(await token.balanceOf(account5.address)).to.equal(0)
+
+    // Reflect changes in the staker pool and start the voting process
+    await jurors.setStakerPool()
+    await jurors.initializeDispute(disputeAddress, quorum, endTime)
   })
 
   it('Test evidence uploaders', async function () {
@@ -184,15 +215,16 @@ describe('SLM Chargebacks', function () {
 
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
     await chargeback.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
   })
 
   it('Test merchant withdrawals', async function () {
     // Create new chargeback contract
+    const defaultAmount = 100
     const disputeID = 126
     const chargebackAmount = 100
     const chargeback2 = await deployChargeback(
@@ -203,6 +235,7 @@ describe('SLM Chargebacks', function () {
       account2,
       chargebackAmount,
     )
+    await token.mint(chargeback2.address, defaultAmount)
 
     // Setup end time and dispute address
     latestBlock = await ethers.provider.getBlock('latest')
@@ -309,10 +342,10 @@ describe('SLM Chargebacks', function () {
 
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
     await chargeback2.connect(account1).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account1.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account1.address)).to.equal(300)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback2.connect(account1).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account1.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account1.address)).to.equal(300)
   })
 })
