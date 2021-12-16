@@ -44,7 +44,6 @@ describe('SLM Preorders', function () {
       account2,
       preorderAmount,
     )
-    await token.mint(preorder.address, defaultAmount)
 
     // Test that buyer and merchant addresses are correct
     chai.expect(await preorder.buyer()).to.equal(account2.address)
@@ -208,18 +207,17 @@ describe('SLM Preorders', function () {
       .expect(preorder.connect(account2).buyerWithdraw(fakeEncryptionKey))
       .to.be.revertedWith('Unauthorized access')
 
-    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(100)
     await preorder.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
 
     // Test that subsequent withdrawals will result in nothing
     await preorder.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
   })
 
   it('Test merchant withdrawals', async function () {
     // Create new preorder contract
-    const defaultAmount = 100
     const disputeID = 126
     const preorderAmount = 100
     const preorder2 = await deployPreorder(
@@ -230,7 +228,6 @@ describe('SLM Preorders', function () {
       account2,
       preorderAmount,
     )
-    await token.mint(preorder2.address, defaultAmount)
 
     // Setup end time and dispute address
     latestBlock = await ethers.provider.getBlock('latest')

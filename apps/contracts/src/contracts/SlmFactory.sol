@@ -147,7 +147,7 @@ contract SlmFactory is CloneFactory, Ownable {
             if(paymentToken == slmToken) {
                 discount = slmDiscount;
             }
-            IERC20(paymentToken).transferFrom(msg.sender, buyer, allowance);
+            IERC20(paymentToken).transferFrom(msg.sender, address(chargeback), allowance);
         } else {
             require(msg.value > 0, "Payment not provided");
         }
@@ -173,7 +173,7 @@ contract SlmFactory is CloneFactory, Ownable {
             if(paymentToken == slmToken) {
                 discount = slmDiscount;
             }
-            IERC20(paymentToken).transferFrom(msg.sender, buyer, allowance);
+            IERC20(paymentToken).transferFrom(msg.sender, address(preorder), allowance);
         } else {
             require(msg.value > 0, "Payment not provided");
         }
@@ -195,7 +195,7 @@ contract SlmFactory is CloneFactory, Ownable {
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
-            IERC20(paymentToken).transferFrom(msg.sender, party1, allowance);
+            IERC20(paymentToken).transferFrom(msg.sender, address(escrow), allowance);
         } else {
             require(msg.value > 0, "Payment not provided");
         }

@@ -37,9 +37,6 @@ contract SlmJudgement is Ownable {
         Tie
     }
 
-    /// List of addresses and active flag to indicate latest active admins
-    mapping(address => bool) public adminList;
-
     /// List of dispute to latest vote states
     mapping(address => VoteStates) public voteResults;
 
@@ -193,31 +190,6 @@ contract SlmJudgement is Ownable {
         stakerManager.managedVote(msg.sender, slmContract);
     }
 
-    /// Grant admin rights to user wallet address
-    /// @param walletAddress User wallet address
-    function setAdminRights(address walletAddress) external onlyOwner {
-        require(walletAddress != address(0), "Zero addr");
-        adminList[walletAddress] = true;
-    }
-
-    /// Revoke admin rights to user wallet address
-    /// @param walletAddress User wallet address
-    function removeAdminRights(address walletAddress) external onlyOwner {
-        require(walletAddress != address(0), "Zero addr");
-        require(this.adminList(walletAddress) == true, "Not an admin");
-        adminList[walletAddress] = false;
-    }
-
-    /// Check if user is an admin
-    /// @param walletAddress User wallet address
-    function getAdminRights(address walletAddress) external view returns(bool) {
-        require(walletAddress != address(0), "Zero addr");
-        if (this.adminList(walletAddress) == true) {
-            return true;
-        }
-        return false;
-    }
-
     /// Tallies votes and returns the latest state of a contract dispute
     /// @param slmContract Contract to check dispute status
     function voteStatus(address slmContract) public {
@@ -267,7 +239,7 @@ contract SlmJudgement is Ownable {
         Role storage roles = disputeRoles[slmContract];
         VoteStates result = voteResults[slmContract];
         if (dispute.voteEndTime > block.timestamp) {
-            require(roles.memberRoles[msg.sender] == MemberRole.Merchant || roles.memberRoles[msg.sender] == MemberRole.Buyer || adminList[msg.sender] == true, "Unauthorized role");
+            require(roles.memberRoles[msg.sender] == MemberRole.Merchant || roles.memberRoles[msg.sender] == MemberRole.Buyer, "Unauthorized role");
             this.authorizeUser(slmContract, msg.sender, encryptionKey);
             return result;
         }
