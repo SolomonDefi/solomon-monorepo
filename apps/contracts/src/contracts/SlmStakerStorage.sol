@@ -5,9 +5,6 @@ import "./library/Ownable.sol";
 import "./library/IERC20.sol";
 import "./SlmStakerManager.sol";
 
-// TODO: Add back interest/reward sections
-// TODO: Update references to SLM Token
-
 /// @title SlmStakerStorage stores information related to the Stakers
 contract SlmStakerStorage is Ownable {
     address public stakerManager;

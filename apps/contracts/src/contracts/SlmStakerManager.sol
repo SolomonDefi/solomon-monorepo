@@ -6,15 +6,9 @@ import "./library/IERC20.sol";
 import "./library/SlmJudgement.sol";
 import "./SlmStakerStorage.sol";
 
-// TODO: Add back interest/reward sections + Unstaking mechanism
-// TODO: Add back functions related to voting
 
 /// @title SlmStakerManager allows users to stake SLM to become jurors and earn rewards
 contract SlmStakerManager is Ownable {
-
-    event StakedSLM(uint256 amount, address user);
-
-    event UnstakedSLM(uint256 amount, address user);
 
     uint256[] public stakerPool;
 
@@ -23,6 +17,14 @@ contract SlmStakerManager is Ownable {
     SlmStakerStorage public stakerStorage;
 
     SlmJudgement public judgement;
+
+    event StakedSLM(uint256 amount, address user);
+
+    event UnstakedSLM(uint256 amount, address user);
+
+    event RewardAnnounced(uint256 percent, uint256 amount);
+
+    event RewardWithdrawn(address user, uint256 amount);
 
     modifier onlyOwnerOrJudgement() {
         require(msg.sender == owner || msg.sender == address(judgement), "Unauthorized access");
@@ -151,12 +153,14 @@ contract SlmStakerManager is Ownable {
         require(rewardPercent > 0, "Invalid percent");
         uint256 rewardAmount = (token.balanceOf(address(stakerStorage)) * rewardPercent) / 100;
         stakerStorage.announceReward(rewardPercent, rewardAmount);
+        emit RewardAnnounced(rewardPercent, rewardAmount);
     }
 
     function withdrawRewards() external {
         uint256 stakeRewards = _calculateStakeRewards(msg.sender);
         if (stakeRewards > 0) {
             stakerStorage.sendFunds(msg.sender, stakeRewards);
+            emit RewardWithdrawn(msg.sender, stakeRewards);
         }
     }
 

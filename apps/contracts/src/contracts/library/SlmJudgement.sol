@@ -9,11 +9,18 @@ import "../SlmStakerManager.sol";
 /// @author Solomon DeFi
 /// @notice Functionality for voting on chargeback/escrow events
 contract SlmJudgement is Ownable {
-
-    // TODO - Add events for certain actions
     
     uint16 public minJurorCount;
+    
     uint256[] private selectedJurors;
+
+    VoteStates public states;
+
+    SlmStakerManager public stakerManager;
+
+    uint256[] public stakerPool;
+
+    bool inactiveDispute = false;
 
     enum VoteStates { 
         Inactive,
@@ -22,8 +29,6 @@ contract SlmJudgement is Ownable {
         MerchantWins,
         Tie
     }
-
-    VoteStates public states;
 
     mapping(address => bool) public adminList;
 
@@ -43,9 +48,9 @@ contract SlmJudgement is Ownable {
     /// @dev Mapping of dispute address to latest index for Round Robin Mapping
     mapping(address => uint32) public jurorSelectionIndex;
 
-    SlmStakerManager public stakerManager;
+    event DisputeInitialized(address slmContract, uint256 endTime);
 
-    uint256[] public stakerPool;
+    event VoteResult(address slmContract, VoteStates result);
 
     modifier onlyOwnerOrManager() {
         require(msg.sender == owner || msg.sender == address(stakerManager), "Unauthorized access");
@@ -109,6 +114,8 @@ contract SlmJudgement is Ownable {
         disputes[slmContract].quorum = quorum;
         disputes[slmContract].voteEndTime = endTime;
         stakerManager.setVoteDetails(slmContract, endTime);
+        emit DisputeInitialized(slmContract, endTime);
+        inactiveDispute = false;
     }
 
     function setDisputeAccess(address slmContract, MemberRole[] memory roles, address[] memory addressList, bytes32[] memory keyList) external onlyOwner {
@@ -122,12 +129,12 @@ contract SlmJudgement is Ownable {
         }
     }
 
-    function vote(address slmContract, bytes32 vote) external {
+    function vote(address slmContract, bytes32 encryptedVote) external {
         require(slmContract != address(0), "Zero addr");
         require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
         Role storage roles = disputeRoles[slmContract];
         require(roles.memberRoles[msg.sender] == MemberRole.Juror, "Voter ineligible");
-        if (roles.encryptedKeyList[msg.sender] == vote) {
+        if (roles.encryptedKeyList[msg.sender] == encryptedVote) {
             if (disputes[slmContract].votes[msg.sender] == 0) {
                 disputes[slmContract].buyerVoteCount += 1;
             } else if (disputes[slmContract].votes[msg.sender] == 2) {
@@ -170,6 +177,7 @@ contract SlmJudgement is Ownable {
     /// @param slmContract Contract to check dispute status
     function voteStatus(address slmContract) public {
         require(slmContract != address(0), "Zero addr");
+        require(!inactiveDispute, "Dispute resolved");
         Dispute storage dispute = disputes[slmContract];
         uint16 merchantVotes = dispute.merchantVoteCount;
         uint16 buyerVotes = dispute.buyerVoteCount;
@@ -187,6 +195,11 @@ contract SlmJudgement is Ownable {
         } else {
             voteResults[slmContract] = VoteStates.Tie;
         }
+        
+        if (dispute.voteEndTime < block.timestamp && !inactiveDispute && voteResults[slmContract] > VoteStates.InsufficientVotes) {
+            inactiveDispute = true;
+            emit VoteResult(slmContract, voteResults[slmContract]);
+        }
     }
 
     function authorizeUser(address slmContract, address user, bytes32 encryptionKey) external view {
@@ -200,12 +213,13 @@ contract SlmJudgement is Ownable {
         require(slmContract != address(0), "Zero addr");
         Dispute storage dispute = disputes[slmContract];
         Role storage roles = disputeRoles[slmContract];
+        VoteStates result = voteResults[slmContract];
         if (dispute.voteEndTime > block.timestamp) {
             require(roles.memberRoles[msg.sender] == MemberRole.Merchant || roles.memberRoles[msg.sender] == MemberRole.Buyer || adminList[msg.sender] == true, "Unauthorized role");
             this.authorizeUser(slmContract, msg.sender, encryptionKey);
-            return voteResults[slmContract];
+            return result;
         }
-        return voteResults[slmContract];
+        return result;
     }
 
     function setStakerPool() external onlyOwner {

@@ -34,8 +34,6 @@ abstract contract SlmShared is Ownable {
 
     TransactionState public state = TransactionState.Inactive;
 
-    event Funded(uint256 amount);
-
     // Dispute/Voting State
     enum TransactionState {
         // Awaiting initial funds
@@ -51,6 +49,8 @@ abstract contract SlmShared is Ownable {
         // Both parties received funds, contract completed
         CompleteTie
     }
+
+    event FundsTransferred(address indexed party, uint256 amount);
 
     event DisputeInitiated(address indexed party1, address indexed party2);
 
@@ -167,5 +167,6 @@ abstract contract SlmShared is Ownable {
                 token.transfer(address(stakerStorage), token.balanceOf(address(this)));
             }
         }
+        emit FundsTransferred(recipient, transferAmount);
     }
 }
