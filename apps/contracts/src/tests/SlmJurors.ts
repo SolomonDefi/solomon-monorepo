@@ -615,7 +615,9 @@ describe('SLM Jurors', function () {
       ['address', 'bytes32', 'uint8'],
       [account3.address, encryptionKey, 1],
     )
-    await chai.expect(jurors.connect(account3).vote(disputeAddress, encryptedVote)).to.be.revertedWith('Voting has ended')
+    await chai
+      .expect(jurors.connect(account3).vote(disputeAddress, encryptedVote))
+      .to.be.revertedWith('Voting has ended')
 
     // Initialize the dispute again to restart the voting process
     endTime = currentTime + 259200
