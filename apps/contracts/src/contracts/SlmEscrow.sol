@@ -10,10 +10,10 @@ import "./library/SlmJudgement.sol";
 contract SlmEscrow is SlmShared {
 
     /// @dev Flag to indicate if dispute has been initiated
-    bool disputeInitiated = false;
+    bool disputeInitiated;
 
     /// @dev Flag to mark final withdrawal in case of ties
-    bool finalWithdrawal = false;
+    bool finalWithdrawal;
 
     /// Initialize the contract
     /// @param _judge Contract that assigns votes for chargeback disputes

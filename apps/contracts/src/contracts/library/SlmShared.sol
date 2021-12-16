@@ -32,20 +32,20 @@ abstract contract SlmShared is Ownable {
     /// @dev Party 2 evidence URL
     string internal _party2EvidenceURL;
 
+    /// @dev Default discount percentage in whole numbers
+    uint8 public discount;
+
     /// @dev Start of dispute
     uint256 public disputeTime;
 
     /// @dev Default length of dispute voting period
-    uint256 public disputePeriod = 7 days;
+    uint256 public disputePeriod;
 
     /// @dev Default juror fees representing one hundredth of a percent in whole numbers
-    uint256 public jurorFees = 1500;
+    uint256 public jurorFees;
 
     /// @dev Default upkeep fees representing one hundredth of a percent in whole numbers
-    uint256 public upkeepFees = 500;
-
-    /// @dev Default discount percentage in whole numbers
-    uint8 public discount = 0;
+    uint256 public upkeepFees;
 
     /// @dev Tracks dispute state
     TransactionState public state = TransactionState.Inactive;
