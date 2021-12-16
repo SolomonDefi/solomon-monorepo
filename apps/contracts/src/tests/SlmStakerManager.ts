@@ -14,8 +14,8 @@ describe('SLM Staker Manager', function () {
     ;[owner, account1, account2, account3, account4, account5] = await ethers.getSigners()
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts()
 
-    // Set minimum time user has to wait between reward withdrawals
-    storage.setMinWithdrawalWaitTime(10)
+    // Set minimum time (1 day) user has to wait between reward withdrawals
+    storage.setMinWithdrawalWaitTime(86400)
 
     // Allocate tokens to user accounts
     const defaultAmount = 200
@@ -121,9 +121,8 @@ describe('SLM Staker Manager', function () {
     let expectedBalance = account1Balance.add(account1Rewards)
     chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)
 
-    // Multiple consecutive withdrawals don't impact balance
-    await manager.connect(account1).withdrawRewards()
-    chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)
+    // Check that subsequent withdrawals have to wait until minimum withdrawal wait period is over
+    await chai.expect(manager.connect(account1).withdrawRewards()).to.be.revertedWith('Cannot withdraw yet')
 
     const account2Balance = await token.balanceOf(account2.address)
     await manager.connect(account2).withdrawRewards()
@@ -152,7 +151,7 @@ describe('SLM Staker Manager', function () {
     chai.expect(await manager.getUnstakedSLM(account1.address)).to.equal(200)
 
     // Check to ensure that withdrawals after the minimum wait period during the same reward interval does not reward extra interest
-    currentTime = await increaseTime(2, currentTime)
+    currentTime = await increaseTime(1, currentTime)
     await ethers.provider.send('evm_mine', [])
 
     account1Balance = await token.balanceOf(account1.address)

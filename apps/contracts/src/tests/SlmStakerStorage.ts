@@ -28,7 +28,7 @@ describe('SLM Staker Storage', function () {
 
     // Deploy chargeback contract
     const disputeID = 125
-    const chargebackAmount = 100
+    const chargebackAmount = 300
     chargeback = await deployChargeback(
       slmFactory,
       token,
@@ -230,11 +230,8 @@ describe('SLM Staker Storage', function () {
 
   it('Sending funds', async () => {
     // Test sending of funds from staker storage contract
-    chai.expect(await token.balanceOf(chargeback.address)).to.equal(0)
-    chai.expect(await token.balanceOf(account1.address)).to.equal(100)
-
-    await token.mint(chargeback.address, 300)
     chai.expect(await token.balanceOf(chargeback.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account1.address)).to.equal(100)
 
     await storage.sendFunds(account1.address, 100)
     chai.expect(await token.balanceOf(account1.address)).to.equal(200)

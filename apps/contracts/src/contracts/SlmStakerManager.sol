@@ -198,6 +198,9 @@ contract SlmStakerManager is Ownable {
 
     /// Allows user to withdraw reward payments
     function withdrawRewards() external {
+        uint256 lastWithdrawalTime = stakerStorage.getLastWithdrawalTime(msg.sender);
+        uint256 minWaitTime = stakerStorage.minWithdrawalWaitTime();
+        require(block.timestamp > lastWithdrawalTime + minWaitTime, "Cannot withdraw yet");
         uint256 stakeRewards = _calculateStakeRewards(msg.sender);
         if (stakeRewards > 0) {
             stakerStorage.sendFunds(msg.sender, stakeRewards);
