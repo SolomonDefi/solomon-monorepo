@@ -525,6 +525,7 @@ describe('SLM Jurors', function () {
       account8,
       chargebackAmount,
     )
+    await token.mint(chargeback2.address, 100)
 
     disputeAddress = chargeback2.address
 
@@ -609,9 +610,22 @@ describe('SLM Jurors', function () {
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
+
+    encryptedVote = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account3.address, encryptionKey, 1],
+    )
+    await chai.expect(jurors.connect(account3).vote(disputeAddress, encryptedVote)).to.be.revertedWith('Voting has ended')
+
+    // Initialize the dispute again to restart the voting process
+    endTime = currentTime + 259200
     await jurors.initializeDispute(disputeAddress, 4, endTime)
 
-    endTime = currentTime + 259200
+    await jurors.voteStatus(disputeAddress)
+    voteResult = await jurors
+      .connect(account8)
+      .getVoteResults(disputeAddress, encryptionKey)
+    chai.expect(voteResult).to.equal(1)
 
     // Have next user fulfill the minimum vote requirement
     encryptedVote = ethers.utils.solidityKeccak256(
@@ -619,46 +633,40 @@ describe('SLM Jurors', function () {
       [account3.address, encryptionKey, 1],
     )
     await jurors.connect(account3).vote(disputeAddress, encryptedVote)
+    await jurors.connect(account3).vote(disputeAddress, encryptedVote)
+
+    await jurors.voteStatus(disputeAddress)
+    voteResult = await jurors
+      .connect(account8)
+      .getVoteResults(disputeAddress, encryptionKey)
+    chai.expect(voteResult).to.equal(1)
+
+    encryptedVote = ethers.utils.solidityKeccak256(
+      ['address', 'bytes32', 'uint8'],
+      [account4.address, encryptionKey, 1],
+    )
+    await jurors.connect(account4).vote(disputeAddress, encryptedVote)
+
+    // Fast forward to end of vote
+    currentTime = await increaseTime(4, currentTime)
+    await ethers.provider.send('evm_mine', [])
+
+    // Checks that voteStatus needs to be run again to update dispute status
+    voteResult = await jurors
+      .connect(account8)
+      .getVoteResults(disputeAddress, encryptionKey)
+    chai.expect(voteResult).to.equal(1)
+
+    // Update dispute status
+    await jurors.voteStatus(disputeAddress)
+    voteResult = await jurors
+      .connect(account8)
+      .getVoteResults(disputeAddress, encryptionKey)
+    chai.expect(voteResult).to.equal(2)
 
     // Buyer withdrawal
-    let disputeBalance = await token.balanceOf(disputeAddress)
-    const firstHalf = Math.floor(disputeBalance / 2)
-    const account8Balance = await token.balanceOf(account8.address)
-    let storageBalance = await token.balanceOf(storage.address)
-    let ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account8Balance).to.equal(200)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(295)
-
-    await chargeback.connect(account8).buyerWithdraw(encryptionKey)
-
-    let jurorFees = Math.floor(
-      (firstHalf * jurorFeePercent * (100 - discount)) / (100000 * 100),
-    )
-    let upkeepFees = Math.floor(
-      (firstHalf * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
-    )
-    let transferredAmount = firstHalf - jurorFees - upkeepFees
-    const account8BalanceAfter = account8Balance.add(
-      ethers.BigNumber.from(transferredAmount),
-    )
-
-    chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
-
-    // Ensure fees were calculated correctly and distributed to the correct parties
-    chai.expect(await token.balanceOf(disputeAddress)).to.equal(51)
-
-    let expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
-    chai.expect(expectedValue).to.equal(upkeepFees)
-
-    expectedValue = storageBalance.add(jurorFees)
-    chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
-
-    // Test that subsequent withdrawals will not change balance
-    await chargeback.connect(account8).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(account8BalanceAfter)
-
-    await chai
-      .expect(chargeback.connect(account9).merchantWithdraw(fakeEncryptionKey))
-      .to.be.revertedWith('Unauthorized access')
+    chai.expect(await token.balanceOf(chargeback2.address)).to.equal(100)
+    await chargeback2.connect(account8).buyerWithdraw(encryptionKey)
+    chai.expect(await token.balanceOf(chargeback2.address)).to.equal(0)
   })
 })
