@@ -1,5 +1,19 @@
 import assert from 'assert'
 import { ethers } from 'hardhat'
+import {
+  getFactories,
+  deployToken,
+  deployStakerStorage,
+  deployStakerManager,
+  deployJudgement,
+  deployChargebackMaster,
+  deployEscrowMaster,
+  deployPreorderMaster,
+  deploySlmFactory,
+  deployChargebackChild,
+  deployPreorderChild,
+  deployEscrowChild,
+} from '../scripts/deployUtils'
 
 // Temporary placeholders for blockchain-utils functions
 export const toBN = (num) => BigInt(toSafeNumber(num))
@@ -58,51 +72,65 @@ export async function deployContracts(
   const [owner] = await ethers.getSigners()
 
   // Set up contract factories for deployment
-  const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
-  const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
-  const TokenFactory = await ethers.getContractFactory('SlmToken')
-  const JudgementFactory = await ethers.getContractFactory('SlmJudgement')
-  const SLMFactory = await ethers.getContractFactory('SlmFactory')
-  const ChargebackFactory = await ethers.getContractFactory('SlmChargeback')
-  const PreorderFactory = await ethers.getContractFactory('SlmPreorder')
-  const EscrowFactory = await ethers.getContractFactory('SlmEscrow')
+  const {
+    StorageFactory,
+    ManagerFactory,
+    TokenFactory,
+    JudgementFactory,
+    SLMFactory,
+    ChargebackFactory,
+    PreorderFactory,
+    EscrowFactory,
+  } = await getFactories()
 
   // Deploy token contract and unlock tokens
   const initialSupply = ethers.utils.parseEther(supplyAmount.toString())
-  const token = await TokenFactory.deploy('SLMToken', 'SLM', initialSupply, owner.address)
+  const { erc20: token } = await deployToken(TokenFactory, owner.address, initialSupply)
   await token.deployed()
   await token.unlock()
 
   // Deploy staker storage contract
-  const storage = await StorageFactory.deploy(token.address, unstakePeriod, minimumStake)
+  const { storage } = await deployStakerStorage(
+    StorageFactory,
+    token.address,
+    unstakePeriod,
+    minimumStake,
+  )
 
   // Deploy staker manager contract
-  const manager = await ManagerFactory.deploy(token.address, storage.address)
+  const { manager } = await deployStakerManager(
+    ManagerFactory,
+    token.address,
+    storage.address,
+  )
   await storage.setStakerManager(manager.address)
 
   // Deploy juror contract
-  const jurors = await JudgementFactory.deploy(manager.address, minJurorCount)
+  const { judgement: jurors } = await deployJudgement(
+    JudgementFactory,
+    manager.address,
+    minJurorCount,
+    tieBreakerDuration,
+  )
   await manager.setJudgementContract(jurors.address)
 
   // Deploy chargeback contract
-  const chargebackMaster = await ChargebackFactory.deploy()
+  const { chargebackMaster } = await deployChargebackMaster(ChargebackFactory)
 
   // Deploy preorder contract
-  const preorderMaster = await PreorderFactory.deploy()
+  const { preorderMaster } = await deployPreorderMaster(PreorderFactory)
 
   // Deploy escrow contract
-  const escrowMaster = await EscrowFactory.deploy()
+  const { escrowMaster } = await deployEscrowMaster(EscrowFactory)
 
   // Deploy SLM Factory contracts
-  const slmFactory = await SLMFactory.deploy(
+  const { slmFactory } = await deploySlmFactory(
+    SLMFactory,
     jurors.address,
     token.address,
-    storage.address,
     chargebackMaster.address,
     preorderMaster.address,
     escrowMaster.address,
-    jurorFees,
-    upkeepFees,
     discount,
   )
 
@@ -117,18 +145,15 @@ export async function deployChargeback(
   buyer,
   amount,
 ) {
-  // Create allowance for transfer of funds into chargeback contract
-  await token.approve(slmFactory.address, amount)
-
-  // Create new chargeback contract
-  await slmFactory.createChargeback(
+  const chargeback = await deployChargebackChild(
+    slmFactory,
+    token,
     disputeID,
-    merchant.address,
-    buyer.address,
-    token.address,
+    merchant,
+    buyer,
+    amount,
   )
-  const chargebackAddress = await slmFactory.getChargebackAddress(disputeID)
-  const chargeback = await ethers.getContractAt('SlmChargeback', chargebackAddress)
+
   return chargeback
 }
 
@@ -140,28 +165,27 @@ export async function deployPreorder(
   buyer,
   amount,
 ) {
-  // Create allowance for transfer of funds into preorder contract
-  await token.approve(slmFactory.address, amount)
-
-  // Create new preorder contract
-  await slmFactory.createPreorder(
+  const preorder = await deployPreorderChild(
+    slmFactory,
+    token,
     disputeID,
-    merchant.address,
-    buyer.address,
-    token.address,
+    merchant,
+    buyer,
+    amount,
   )
-  const preorderAddress = await slmFactory.getPreorderAddress(disputeID)
-  const preorder = await ethers.getContractAt('SlmPreorder', preorderAddress)
+
   return preorder
 }
 
 export async function deployEscrow(slmFactory, token, disputeID, party1, party2, amount) {
-  // Create allowance for transfer of funds into escrow contract
-  await token.approve(slmFactory.address, amount)
+  const escrow = await deployEscrowChild(
+    slmFactory,
+    token,
+    disputeID,
+    party1,
+    party2,
+    amount,
+  )
 
-  // Create new escrow contract
-  await slmFactory.createEscrow(disputeID, party1.address, party2.address, token.address)
-  const escrowAddress = await slmFactory.getEscrowAddress(disputeID)
-  const escrow = await ethers.getContractAt('SlmEscrow', escrowAddress)
   return escrow
 }
