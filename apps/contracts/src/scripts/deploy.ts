@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat'
-import { 
+import {
   getFactories,
   deployToken,
   deployStakerStorage,
@@ -9,11 +9,11 @@ import {
   deployEscrowMaster,
   deployPreorderMaster,
   deploySlmFactory,
- } from './deployUtils'
+} from './deployUtils'
 
- // Declare constants for contract deployment
+// Declare constants for contract deployment
 let tokenAddress = '[PROD TOKEN ADDRESS]'
-const initialSupply =  '100000000000000000000000000'
+const initialSupply = '100000000000000000000000000'
 const unstakePeriod = 1
 const minimumStake = 1
 const minJurorCount = 3
@@ -38,31 +38,53 @@ async function main() {
 
   const factories = await getFactories()
 
-  // Deploy token contract for dev and testnet environments  
+  // Deploy token contract for dev and testnet environments
   if (network.chainId === 1337) {
     // Local RPC
-    const { erc20 } = await deployToken(factories.TokenFactory, deployer.address, initialSupply)
+    const { erc20 } = await deployToken(
+      factories.TokenFactory,
+      deployer.address,
+      initialSupply,
+    )
     tokenAddress = erc20.address
     printContractAddresses('Token', tokenAddress)
     await erc20.deployed()
     await erc20.unlock()
   } else if (network.chainId === 3) {
     // Ropsten testnet
-    const { erc20 } = await deployToken(factories.TokenFactory, deployer.address, initialSupply)
+    const { erc20 } = await deployToken(
+      factories.TokenFactory,
+      deployer.address,
+      initialSupply,
+    )
     tokenAddress = erc20.address
     printContractAddresses('Token', tokenAddress)
     await erc20.deployed()
     await erc20.unlock()
   }
-  
-  const { storage } = await deployStakerStorage(factories.StorageFactory, tokenAddress, unstakePeriod, minimumStake)
+
+  const { storage } = await deployStakerStorage(
+    factories.StorageFactory,
+    tokenAddress,
+    unstakePeriod,
+    minimumStake,
+  )
   printContractAddresses('SlmStakerStorage', storage.address)
 
-  const { manager } = await deployStakerManager(factories.ManagerFactory, tokenAddress, storage.address)
+  const { manager } = await deployStakerManager(
+    factories.ManagerFactory,
+    tokenAddress,
+    storage.address,
+  )
   printContractAddresses('SlmStakerManager', manager.address)
   await storage.setStakerManager(manager.address)
 
-  const { judgement } = await deployJudgement(factories.JudgementFactory, manager.address, minJurorCount, tieBreakerDuration)
+  const { judgement } = await deployJudgement(
+    factories.JudgementFactory,
+    manager.address,
+    minJurorCount,
+    tieBreakerDuration,
+  )
   printContractAddresses('SlmJudgement', judgement.address)
   await manager.setJudgementContract(judgement.address)
 
@@ -77,11 +99,11 @@ async function main() {
 
   const { slmFactory } = await deploySlmFactory(
     factories.SLMFactory,
-    judgement.address, 
-    tokenAddress, 
-    chargebackMaster.address, 
-    preorderMaster.address, 
-    escrowMaster.address, 
+    judgement.address,
+    tokenAddress,
+    chargebackMaster.address,
+    preorderMaster.address,
+    escrowMaster.address,
     discount,
   )
   printContractAddresses('SlmFactory', slmFactory.address)

@@ -10,7 +10,7 @@ export const getFactories = async () => {
   const PreorderFactory = await ethers.getContractFactory('SlmPreorder')
   const EscrowFactory = await ethers.getContractFactory('SlmEscrow')
 
-  return { 
+  return {
     StorageFactory,
     ManagerFactory,
     TokenFactory,
@@ -19,7 +19,7 @@ export const getFactories = async () => {
     ChargebackFactory,
     PreorderFactory,
     EscrowFactory,
-   }
+  }
 }
 
 export const deployToken = async (factory, owner, initialSupply) => {
@@ -27,7 +27,12 @@ export const deployToken = async (factory, owner, initialSupply) => {
   return { erc20 }
 }
 
-export const deployStakerStorage = async (factory, tokenAddress, unstakePeriod, minimumStake) => {
+export const deployStakerStorage = async (
+  factory,
+  tokenAddress,
+  unstakePeriod,
+  minimumStake,
+) => {
   const storage = await factory.deploy(tokenAddress, unstakePeriod, minimumStake)
   return { storage }
 }
@@ -37,7 +42,12 @@ export const deployStakerManager = async (factory, tokenAddress, storageAddress)
   return { manager }
 }
 
-export const deployJudgement = async (factory, managerAddress, minJurorCount, tieDuration) => {
+export const deployJudgement = async (
+  factory,
+  managerAddress,
+  minJurorCount,
+  tieDuration,
+) => {
   const judgement = await factory.deploy(managerAddress, minJurorCount, tieDuration)
   return { judgement }
 }
@@ -58,20 +68,20 @@ export const deployEscrowMaster = async (factory) => {
 }
 
 export const deploySlmFactory = async (
-  factory, 
-  jurorAddress, 
-  tokenAddress, 
-  chargebackAddress, 
-  preorderAddress, 
-  escrowAddress, 
+  factory,
+  jurorAddress,
+  tokenAddress,
+  chargebackAddress,
+  preorderAddress,
+  escrowAddress,
   discount,
 ) => {
   const slmFactory = await factory.deploy(
-    jurorAddress, 
-    tokenAddress, 
-    chargebackAddress, 
-    preorderAddress, 
-    escrowAddress, 
+    jurorAddress,
+    tokenAddress,
+    chargebackAddress,
+    preorderAddress,
+    escrowAddress,
     discount,
   )
   return { slmFactory }
@@ -128,23 +138,18 @@ export async function deployPreorderChild(
 }
 
 export async function deployEscrowChild(
-  slmFactory, 
-  token, 
-  disputeID, 
-  party1, 
-  party2, 
-  amount
+  slmFactory,
+  token,
+  disputeID,
+  party1,
+  party2,
+  amount,
 ) {
   // Create allowance for transfer of funds into escrow contract
   await token.approve(slmFactory.address, amount)
 
   // Create new escrow contract
-  await slmFactory.createEscrow(
-    disputeID, 
-    party1.address, 
-    party2.address, 
-    token.address,
-  )
+  await slmFactory.createEscrow(disputeID, party1.address, party2.address, token.address)
 
   // Get escrow contract object
   const escrowAddress = await slmFactory.getEscrowAddress(disputeID)
