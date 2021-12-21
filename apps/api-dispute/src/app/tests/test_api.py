@@ -34,6 +34,7 @@ def test_ping(client: TestClient) -> None:
 
 
 valid_eth_address = '0xd3cda913deb6f67967b99d67acdfa1712c293601'
+valid_checksum_address = '0xCf5F514A66c2326d45D80B3FEACfA7502fbcd1E1'
 event_data_ids = [
     "valid_dispute_created",
     "fail_dispute_created",
@@ -46,7 +47,7 @@ event_data: list[tuple[dict, bool]] = [
         {
             "id": uuid4().hex,
             "type": "dispute.preorder.created",
-            "party1": valid_eth_address,
+            "party1": valid_checksum_address,
             "party2": valid_eth_address,
             "contract": valid_eth_address,
             "judgeContract": valid_eth_address,

@@ -15,6 +15,7 @@ class EthAddress(str):
 
     @classmethod
     def validate(cls, v: Any) -> 'EthAddress':
+        v = to_normalized_address(v)
         if is_address(v):
-            return cls(to_normalized_address(v))
+            return cls(v)
         raise EthAddressError()
