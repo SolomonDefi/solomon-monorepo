@@ -15,6 +15,7 @@ python-dotenv = "^0.19.0"
 requests = "^2.26.0"
 alembic = "^1.7.0"
 eth-utils = "^1.10.0"
+eth-hash = {extras = ["pycryptodome"], version = "^0.3.2"}
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
