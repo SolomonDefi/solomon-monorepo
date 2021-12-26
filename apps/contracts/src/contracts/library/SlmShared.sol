@@ -133,7 +133,7 @@ abstract contract SlmShared is Ownable {
                 if (totalBalance > 0) {
                     _transferFunds(totalBalance, recipient, owner, isTie, finalWithdrawal);
                 }
-                }
+            }
         } else {
             if (address(token) == address(0)) {
                 totalBalance = address(this).balance;

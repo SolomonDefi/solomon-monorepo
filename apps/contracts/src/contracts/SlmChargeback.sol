@@ -21,6 +21,7 @@ contract SlmChargeback is SlmShared {
     /// @param _judge Contract that assigns votes for chargeback disputes
     /// @param _token Token for ERC20 payments
     /// @param _stakerStorage Contract that handles staker balances
+    /// @param _owner The address of the contract owner
     /// @param _merchant The merchant's address
     /// @param _buyer The buyer's address
     /// @param _jurorFees Part of transaction fee going to jurors
@@ -131,7 +132,7 @@ contract SlmChargeback is SlmShared {
             state = TransactionState.CompleteParty2;
         }
 
-        if (!merchantWithdrawalComplete) {  
+        if (!merchantWithdrawalComplete) {
             withdraw(merchant(), owner, isTie, finalWithdrawal);
         }
         merchantWithdrawalComplete = true;
