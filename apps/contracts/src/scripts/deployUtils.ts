@@ -42,13 +42,8 @@ export const deployStakerManager = async (factory, tokenAddress, storageAddress)
   return { manager }
 }
 
-export const deployJudgement = async (
-  factory,
-  managerAddress,
-  minJurorCount,
-  tieDuration,
-) => {
-  const judgement = await factory.deploy(managerAddress, minJurorCount, tieDuration)
+export const deployJudgement = async (factory, managerAddress, minJurorCount) => {
+  const judgement = await factory.deploy(managerAddress, minJurorCount)
   return { judgement }
 }
 
@@ -69,19 +64,25 @@ export const deployEscrowMaster = async (factory) => {
 
 export const deploySlmFactory = async (
   factory,
-  jurorAddress,
+  judgeAddress,
   tokenAddress,
+  stakerStorage,
   chargebackAddress,
   preorderAddress,
   escrowAddress,
+  jurorFees,
+  upkeepFees,
   discount,
 ) => {
   const slmFactory = await factory.deploy(
-    jurorAddress,
+    judgeAddress,
     tokenAddress,
+    stakerStorage,
     chargebackAddress,
     preorderAddress,
     escrowAddress,
+    jurorFees,
+    upkeepFees,
     discount,
   )
   return { slmFactory }

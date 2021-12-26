@@ -50,7 +50,6 @@ describe('SLM Jurors', function () {
       1,
       1,
       3,
-      1,
       jurorFeePercent,
       upkeepFeesPercent,
       discount,

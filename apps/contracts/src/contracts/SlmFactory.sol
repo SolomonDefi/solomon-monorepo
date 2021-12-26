@@ -42,7 +42,7 @@ contract SlmFactory is CloneFactory, Ownable {
 
     /// Mapping of dispute ID to Chargeback contract addresses
     mapping(uint256 => address) public chargebackAddressList;
-     
+
     /// Mapping of dispute ID to Preorder contract addresses
     mapping(uint256 => address) public preorderAddressList;
 
@@ -71,7 +71,17 @@ contract SlmFactory is CloneFactory, Ownable {
     /// @param _jurorFees Default juror fees for dispute contracts representing hundredths of a percent in whole numbers
     /// @param _upkeepFees Default upkeep fees for dispute contracts representing hundredths of a percent in whole numbers
     /// @param _slmDiscount Default discounts on transaction fees representing percent in whole numbers
-    constructor(address _judge, address _slmToken, address _stakerStorage, address _chargebackMasterContract, address _preorderMasterContract, address _escrowMasterContract, uint32 _jurorFees, uint32 _upkeepFees, uint8 _slmDiscount) {
+    constructor(
+        address _judge,
+        address _slmToken,
+        address _stakerStorage,
+        address _chargebackMasterContract,
+        address _preorderMasterContract,
+        address _escrowMasterContract,
+        uint32 _jurorFees,
+        uint32 _upkeepFees,
+        uint8 _slmDiscount
+    ) {
         require(_judge != address(0), "Zero addr");
         require(_slmToken != address(0), "Zero addr");
         require(_stakerStorage != address(0), "Zero addr");
@@ -101,7 +111,7 @@ contract SlmFactory is CloneFactory, Ownable {
         require(newJudge != address(0), "Zero addr");
         judge = newJudge;
     }
-    
+
     /// Set SlmToken contract
     /// @param newSlmToken SlmToken contract address
     function setTokenContract(address newSlmToken) external onlyOwner {
