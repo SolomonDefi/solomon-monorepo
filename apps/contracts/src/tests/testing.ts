@@ -64,7 +64,6 @@ export async function deployContracts(
   unstakePeriod = 1,
   minimumStake = 1,
   minJurorCount = 3,
-  tieBreakerDuration = 1,
   jurorFees = 0,
   upkeepFees = 0,
   discount = 10,
@@ -110,7 +109,6 @@ export async function deployContracts(
     JudgementFactory,
     manager.address,
     minJurorCount,
-    tieBreakerDuration,
   )
   await manager.setJudgementContract(jurors.address)
 
@@ -128,9 +126,12 @@ export async function deployContracts(
     SLMFactory,
     jurors.address,
     token.address,
+    storage.address,
     chargebackMaster.address,
     preorderMaster.address,
     escrowMaster.address,
+    jurorFees,
+    upkeepFees,
     discount,
   )
 

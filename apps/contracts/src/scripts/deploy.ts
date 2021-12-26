@@ -17,7 +17,8 @@ const initialSupply = '100000000000000000000000000'
 const unstakePeriod = 1
 const minimumStake = 1
 const minJurorCount = 3
-const tieBreakerDuration = 1
+const jurorFees = 0
+const upkeepFees = 0
 const discount = 0
 
 const printContractAddresses = (name, contractAddress) => {
@@ -83,7 +84,6 @@ async function main() {
     factories.JudgementFactory,
     manager.address,
     minJurorCount,
-    tieBreakerDuration,
   )
   printContractAddresses('SlmJudgement', judgement.address)
   await manager.setJudgementContract(judgement.address)
@@ -101,9 +101,12 @@ async function main() {
     factories.SLMFactory,
     judgement.address,
     tokenAddress,
+    storage.address,
     chargebackMaster.address,
     preorderMaster.address,
     escrowMaster.address,
+    jurorFees,
+    upkeepFees,
     discount,
   )
   printContractAddresses('SlmFactory', slmFactory.address)
