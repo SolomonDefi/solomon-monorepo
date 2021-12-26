@@ -11,11 +11,11 @@ import "../SlmStakerManager.sol";
 contract SlmJudgement is Ownable {
 
     // TODO - Add events for certain actions
-    
+
     uint16 public minJurorCount;
     uint256[] private selectedJurors;
 
-    enum VoteStates { 
+    enum VoteStates {
         Inactive,
         InsufficientVotes,
         BuyerWins,
@@ -122,12 +122,12 @@ contract SlmJudgement is Ownable {
         }
     }
 
-    function vote(address slmContract, bytes32 vote) external {
+    function vote(address slmContract, bytes32 encryptedVote) external {
         require(slmContract != address(0), "Zero addr");
         require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
         Role storage roles = disputeRoles[slmContract];
         require(roles.memberRoles[msg.sender] == MemberRole.Juror, "Voter ineligible");
-        if (roles.encryptedKeyList[msg.sender] == vote) {
+        if (roles.encryptedKeyList[msg.sender] == encryptedVote) {
             if (disputes[slmContract].votes[msg.sender] == 0) {
                 disputes[slmContract].buyerVoteCount += 1;
             } else if (disputes[slmContract].votes[msg.sender] == 2) {
@@ -251,7 +251,7 @@ contract SlmJudgement is Ownable {
             if (selectedStartCount == stakerCount) {
                 selectedStartCount = 0;
             }
-            
+
             jurorSelectionIndex[slmContract] = selectedStartCount;
         }
 

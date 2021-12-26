@@ -94,7 +94,7 @@ describe('SLM Preorders', function () {
       .to.be.revertedWith('Please first initiate dispute')
     await chai
       .expect(preorder.connect(account1).requestRefund(buyerEvidenceURL))
-      .to.be.revertedWith('Only buyer can chargeback')
+      .to.be.revertedWith('Only buyer can preorder')
     await preorder.connect(account2).requestRefund(buyerEvidenceURL)
     chai.expect(await preorder.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
 
