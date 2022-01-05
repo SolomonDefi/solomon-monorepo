@@ -50,8 +50,6 @@ abstract contract SlmShared is Ownable {
     /// @dev Tracks dispute state
     TransactionState public state = TransactionState.Inactive;
 
-    event Funded(uint256 amount);
-
     // Dispute/Voting State
     /// @dev Dispute/Voting State
     enum TransactionState {
@@ -69,10 +67,10 @@ abstract contract SlmShared is Ownable {
         CompleteTie
     }
 
-    /// Event announcing the transfer of funds
-    /// @param party Party address
-    /// @param amount Amount transferred
-    event FundsTransferred(address indexed party, uint256 amount);
+    /// Event announcing the transfer of funds to wallet address
+    /// @param user User wallet address
+    /// @param amount Amount unstaked
+    event FundsTransferred(address indexed user, uint256 amount);
 
     /// Event announcing the initialization of the dispute
     /// @param party1 Party 1 address
@@ -204,5 +202,6 @@ abstract contract SlmShared is Ownable {
                 token.transfer(address(stakerStorage), token.balanceOf(address(this)));
             }
         }
+        emit FundsTransferred(recipient, transferAmount);
     }
 }
