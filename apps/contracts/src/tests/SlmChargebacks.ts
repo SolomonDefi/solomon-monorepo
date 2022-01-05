@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { solidity } from 'ethereum-waffle';
-chai.use(solidity);
+import { solidity } from 'ethereum-waffle'
+chai.use(solidity)
 import {
   increaseTime,
   sendVote,
@@ -127,22 +127,8 @@ describe('SLM Chargebacks', function () {
   it('Test buyer withdrawals', async function () {
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const userArray = [
-      account2,
-      account1,
-      account3,
-      account4,
-      account5,
-    ]
-    await setAccess(
-      jurors, 
-      disputeAddress, 
-      roleArray, 
-      userArray, 
-      encryptionKey,
-    )
-
-
+    const userArray = [account2, account1, account3, account4, account5]
+    await setAccess(jurors, disputeAddress, roleArray, userArray, encryptionKey)
 
     // Have jurors submit their votes
     let voteResult = await jurors
@@ -215,21 +201,8 @@ describe('SLM Chargebacks', function () {
 
     // Set access controls to buyer, merchant, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const userArray = [
-      account2,
-      account1,
-      account3,
-      account4,
-      account5,
-    ]
-    await setAccess(
-      jurors, 
-      disputeAddress, 
-      roleArray, 
-      userArray, 
-      encryptionKey,
-    )
-
+    const userArray = [account2, account1, account3, account4, account5]
+    await setAccess(jurors, disputeAddress, roleArray, userArray, encryptionKey)
 
     // Have juror submit their votes
     let voteResult = await jurors

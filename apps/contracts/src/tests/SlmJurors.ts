@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { solidity } from 'ethereum-waffle';
-chai.use(solidity);
+import { solidity } from 'ethereum-waffle'
+chai.use(solidity)
 import {
   increaseTime,
   encryptVote,
@@ -176,20 +176,8 @@ describe('SLM Jurors', function () {
   it('Checks voting', async function () {
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const userArray = [
-      account8,
-      account9,
-      account1,
-      account2,
-      account7,
-    ]
-    await setAccess(
-      jurors, 
-      disputeAddress, 
-      roleArray, 
-      userArray, 
-      encryptionKey,
-    )
+    const userArray = [account8, account9, account1, account2, account7]
+    await setAccess(jurors, disputeAddress, roleArray, userArray, encryptionKey)
 
     // Have jurors submit their votes
     await sendVote(jurors, account1, disputeAddress, fakeEncryptionKey, 1)
@@ -299,21 +287,8 @@ describe('SLM Jurors', function () {
 
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const userArray = [
-      account8,
-      account9,
-      account1,
-      account2,
-      account3,
-    ]
-    await setAccess(
-      jurors, 
-      disputeAddress, 
-      roleArray, 
-      userArray, 
-      encryptionKey,
-    )
-
+    const userArray = [account8, account9, account1, account2, account3]
+    await setAccess(jurors, disputeAddress, roleArray, userArray, encryptionKey)
 
     // Select jurors from list of stakers
     chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)
@@ -453,22 +428,8 @@ describe('SLM Jurors', function () {
 
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3, 3]
-    const userArray = [
-      account8,
-      account9,
-      account1,
-      account2,
-      account3,
-      account4,
-    ]
-    await setAccess(
-      jurors, 
-      disputeAddress, 
-      roleArray, 
-      userArray, 
-      encryptionKey,
-    )
-
+    const userArray = [account8, account9, account1, account2, account3, account4]
+    await setAccess(jurors, disputeAddress, roleArray, userArray, encryptionKey)
 
     // Select jurors from list of stakers
     chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)

@@ -52,14 +52,23 @@ export const toSafeNumber = (value) => parseSci(value.toString())
 
 // End of temporary placeholders
 
-export async function setAccess(jurorObject, disputeAddress, roleArray, userArray, encryptionKey) {
-
+export async function setAccess(
+  jurorObject,
+  disputeAddress,
+  roleArray,
+  userArray,
+  encryptionKey,
+) {
   let addressArray = []
   let encryptionKeyArray = []
 
-  for(let i = 0; i < roleArray.length; i++) {
+  for (let i = 0; i < roleArray.length; i++) {
     addressArray.push(userArray[i].address)
-    let encryptedString = await createEncryptedString(roleArray[i], userArray[i].address, encryptionKey)
+    let encryptedString = await createEncryptedString(
+      roleArray[i],
+      userArray[i].address,
+      encryptionKey,
+    )
     encryptionKeyArray.push(encryptedString)
   }
 
