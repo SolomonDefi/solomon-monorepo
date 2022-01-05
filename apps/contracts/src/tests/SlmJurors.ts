@@ -1,14 +1,14 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { 
-  increaseTime, 
+import {
+  increaseTime,
   encryptVote,
   sendVote,
   createEncryptedString,
   stake,
-  deployContracts, 
-  deployChargeback, 
-  deployEscrow 
+  deployContracts,
+  deployChargeback,
+  deployEscrow,
 } from './testing'
 
 describe('SLM Jurors', function () {
@@ -183,11 +183,31 @@ describe('SLM Jurors', function () {
     ]
 
     // TODO: Consolidate set dispute access
-    const encryptedStringBuyer = createEncryptedString('buyer', account8.address, encryptionKey)
-    const encryptedStringMerchant = createEncryptedString('merchant', account9.address, encryptionKey)
-    const encryptedStringAcc1 = createEncryptedString('juror', account1.address, encryptionKey)
-    const encryptedStringAcc2 = createEncryptedString('juror', account2.address, encryptionKey)
-    const encryptedStringAcc7 = createEncryptedString('juror', account7.address, encryptionKey)
+    const encryptedStringBuyer = createEncryptedString(
+      'buyer',
+      account8.address,
+      encryptionKey,
+    )
+    const encryptedStringMerchant = createEncryptedString(
+      'merchant',
+      account9.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc1 = createEncryptedString(
+      'juror',
+      account1.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc2 = createEncryptedString(
+      'juror',
+      account2.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc7 = createEncryptedString(
+      'juror',
+      account7.address,
+      encryptionKey,
+    )
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -318,11 +338,31 @@ describe('SLM Jurors', function () {
       account3.address,
     ]
 
-    const encryptedStringBuyer = await createEncryptedString('buyer', account8.address, encryptionKey)
-    const encryptedStringMerchant = await createEncryptedString('merchant', account9.address, encryptionKey)
-    const encryptedStringAcc1 = await createEncryptedString('juror', account1.address, encryptionKey)
-    const encryptedStringAcc2 = await createEncryptedString('juror', account2.address, encryptionKey)
-    const encryptedStringAcc3 = await createEncryptedString('juror', account3.address, encryptionKey)
+    const encryptedStringBuyer = await createEncryptedString(
+      'buyer',
+      account8.address,
+      encryptionKey,
+    )
+    const encryptedStringMerchant = await createEncryptedString(
+      'merchant',
+      account9.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc1 = await createEncryptedString(
+      'juror',
+      account1.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc2 = await createEncryptedString(
+      'juror',
+      account2.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc3 = await createEncryptedString(
+      'juror',
+      account3.address,
+      encryptionKey,
+    )
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -483,12 +523,36 @@ describe('SLM Jurors', function () {
       account3.address,
       account4.address,
     ]
-    const encryptedStringBuyer = await createEncryptedString('buyer', account8.address, encryptionKey)
-    const encryptedStringMerchant = await createEncryptedString('merchant', account9.address, encryptionKey)
-    const encryptedStringAcc1 = await createEncryptedString('juror', account1.address, encryptionKey)
-    const encryptedStringAcc2 = await createEncryptedString('juror', account2.address, encryptionKey)
-    const encryptedStringAcc3 = await createEncryptedString('juror', account3.address, encryptionKey)
-    const encryptedStringAcc4 = await createEncryptedString('juror', account4.address, encryptionKey)
+    const encryptedStringBuyer = await createEncryptedString(
+      'buyer',
+      account8.address,
+      encryptionKey,
+    )
+    const encryptedStringMerchant = await createEncryptedString(
+      'merchant',
+      account9.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc1 = await createEncryptedString(
+      'juror',
+      account1.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc2 = await createEncryptedString(
+      'juror',
+      account2.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc3 = await createEncryptedString(
+      'juror',
+      account3.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc4 = await createEncryptedString(
+      'juror',
+      account4.address,
+      encryptionKey,
+    )
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,

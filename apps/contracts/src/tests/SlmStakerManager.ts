@@ -1,11 +1,6 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { 
-  stake, 
-  unstake,
-  increaseTime, 
-  deployContracts 
-} from './testing'
+import { stake, unstake, increaseTime, deployContracts } from './testing'
 
 describe('SLM Staker Manager', function () {
   let jurors, token, storage, manager, slmFactory

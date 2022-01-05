@@ -52,12 +52,12 @@ export const toSafeNumber = (value) => parseSci(value.toString())
 // End of temporary placeholders
 
 export async function createEncryptedString(role, address, encryptionKey) {
-  if(role.toLowerCase() === 'buyer' || role.toLowerCase() === 'merchant') {
+  if (role.toLowerCase() === 'buyer' || role.toLowerCase() === 'merchant') {
     return ethers.utils.solidityKeccak256(
       ['address', 'bytes32'],
       [address, encryptionKey],
     )
-  } else{
+  } else {
     return ethers.utils.solidityKeccak256(
       ['address', 'bytes32', 'uint8'],
       [address, encryptionKey, 1],
@@ -72,7 +72,13 @@ export async function encryptVote(address, encryptionKey, vote) {
   )
 }
 
-export async function sendVote(jurorObject, userObject, disputeAddress, encryptionKey, vote) {
+export async function sendVote(
+  jurorObject,
+  userObject,
+  disputeAddress,
+  encryptionKey,
+  vote,
+) {
   const encryptedVote = ethers.utils.solidityKeccak256(
     ['address', 'bytes32', 'uint8'],
     [userObject.address, encryptionKey, vote],
@@ -82,7 +88,9 @@ export async function sendVote(jurorObject, userObject, disputeAddress, encrypti
 }
 
 export async function stake(tokenObject, managerObject, userObject, userId, stakeAmount) {
-  await tokenObject.connect(userObject).increaseAllowance(managerObject.address, stakeAmount)
+  await tokenObject
+    .connect(userObject)
+    .increaseAllowance(managerObject.address, stakeAmount)
   await managerObject.connect(userObject).stake(userId, stakeAmount)
 }
 

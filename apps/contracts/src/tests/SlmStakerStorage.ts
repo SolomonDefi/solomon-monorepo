@@ -1,10 +1,6 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { 
-  stake,
-  deployContracts, 
-  deployChargeback 
-} from './testing'
+import { stake, deployContracts, deployChargeback } from './testing'
 
 describe('SLM Staker Storage', function () {
   let jurors, token, storage, manager, slmFactory, chargeback
@@ -82,7 +78,7 @@ describe('SLM Staker Storage', function () {
   it('Stakes', async () => {
     // Checks staking of tokens
     const stakeAmount = 100
-    
+
     userId1 = 1
     await stake(token, manager, account1, userId1, stakeAmount)
     chai.expect(await storage.getStake(account1.address)).to.equal(stakeAmount)

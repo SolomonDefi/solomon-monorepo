@@ -1,12 +1,12 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { 
-  increaseTime, 
+import {
+  increaseTime,
   sendVote,
   createEncryptedString,
   stake,
-  deployContracts, 
-  deployChargeback 
+  deployContracts,
+  deployChargeback,
 } from './testing'
 
 describe('SLM Chargebacks', function () {
@@ -133,11 +133,31 @@ describe('SLM Chargebacks', function () {
       account5.address,
     ]
 
-    const encryptedStringBuyer = createEncryptedString('buyer', account2.address, encryptionKey)
-    const encryptedStringMerchant = createEncryptedString('merchant', account1.address, encryptionKey)
-    const encryptedStringAcc3 = createEncryptedString('juror', account3.address, encryptionKey)
-    const encryptedStringAcc4 = createEncryptedString('juror', account4.address, encryptionKey)
-    const encryptedStringAcc5 = createEncryptedString('juror', account5.address, encryptionKey)
+    const encryptedStringBuyer = createEncryptedString(
+      'buyer',
+      account2.address,
+      encryptionKey,
+    )
+    const encryptedStringMerchant = createEncryptedString(
+      'merchant',
+      account1.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc3 = createEncryptedString(
+      'juror',
+      account3.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc4 = createEncryptedString(
+      'juror',
+      account4.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc5 = createEncryptedString(
+      'juror',
+      account5.address,
+      encryptionKey,
+    )
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -231,11 +251,31 @@ describe('SLM Chargebacks', function () {
       account5.address,
     ]
 
-    const encryptedStringBuyer = createEncryptedString('buyer', account2.address, encryptionKey)
-    const encryptedStringMerchant = createEncryptedString('merchant', account1.address, encryptionKey)
-    const encryptedStringAcc3 = createEncryptedString('juror', account3.address, encryptionKey)
-    const encryptedStringAcc4 = createEncryptedString('juror', account4.address, encryptionKey)
-    const encryptedStringAcc5 = createEncryptedString('juror', account5.address, encryptionKey)
+    const encryptedStringBuyer = createEncryptedString(
+      'buyer',
+      account2.address,
+      encryptionKey,
+    )
+    const encryptedStringMerchant = createEncryptedString(
+      'merchant',
+      account1.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc3 = createEncryptedString(
+      'juror',
+      account3.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc4 = createEncryptedString(
+      'juror',
+      account4.address,
+      encryptionKey,
+    )
+    const encryptedStringAcc5 = createEncryptedString(
+      'juror',
+      account5.address,
+      encryptionKey,
+    )
 
     const encryptionKeyArray = [
       encryptedStringBuyer,
