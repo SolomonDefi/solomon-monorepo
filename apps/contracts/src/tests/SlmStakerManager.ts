@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { solidity } from 'ethereum-waffle';
-chai.use(solidity);
+import { solidity } from 'ethereum-waffle'
+chai.use(solidity)
 import { stake, unstake, increaseTime, deployContracts } from './testing'
 
 describe('SLM Staker Manager', function () {
