@@ -1,6 +1,10 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { deployContracts, deployChargeback } from './testing'
+import { 
+  stake,
+  deployContracts, 
+  deployChargeback 
+} from './testing'
 
 describe('SLM Staker Storage', function () {
   let jurors, token, storage, manager, slmFactory, chargeback
@@ -78,10 +82,9 @@ describe('SLM Staker Storage', function () {
   it('Stakes', async () => {
     // Checks staking of tokens
     const stakeAmount = 100
-
-    await token.connect(account1).increaseAllowance(manager.address, stakeAmount)
+    
     userId1 = 1
-    await manager.connect(account1).stake(userId1, stakeAmount)
+    await stake(token, manager, account1, userId1, stakeAmount)
     chai.expect(await storage.getStake(account1.address)).to.equal(stakeAmount)
 
     // Test increase of stake balance and reflected balance changes

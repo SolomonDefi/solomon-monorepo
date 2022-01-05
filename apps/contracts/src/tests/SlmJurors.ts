@@ -1,6 +1,15 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { increaseTime, deployContracts, deployChargeback, deployEscrow } from './testing'
+import { 
+  increaseTime, 
+  encryptVote,
+  sendVote,
+  createEncryptedString,
+  stake,
+  deployContracts, 
+  deployChargeback, 
+  deployEscrow 
+} from './testing'
 
 describe('SLM Jurors', function () {
   let jurors, token, storage, manager, slmFactory, chargeback, escrow
@@ -94,21 +103,19 @@ describe('SLM Jurors', function () {
 
   it('Checks selection and storage of jurors', async function () {
     const defaultAmount = 100
-    const stakeAmount = 100
+    let stakeAmount = 100
     const endTime = currentTime + 259200
     disputeAddress = escrow.address
 
     // Have stakers submit their stakes
-    await token.connect(account2).increaseAllowance(manager.address, stakeAmount)
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
     userId2 = 132
-    await manager.connect(account2).stake(userId2, 100)
+    await stake(token, manager, account2, userId2, stakeAmount)
     chai.expect(await token.balanceOf(account2.address)).to.equal(0)
 
-    await token.connect(account1).increaseAllowance(manager.address, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
     userId1 = 121
-    await manager.connect(account1).stake(userId1, stakeAmount)
+    await stake(token, manager, account1, userId1, stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(0)
 
     // Check that dispute cannot be initialized until there are at least 7 stakers
@@ -118,34 +125,29 @@ describe('SLM Jurors', function () {
       .expect(jurors.initializeDispute(disputeAddress, quorum, endTime))
       .to.be.revertedWith('Not enough stakers')
 
-    await token.connect(account3).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
     userId3 = 303
-    await manager.connect(account3).stake(userId3, 100)
+    await stake(token, manager, account3, userId3, stakeAmount)
     chai.expect(await token.balanceOf(account3.address)).to.equal(0)
 
-    await token.connect(account4).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account4.address)).to.equal(defaultAmount)
     userId4 = 400
-    await manager.connect(account4).stake(userId4, 100)
+    await stake(token, manager, account4, userId4, stakeAmount)
     chai.expect(await token.balanceOf(account4.address)).to.equal(0)
 
-    await token.connect(account5).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account5.address)).to.equal(defaultAmount)
     userId5 = 501
-    await manager.connect(account5).stake(userId5, 100)
+    await stake(token, manager, account5, userId5, stakeAmount)
     chai.expect(await token.balanceOf(account5.address)).to.equal(0)
 
-    await token.connect(account6).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account6.address)).to.equal(defaultAmount)
     userId6 = 620
-    await manager.connect(account6).stake(userId6, 100)
+    await stake(token, manager, account6, userId6, stakeAmount)
     chai.expect(await token.balanceOf(account6.address)).to.equal(0)
 
-    await token.connect(account7).increaseAllowance(manager.address, 200)
     chai.expect(await token.balanceOf(account7.address)).to.equal(defaultAmount)
     userId7 = 763
-    await manager.connect(account7).stake(userId7, 100)
+    await stake(token, manager, account7, userId7, stakeAmount)
     chai.expect(await token.balanceOf(account7.address)).to.equal(0)
 
     // Checks that the minimum juror count must be 3
@@ -179,26 +181,13 @@ describe('SLM Jurors', function () {
       account2.address,
       account7.address,
     ]
-    const encryptedStringBuyer = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account8.address, encryptionKey],
-    )
-    const encryptedStringMerchant = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account9.address, encryptionKey],
-    )
-    const encryptedStringAcc1 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account1.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc2 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account2.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc7 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account7.address, encryptionKey, 1],
-    )
+
+    // TODO: Consolidate set dispute access
+    const encryptedStringBuyer = createEncryptedString('buyer', account8.address, encryptionKey)
+    const encryptedStringMerchant = createEncryptedString('merchant', account9.address, encryptionKey)
+    const encryptedStringAcc1 = createEncryptedString('juror', account1.address, encryptionKey)
+    const encryptedStringAcc2 = createEncryptedString('juror', account2.address, encryptionKey)
+    const encryptedStringAcc7 = createEncryptedString('juror', account7.address, encryptionKey)
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -214,11 +203,7 @@ describe('SLM Jurors', function () {
     )
 
     // Have jurors submit their votes
-    let encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account1.address, fakeEncryptionKey, 1],
-    )
-    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account1, disputeAddress, fakeEncryptionKey, 1)
 
     await jurors.voteStatus(disputeAddress)
 
@@ -235,33 +220,21 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(3)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account7.address, fakeEncryptionKey, 1],
-    )
-    await jurors.connect(account7).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account7, disputeAddress, fakeEncryptionKey, 1)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(3)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account7.address, encryptionKey, 2],
-    )
-    await jurors.connect(account7).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account7, disputeAddress, encryptionKey, 2)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(3)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account7.address, encryptionKey, 1],
-    )
-    await jurors.connect(account7).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account7, disputeAddress, encryptionKey, 1)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
@@ -272,20 +245,13 @@ describe('SLM Jurors', function () {
     currentTime = await increaseTime(2, currentTime)
     await ethers.provider.send('evm_mine', [])
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account2.address, encryptionKey, 1],
-    )
-    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account2, disputeAddress, encryptionKey, 1)
 
     // Ensure that votes cannot be submitted after the voting end date has passed
     currentTime = await increaseTime(1, currentTime)
     await ethers.provider.send('evm_mine', [])
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 2],
-    )
+    let encryptedVote = await encryptVote(account3.address, encryptionKey, 2)
     await chai
       .expect(jurors.connect(account3).vote(disputeAddress, encryptedVote))
       .to.be.revertedWith('Voting has ended')
@@ -351,26 +317,12 @@ describe('SLM Jurors', function () {
       account2.address,
       account3.address,
     ]
-    const encryptedStringBuyer = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account8.address, encryptionKey],
-    )
-    const encryptedStringMerchant = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account9.address, encryptionKey],
-    )
-    const encryptedStringAcc1 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account1.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc2 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account2.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc3 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
+
+    const encryptedStringBuyer = await createEncryptedString('buyer', account8.address, encryptionKey)
+    const encryptedStringMerchant = await createEncryptedString('merchant', account9.address, encryptionKey)
+    const encryptedStringAcc1 = await createEncryptedString('juror', account1.address, encryptionKey)
+    const encryptedStringAcc2 = await createEncryptedString('juror', account2.address, encryptionKey)
+    const encryptedStringAcc3 = await createEncryptedString('juror', account3.address, encryptionKey)
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -391,16 +343,8 @@ describe('SLM Jurors', function () {
     chai.expect(await jurors.checkJuror(disputeAddress, account3.address)).to.equal(true)
 
     // Have jurors submit their votes
-    let encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account1.address, encryptionKey, 1],
-    )
-    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account2.address, encryptionKey, 2],
-    )
-    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account1, disputeAddress, encryptionKey, 1)
+    await sendVote(jurors, account2, disputeAddress, encryptionKey, 2)
 
     // Fast forward to the end of the vote and confirm that the result is a tie
     currentTime = await increaseTime(4, currentTime)
@@ -539,30 +483,12 @@ describe('SLM Jurors', function () {
       account3.address,
       account4.address,
     ]
-    const encryptedStringBuyer = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account8.address, encryptionKey],
-    )
-    const encryptedStringMerchant = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account9.address, encryptionKey],
-    )
-    const encryptedStringAcc1 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account1.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc2 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account2.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc3 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc4 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account4.address, encryptionKey, 1],
-    )
+    const encryptedStringBuyer = await createEncryptedString('buyer', account8.address, encryptionKey)
+    const encryptedStringMerchant = await createEncryptedString('merchant', account9.address, encryptionKey)
+    const encryptedStringAcc1 = await createEncryptedString('juror', account1.address, encryptionKey)
+    const encryptedStringAcc2 = await createEncryptedString('juror', account2.address, encryptionKey)
+    const encryptedStringAcc3 = await createEncryptedString('juror', account3.address, encryptionKey)
+    const encryptedStringAcc4 = await createEncryptedString('juror', account4.address, encryptionKey)
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -584,16 +510,8 @@ describe('SLM Jurors', function () {
     chai.expect(await jurors.checkJuror(disputeAddress, account3.address)).to.equal(true)
 
     // Have jurors submit their votes
-    let encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account1.address, encryptionKey, 1],
-    )
-    await jurors.connect(account1).vote(disputeAddress, encryptedVote)
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account2.address, encryptionKey, 2],
-    )
-    await jurors.connect(account2).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account1, disputeAddress, encryptionKey, 1)
+    await sendVote(jurors, account2, disputeAddress, encryptionKey, 2)
 
     // Fast forward to the end of the vote and confirm that there are not enough votes
     currentTime = await increaseTime(4, currentTime)
@@ -604,10 +522,7 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
+    let encryptedVote = await encryptVote(account3.address, encryptionKey, 1)
     await chai
       .expect(jurors.connect(account3).vote(disputeAddress, encryptedVote))
       .to.be.revertedWith('Voting has ended')
@@ -625,10 +540,7 @@ describe('SLM Jurors', function () {
     chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(false)
 
     // Have next user fulfill the minimum vote requirement
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
+    encryptedVote = await encryptVote(account3.address, encryptionKey, 1)
     await jurors.connect(account3).vote(disputeAddress, encryptedVote)
     await jurors.connect(account3).vote(disputeAddress, encryptedVote)
 
@@ -638,11 +550,7 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account4.address, encryptionKey, 1],
-    )
-    await jurors.connect(account4).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account4, disputeAddress, encryptionKey, 1)
 
     // Fast forward to end of vote
     currentTime = await increaseTime(4, currentTime)

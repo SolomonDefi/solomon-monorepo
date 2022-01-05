@@ -1,6 +1,11 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { increaseTime, deployContracts } from './testing'
+import { 
+  stake, 
+  unstake,
+  increaseTime, 
+  deployContracts 
+} from './testing'
 
 describe('SLM Staker Manager', function () {
   let jurors, token, storage, manager, slmFactory
@@ -30,9 +35,8 @@ describe('SLM Staker Manager', function () {
     // Have users stake their tokens
     const stakeAmount = 100
 
-    await token.connect(account1).increaseAllowance(manager.address, stakeAmount)
     userId1 = 1
-    await manager.connect(account1).stake(userId1, stakeAmount)
+    await stake(token, manager, account1, userId1, stakeAmount)
     chai.expect(await manager.getStake(account1.address)).to.equal(stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
 
@@ -42,9 +46,8 @@ describe('SLM Staker Manager', function () {
     const address = await manager.getUserAddress(userId)
     chai.expect(account1.address).to.equal(address)
 
-    await token.connect(account2).increaseAllowance(manager.address, stakeAmount)
     userId2 = 2
-    await manager.connect(account2).stake(userId2, stakeAmount)
+    await stake(token, manager, account2, userId2, stakeAmount)
     chai.expect(await manager.getStake(account2.address)).to.equal(stakeAmount)
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
 
@@ -57,7 +60,7 @@ describe('SLM Staker Manager', function () {
     chai.expect(stakerPool.length).to.equal(2)
 
     // Test unstaking and retrieval of unstake data & balance changes
-    await manager.connect(account1).unstake()
+    await unstake(manager, account1)
     chai.expect(await manager.getUnstakedAmount(account1.address, 0)).to.equal(100)
     chai.expect(await manager.getUnstakeCount(account1.address)).to.equal(1)
 
@@ -88,13 +91,12 @@ describe('SLM Staker Manager', function () {
 
   it('Handles rewards', async () => {
     // Add more stakers
-    await token.connect(account1).increaseAllowance(manager.address, 100)
+    const stakeAmount = 100
     userId1 = 1
-    await manager.connect(account1).stake(userId1, 100)
+    await stake(token, manager, account1, userId1, stakeAmount)
 
-    await token.connect(account2).increaseAllowance(manager.address, 100)
     userId2 = 2
-    await manager.connect(account2).stake(userId2, 100)
+    await stake(token, manager, account2, userId2, stakeAmount)
 
     // Test reward mechanism with two reward announcements
     const rewardPercent1 = 20
@@ -136,7 +138,7 @@ describe('SLM Staker Manager', function () {
     chai.expect(await token.balanceOf(account2.address)).to.equal(expectedBalance)
 
     // Test retrieval of total unstaked SLM for Account 1
-    await manager.connect(account1).unstake()
+    await unstake(manager, account1)
     chai.expect(await manager.getUnstakedAmount(account1.address, 0)).to.equal(100)
     chai.expect(await manager.getUnstakeCount(account1.address)).to.equal(2)
 
@@ -163,21 +165,18 @@ describe('SLM Staker Manager', function () {
 
   it('Check updates on staker pool after unstaking', async () => {
     // Add more stakers
-    await token.connect(account1).increaseAllowance(manager.address, 100)
+    const stakeAmount = 100
     userId1 = 1
-    await manager.connect(account1).stake(userId1, 100)
+    await stake(token, manager, account1, userId1, stakeAmount)
 
-    await token.connect(account3).increaseAllowance(manager.address, 100)
     userId3 = 3
-    await manager.connect(account3).stake(userId3, 100)
+    await stake(token, manager, account3, userId3, stakeAmount)
 
-    await token.connect(account4).increaseAllowance(manager.address, 100)
     userId4 = 4
-    await manager.connect(account4).stake(userId4, 100)
+    await stake(token, manager, account4, userId4, stakeAmount)
 
-    await token.connect(account5).increaseAllowance(manager.address, 100)
     userId5 = 5
-    await manager.connect(account5).stake(userId5, 100)
+    await stake(token, manager, account5, userId5, stakeAmount)
 
     // Check staker pool ordering
     let stakerPool = await manager.getStakerPool()
@@ -189,7 +188,7 @@ describe('SLM Staker Manager', function () {
     chai.expect(stakerPool[4]).to.equal(ethers.BigNumber.from(userId5))
 
     // Unstake last member of staker pool
-    await manager.connect(account5).unstake()
+    await unstake(manager, account5)
 
     // Check that the stakerPool array has been adjusted after the unstake
     stakerPool = await manager.getStakerPool()
@@ -200,7 +199,7 @@ describe('SLM Staker Manager', function () {
     chai.expect(stakerPool[3]).to.equal(ethers.BigNumber.from(userId4))
 
     // Unstake a member in the middle of the staker pool
-    await manager.connect(account1).unstake()
+    await unstake(manager, account1)
 
     // Check that the stakerPool array has been adjusted after the unstake
     stakerPool = await manager.getStakerPool()
