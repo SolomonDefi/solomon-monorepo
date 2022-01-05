@@ -1,10 +1,12 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
+import { solidity } from 'ethereum-waffle';
+chai.use(solidity);
 import {
   increaseTime,
   sendVote,
-  createEncryptedString,
   stake,
+  setAccess,
   deployContracts,
   deployChargeback,
 } from './testing'
@@ -125,52 +127,22 @@ describe('SLM Chargebacks', function () {
   it('Test buyer withdrawals', async function () {
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const addressArray = [
-      account2.address,
-      account1.address,
-      account3.address,
-      account4.address,
-      account5.address,
+    const userArray = [
+      account2,
+      account1,
+      account3,
+      account4,
+      account5,
     ]
+    await setAccess(
+      jurors, 
+      disputeAddress, 
+      roleArray, 
+      userArray, 
+      encryptionKey,
+    )
 
-    const encryptedStringBuyer = createEncryptedString(
-      'buyer',
-      account2.address,
-      encryptionKey,
-    )
-    const encryptedStringMerchant = createEncryptedString(
-      'merchant',
-      account1.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc3 = createEncryptedString(
-      'juror',
-      account3.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc4 = createEncryptedString(
-      'juror',
-      account4.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc5 = createEncryptedString(
-      'juror',
-      account5.address,
-      encryptionKey,
-    )
-    const encryptionKeyArray = [
-      encryptedStringBuyer,
-      encryptedStringMerchant,
-      encryptedStringAcc3,
-      encryptedStringAcc4,
-      encryptedStringAcc5,
-    ]
-    await jurors.setDisputeAccess(
-      disputeAddress,
-      roleArray,
-      addressArray,
-      encryptionKeyArray,
-    )
+
 
     // Have jurors submit their votes
     let voteResult = await jurors
@@ -243,53 +215,21 @@ describe('SLM Chargebacks', function () {
 
     // Set access controls to buyer, merchant, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const addressArray = [
-      account2.address,
-      account1.address,
-      account3.address,
-      account4.address,
-      account5.address,
+    const userArray = [
+      account2,
+      account1,
+      account3,
+      account4,
+      account5,
     ]
-
-    const encryptedStringBuyer = createEncryptedString(
-      'buyer',
-      account2.address,
-      encryptionKey,
-    )
-    const encryptedStringMerchant = createEncryptedString(
-      'merchant',
-      account1.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc3 = createEncryptedString(
-      'juror',
-      account3.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc4 = createEncryptedString(
-      'juror',
-      account4.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc5 = createEncryptedString(
-      'juror',
-      account5.address,
+    await setAccess(
+      jurors, 
+      disputeAddress, 
+      roleArray, 
+      userArray, 
       encryptionKey,
     )
 
-    const encryptionKeyArray = [
-      encryptedStringBuyer,
-      encryptedStringMerchant,
-      encryptedStringAcc3,
-      encryptedStringAcc4,
-      encryptedStringAcc5,
-    ]
-    await jurors.setDisputeAccess(
-      disputeAddress,
-      roleArray,
-      addressArray,
-      encryptionKeyArray,
-    )
 
     // Have juror submit their votes
     let voteResult = await jurors

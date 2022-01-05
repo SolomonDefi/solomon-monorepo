@@ -1,11 +1,13 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
+import { solidity } from 'ethereum-waffle';
+chai.use(solidity);
 import {
   increaseTime,
   encryptVote,
   sendVote,
-  createEncryptedString,
   stake,
+  setAccess,
   deployContracts,
   deployChargeback,
   deployEscrow,
@@ -174,52 +176,19 @@ describe('SLM Jurors', function () {
   it('Checks voting', async function () {
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const addressArray = [
-      account8.address,
-      account9.address,
-      account1.address,
-      account2.address,
-      account7.address,
+    const userArray = [
+      account8,
+      account9,
+      account1,
+      account2,
+      account7,
     ]
-
-    // TODO: Consolidate set dispute access
-    const encryptedStringBuyer = createEncryptedString(
-      'buyer',
-      account8.address,
+    await setAccess(
+      jurors, 
+      disputeAddress, 
+      roleArray, 
+      userArray, 
       encryptionKey,
-    )
-    const encryptedStringMerchant = createEncryptedString(
-      'merchant',
-      account9.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc1 = createEncryptedString(
-      'juror',
-      account1.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc2 = createEncryptedString(
-      'juror',
-      account2.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc7 = createEncryptedString(
-      'juror',
-      account7.address,
-      encryptionKey,
-    )
-    const encryptionKeyArray = [
-      encryptedStringBuyer,
-      encryptedStringMerchant,
-      encryptedStringAcc1,
-      encryptedStringAcc2,
-      encryptedStringAcc7,
-    ]
-    await jurors.setDisputeAccess(
-      disputeAddress,
-      roleArray,
-      addressArray,
-      encryptionKeyArray,
     )
 
     // Have jurors submit their votes
@@ -330,52 +299,21 @@ describe('SLM Jurors', function () {
 
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
-    const addressArray = [
-      account8.address,
-      account9.address,
-      account1.address,
-      account2.address,
-      account3.address,
+    const userArray = [
+      account8,
+      account9,
+      account1,
+      account2,
+      account3,
     ]
+    await setAccess(
+      jurors, 
+      disputeAddress, 
+      roleArray, 
+      userArray, 
+      encryptionKey,
+    )
 
-    const encryptedStringBuyer = await createEncryptedString(
-      'buyer',
-      account8.address,
-      encryptionKey,
-    )
-    const encryptedStringMerchant = await createEncryptedString(
-      'merchant',
-      account9.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc1 = await createEncryptedString(
-      'juror',
-      account1.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc2 = await createEncryptedString(
-      'juror',
-      account2.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc3 = await createEncryptedString(
-      'juror',
-      account3.address,
-      encryptionKey,
-    )
-    const encryptionKeyArray = [
-      encryptedStringBuyer,
-      encryptedStringMerchant,
-      encryptedStringAcc1,
-      encryptedStringAcc2,
-      encryptedStringAcc3,
-    ]
-    await jurors.setDisputeAccess(
-      disputeAddress,
-      roleArray,
-      addressArray,
-      encryptionKeyArray,
-    )
 
     // Select jurors from list of stakers
     chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)
@@ -515,58 +453,22 @@ describe('SLM Jurors', function () {
 
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3, 3]
-    const addressArray = [
-      account8.address,
-      account9.address,
-      account1.address,
-      account2.address,
-      account3.address,
-      account4.address,
+    const userArray = [
+      account8,
+      account9,
+      account1,
+      account2,
+      account3,
+      account4,
     ]
-    const encryptedStringBuyer = await createEncryptedString(
-      'buyer',
-      account8.address,
+    await setAccess(
+      jurors, 
+      disputeAddress, 
+      roleArray, 
+      userArray, 
       encryptionKey,
     )
-    const encryptedStringMerchant = await createEncryptedString(
-      'merchant',
-      account9.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc1 = await createEncryptedString(
-      'juror',
-      account1.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc2 = await createEncryptedString(
-      'juror',
-      account2.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc3 = await createEncryptedString(
-      'juror',
-      account3.address,
-      encryptionKey,
-    )
-    const encryptedStringAcc4 = await createEncryptedString(
-      'juror',
-      account4.address,
-      encryptionKey,
-    )
-    const encryptionKeyArray = [
-      encryptedStringBuyer,
-      encryptedStringMerchant,
-      encryptedStringAcc1,
-      encryptedStringAcc2,
-      encryptedStringAcc3,
-      encryptedStringAcc4,
-    ]
-    await jurors.setDisputeAccess(
-      disputeAddress,
-      roleArray,
-      addressArray,
-      encryptionKeyArray,
-    )
+
 
     // Select jurors from list of stakers
     chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)

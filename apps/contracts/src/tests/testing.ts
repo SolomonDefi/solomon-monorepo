@@ -1,5 +1,6 @@
 import assert from 'assert'
 import { ethers } from 'hardhat'
+
 import {
   getFactories,
   deployToken,
@@ -51,8 +52,27 @@ export const toSafeNumber = (value) => parseSci(value.toString())
 
 // End of temporary placeholders
 
+export async function setAccess(jurorObject, disputeAddress, roleArray, userArray, encryptionKey) {
+
+  let addressArray = []
+  let encryptionKeyArray = []
+
+  for(let i = 0; i < roleArray.length; i++) {
+    addressArray.push(userArray[i].address)
+    let encryptedString = await createEncryptedString(roleArray[i], userArray[i].address, encryptionKey)
+    encryptionKeyArray.push(encryptedString)
+  }
+
+  await jurorObject.setDisputeAccess(
+    disputeAddress,
+    roleArray,
+    addressArray,
+    encryptionKeyArray,
+  )
+}
+
 export async function createEncryptedString(role, address, encryptionKey) {
-  if (role.toLowerCase() === 'buyer' || role.toLowerCase() === 'merchant') {
+  if (role === 1 || role === 2) {
     return ethers.utils.solidityKeccak256(
       ['address', 'bytes32'],
       [address, encryptionKey],
