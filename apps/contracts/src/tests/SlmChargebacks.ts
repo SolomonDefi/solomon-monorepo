@@ -1,6 +1,13 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
-import { increaseTime, deployContracts, deployChargeback } from './testing'
+import { 
+  increaseTime, 
+  sendVote,
+  createEncryptedString,
+  stake,
+  deployContracts, 
+  deployChargeback 
+} from './testing'
 
 describe('SLM Chargebacks', function () {
   let chargeback, token, manager, storage, jurors, slmFactory
@@ -38,7 +45,6 @@ describe('SLM Chargebacks', function () {
       account2,
       chargebackAmount,
     )
-    await token.mint(chargeback.address, defaultAmount)
 
     // Check slmFactory setters
     const discount = 10
@@ -60,26 +66,23 @@ describe('SLM Chargebacks', function () {
     currentTime = latestBlock.timestamp
     const endTime = currentTime + 259200
     disputeAddress = chargeback.address
-
     const quorum = 2
+    const stakeAmount = 100
 
     // Have stakers submit their stakes
-    await token.connect(account3).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account3.address)).to.equal(defaultAmount)
     userId3 = 3
-    await manager.connect(account3).stake(userId3, 100)
+    await stake(token, manager, account3, userId3, stakeAmount)
     chai.expect(await token.balanceOf(account3.address)).to.equal(0)
 
-    await token.connect(account4).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account4.address)).to.equal(defaultAmount)
     userId4 = 4
-    await manager.connect(account4).stake(userId4, 100)
+    await stake(token, manager, account4, userId4, stakeAmount)
     chai.expect(await token.balanceOf(account4.address)).to.equal(0)
 
-    await token.connect(account5).increaseAllowance(manager.address, 100)
     chai.expect(await token.balanceOf(account5.address)).to.equal(defaultAmount)
     userId5 = 5
-    await manager.connect(account5).stake(userId5, 100)
+    await stake(token, manager, account5, userId5, stakeAmount)
     chai.expect(await token.balanceOf(account5.address)).to.equal(0)
 
     // Reflect changes in the staker pool and start the voting process
@@ -129,26 +132,12 @@ describe('SLM Chargebacks', function () {
       account4.address,
       account5.address,
     ]
-    const encryptedStringBuyer = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account2.address, encryptionKey],
-    )
-    const encryptedStringMerchant = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account1.address, encryptionKey],
-    )
-    const encryptedStringAcc3 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc4 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account4.address, encryptionKey, 1],
-    )
-    const encryptedStringAcc5 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account5.address, encryptionKey, 1],
-    )
+
+    const encryptedStringBuyer = createEncryptedString('buyer', account2.address, encryptionKey)
+    const encryptedStringMerchant = createEncryptedString('merchant', account1.address, encryptionKey)
+    const encryptedStringAcc3 = createEncryptedString('juror', account3.address, encryptionKey)
+    const encryptedStringAcc4 = createEncryptedString('juror', account4.address, encryptionKey)
+    const encryptedStringAcc5 = createEncryptedString('juror', account5.address, encryptionKey)
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -169,11 +158,7 @@ describe('SLM Chargebacks', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(0)
 
-    let encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
-    await jurors.connect(account3).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
 
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
@@ -181,17 +166,8 @@ describe('SLM Chargebacks', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account4.address, encryptionKey, 1],
-    )
-    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
-
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account5.address, encryptionKey, 1],
-    )
-    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account4, disputeAddress, encryptionKey, 1)
+    await sendVote(jurors, account5, disputeAddress, encryptionKey, 1)
 
     // Count up votes and fast forward to the end of the voting process
     await jurors.voteStatus(disputeAddress)
@@ -215,16 +191,15 @@ describe('SLM Chargebacks', function () {
 
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
     await chargeback.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback.connect(account2).buyerWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account2.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account2.address)).to.equal(200)
   })
 
   it('Test merchant withdrawals', async function () {
     // Create new chargeback contract
-    const defaultAmount = 100
     const disputeID = 126
     const chargebackAmount = 100
     const chargeback2 = await deployChargeback(
@@ -235,7 +210,6 @@ describe('SLM Chargebacks', function () {
       account2,
       chargebackAmount,
     )
-    await token.mint(chargeback2.address, defaultAmount)
 
     // Setup end time and dispute address
     latestBlock = await ethers.provider.getBlock('latest')
@@ -256,26 +230,13 @@ describe('SLM Chargebacks', function () {
       account4.address,
       account5.address,
     ]
-    const encryptedStringBuyer = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account2.address, encryptionKey],
-    )
-    const encryptedStringMerchant = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32'],
-      [account1.address, encryptionKey],
-    )
-    const encryptedStringAcc3 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 2],
-    )
-    const encryptedStringAcc4 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account4.address, encryptionKey, 2],
-    )
-    const encryptedStringAcc5 = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account5.address, encryptionKey, 2],
-    )
+
+    const encryptedStringBuyer = createEncryptedString('buyer', account2.address, encryptionKey)
+    const encryptedStringMerchant = createEncryptedString('merchant', account1.address, encryptionKey)
+    const encryptedStringAcc3 = createEncryptedString('juror', account3.address, encryptionKey)
+    const encryptedStringAcc4 = createEncryptedString('juror', account4.address, encryptionKey)
+    const encryptedStringAcc5 = createEncryptedString('juror', account5.address, encryptionKey)
+
     const encryptionKeyArray = [
       encryptedStringBuyer,
       encryptedStringMerchant,
@@ -296,11 +257,7 @@ describe('SLM Chargebacks', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(0)
 
-    let encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account3.address, encryptionKey, 1],
-    )
-    await jurors.connect(account3).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
 
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
@@ -308,17 +265,8 @@ describe('SLM Chargebacks', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account4.address, encryptionKey, 1],
-    )
-    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
-
-    encryptedVote = ethers.utils.solidityKeccak256(
-      ['address', 'bytes32', 'uint8'],
-      [account5.address, encryptionKey, 1],
-    )
-    await jurors.connect(account5).vote(disputeAddress, encryptedVote)
+    await sendVote(jurors, account4, disputeAddress, encryptionKey, 2)
+    await sendVote(jurors, account5, disputeAddress, encryptionKey, 2)
 
     // Count up votes and fast forward to the end of the voting period
     await jurors.voteStatus(disputeAddress)
@@ -342,10 +290,10 @@ describe('SLM Chargebacks', function () {
 
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
     await chargeback2.connect(account1).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account1.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account1.address)).to.equal(200)
 
     // Test that subsequent withdrawals will result in nothing
     await chargeback2.connect(account1).merchantWithdraw(encryptionKey)
-    chai.expect(await token.balanceOf(account1.address)).to.equal(300)
+    chai.expect(await token.balanceOf(account1.address)).to.equal(200)
   })
 })
