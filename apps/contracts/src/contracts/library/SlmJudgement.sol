@@ -36,13 +36,10 @@ contract SlmJudgement is Ownable {
     SlmStakerManager public stakerManager;
 
     /// @dev Minimum number of jurors required to start a dispute vote
-    uint16 public minJurorCount;
+    uint8 public minJurorCount;
 
     /// @dev Full list of stakers
     uint256[] private stakerPool;
-
-    /// List of addresses and active flag to indicate latest active admins
-    mapping(address => bool) public adminList;
 
     /// List of dispute to latest vote states
     mapping(address => VoteStates) private voteResults;
@@ -171,21 +168,29 @@ contract SlmJudgement is Ownable {
         require(disputes[slmContract].voteEndTime > block.timestamp, "Voting has ended");
         Role storage roles = disputeRoles[slmContract];
         require(roles.memberRoles[msg.sender] == MemberRole.Juror, "Voter ineligible");
+        // Check that encryptedVote matches the encryptedKey stored on chain
         if (roles.encryptedKeyList[msg.sender] == encryptedVote) {
             if (disputes[slmContract].votes[msg.sender] == 0) {
+                // If hasn't voted yet, increase buyerVoteCount by 1
                 disputes[slmContract].buyerVoteCount += 1;
             } else if (disputes[slmContract].votes[msg.sender] == 2) {
+                // Adjusts vote count if user changes vote from a vote for the merchant
                 disputes[slmContract].merchantVoteCount -= 1;
                 disputes[slmContract].buyerVoteCount += 1;
             }
+            // Log user's vote for the buyer
             disputes[slmContract].votes[msg.sender] = 1;
+        // If encryptedVote doesn't match, defaults to a vote for the merchant
         } else {
             if (disputes[slmContract].votes[msg.sender] == 0) {
+                // If hasn't voted yet, increase merchantVoteCount by 1
                 disputes[slmContract].merchantVoteCount += 1;
             } else if (disputes[slmContract].votes[msg.sender] == 1) {
+                // Adjusts vote count if user changes vote from a vote for the buyer
                 disputes[slmContract].buyerVoteCount -= 1;
                 disputes[slmContract].merchantVoteCount += 1;
             }
+            // Log user's vote for the merchant
             disputes[slmContract].votes[msg.sender] = 2;
         }
         stakerManager.managedVote(msg.sender, slmContract);

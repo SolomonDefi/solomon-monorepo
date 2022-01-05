@@ -193,6 +193,7 @@ contract SlmStakerManager is Ownable {
         require(rewardPercent > 0, "Invalid percent");
         uint256 rewardAmount = (token.balanceOf(address(stakerStorage)) * rewardPercent) / 100;
         stakerStorage.announceReward(rewardPercent, rewardAmount);
+        emit RewardAnnounced(rewardPercent, rewardAmount);
     }
 
     /// Allows user to withdraw reward payments
@@ -203,6 +204,7 @@ contract SlmStakerManager is Ownable {
         uint256 stakeRewards = _calculateStakeRewards(msg.sender);
         if (stakeRewards > 0) {
             stakerStorage.sendFunds(msg.sender, stakeRewards);
+            emit RewardWithdrawn(msg.sender, stakeRewards);
         }
     }
 
