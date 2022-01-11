@@ -1,5 +1,6 @@
 import { ethers } from 'hardhat'
 
+// Get contract factories for Slm contracts
 export const getFactories = async () => {
   const StorageFactory = await ethers.getContractFactory('SlmStakerStorage')
   const ManagerFactory = await ethers.getContractFactory('SlmStakerManager')
@@ -22,11 +23,13 @@ export const getFactories = async () => {
   }
 }
 
+// Deploy SlmToken contract
 export const deployToken = async (factory, owner, initialSupply) => {
   const erc20 = await factory.deploy('Test ERC20', 'T20', initialSupply, owner)
   return { erc20 }
 }
 
+// Deploy SlmStakerStorage contract
 export const deployStakerStorage = async (
   factory,
   tokenAddress,
@@ -37,31 +40,37 @@ export const deployStakerStorage = async (
   return { storage }
 }
 
+// Deploy SlmStakerManager contract
 export const deployStakerManager = async (factory, tokenAddress, storageAddress) => {
   const manager = await factory.deploy(tokenAddress, storageAddress)
   return { manager }
 }
 
+// Deploy SlmJudgement contract
 export const deployJudgement = async (factory, managerAddress, minJurorCount) => {
   const judgement = await factory.deploy(managerAddress, minJurorCount)
   return { judgement }
 }
 
+// Deploy Chargeback master contract
 export const deployChargebackMaster = async (factory) => {
   const chargebackMaster = await factory.deploy()
   return { chargebackMaster }
 }
 
+// Deploy Preorder master contract
 export const deployPreorderMaster = async (factory) => {
   const preorderMaster = await factory.deploy()
   return { preorderMaster }
 }
 
+// Deploy Escrow master contract
 export const deployEscrowMaster = async (factory) => {
   const escrowMaster = await factory.deploy()
   return { escrowMaster }
 }
 
+// Deploy SlmFactory contract
 export const deploySlmFactory = async (
   factory,
   judgeAddress,
@@ -88,6 +97,7 @@ export const deploySlmFactory = async (
   return { slmFactory }
 }
 
+// Create Chargeback child dispute contract
 export async function deployChargebackChild(
   slmFactory,
   token,
@@ -113,6 +123,7 @@ export async function deployChargebackChild(
   return chargeback
 }
 
+// Create Preorder child dispute contract
 export async function deployPreorderChild(
   slmFactory,
   token,
@@ -138,6 +149,7 @@ export async function deployPreorderChild(
   return preorder
 }
 
+// Create Escrow child dispute contract
 export async function deployEscrowChild(
   slmFactory,
   token,

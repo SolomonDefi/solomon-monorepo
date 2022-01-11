@@ -219,6 +219,7 @@ contract SlmJudgement is Ownable {
             voteResults[slmContract] = VoteStates.Tie;
         }
 
+        // Set vote to inactive when voting has successfully completed
         if (dispute.voteEndTime < block.timestamp &&
             !inactiveDispute[slmContract] &&
             voteResults[slmContract] > VoteStates.InsufficientVotes
@@ -246,6 +247,8 @@ contract SlmJudgement is Ownable {
         require(slmContract != address(0), "Zero addr");
         Dispute storage dispute = disputes[slmContract];
         Role storage roles = disputeRoles[slmContract];
+
+        // Restrict access to only merchant and buyer during dispute voting process
         if (dispute.voteEndTime > block.timestamp) {
             require(roles.memberRoles[msg.sender] == MemberRole.Merchant || roles.memberRoles[msg.sender] == MemberRole.Buyer, "Unauthorized role");
             this.authorizeUser(slmContract, msg.sender, encryptionKey);
@@ -276,11 +279,13 @@ contract SlmJudgement is Ownable {
         uint256 stakerCount = stakerPool.length;
         require(stakerCount >= minJurorCount, "Not enough stakers");
 
+        // Set starting index for juror selection
         uint32 selectedStartCount = 0;
         if (jurorSelectionIndex[slmContract] > 0) {
             selectedStartCount = jurorSelectionIndex[slmContract];
         }
 
+        // Update juror listing from starting index and update outstanding vote records
         for (uint8 i = 0; i < minJurorCount; i++) {
             uint256 userId = stakerPool[selectedStartCount];
             address userAddress = stakerManager.getUserAddress(userId);

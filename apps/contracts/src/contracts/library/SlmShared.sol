@@ -143,6 +143,7 @@ abstract contract SlmShared is Ownable {
         require(owner != address(0), "Zero addr");
         require(block.timestamp > (disputeTime + disputePeriod), "Cannot withdraw yet");
         uint256 totalBalance;
+        // Transfer balance equally to both parties in the event of a tie
         if (isTie) {
             if (!finalWithdrawal) {
                 if (address(token) == address(0)) {
@@ -153,6 +154,7 @@ abstract contract SlmShared is Ownable {
                 if (totalBalance > 0) {
                     _transferFunds(totalBalance, recipient, owner, isTie, finalWithdrawal);
                 }
+            // Transfer remaining balance in contract for final withdrawals to prevent residual balances
             } else {
                 if (address(token) == address(0)) {
                     totalBalance = address(this).balance;
@@ -163,6 +165,7 @@ abstract contract SlmShared is Ownable {
                     _transferFunds(totalBalance, recipient, owner, isTie, finalWithdrawal);
                 }
             }
+        // For all other cases, transfer funds to winning party
         } else {
             if (address(token) == address(0)) {
                 totalBalance = address(this).balance;
@@ -196,6 +199,7 @@ abstract contract SlmShared is Ownable {
         } else {
             token.transfer(recipient, transferAmount);
             token.transfer(owner, upkeepFeeAmount);
+            // Allocate and transfer remaining allotted amount to jurors to prevent residual balances
             if (isTie && !finalWithdrawal) {
                 token.transfer(address(stakerStorage), jurorFeeAmount);
             } else {

@@ -112,6 +112,7 @@ contract SlmEscrow is SlmShared {
             withdraw(_party2, owner, isTie, finalWithdrawal);
             finalWithdrawal = true;
         } else {
+            // Withdraw for both parties in the case of a tie
             state = TransactionState.CompleteTie;
             withdraw(_party1, owner, isTie, finalWithdrawal);
             finalWithdrawal = true;

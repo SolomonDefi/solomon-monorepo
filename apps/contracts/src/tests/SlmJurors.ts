@@ -14,6 +14,7 @@ import {
 } from './testing'
 
 describe('SLM Jurors', function () {
+  // Set global variables
   let jurors, token, storage, manager, slmFactory, chargeback, escrow
   let disputeAddress, jurorFeePercent, upkeepFeesPercent, discount
   let ChargebackFactory, EscrowFactory
@@ -50,12 +51,12 @@ describe('SLM Jurors', function () {
       account9,
     ] = await ethers.getSigners()
 
-    // Sets up current time variable
+    // Sets up constants
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    jurorFeePercent = 3000
-    upkeepFeesPercent = 2000
-    discount = 10
+    jurorFeePercent = 3000 // 3%
+    upkeepFeesPercent = 2000 // 2%
+    discount = 10 // 10%
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts(
       100000000,
       1,
@@ -106,7 +107,7 @@ describe('SLM Jurors', function () {
   it('Checks selection and storage of jurors', async function () {
     const defaultAmount = 100
     let stakeAmount = 100
-    const endTime = currentTime + 259200
+    const endTime = currentTime + 259200 // 3 days later
     disputeAddress = escrow.address
 
     // Have stakers submit their stakes
@@ -160,8 +161,9 @@ describe('SLM Jurors', function () {
 
     await jurors.setStakerPool()
 
+    // Set min juror count back to 7
     await jurors.setMinJurorCount(7)
-    await jurors.initializeDispute(disputeAddress, 1, endTime)
+    await jurors.initializeDispute(disputeAddress, quorum, endTime)
 
     // Check seleted juror list
     chai.expect(await jurors.checkJuror(disputeAddress, account2.address)).to.equal(true)
@@ -182,9 +184,8 @@ describe('SLM Jurors', function () {
     // Have jurors submit their votes
     await sendVote(jurors, account1, disputeAddress, fakeEncryptionKey, 1)
 
-    await jurors.voteStatus(disputeAddress)
-
     // Check that the results of active votes cannot be accessed by anyone except the buyer or merchant
+    await jurors.voteStatus(disputeAddress)    
     await chai
       .expect(jurors.getVoteResults(disputeAddress, encryptionKey))
       .to.be.revertedWith('Unauthorized role')
@@ -192,11 +193,13 @@ describe('SLM Jurors', function () {
       .expect(jurors.connect(account1).getVoteResults(disputeAddress, encryptionKey))
       .to.be.revertedWith('Unauthorized role')
 
+    // Check that vote result is currently a merchant win
     let voteResult = await jurors
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(3)
-
+    
+    // Allow rest of jurors to submit their votes
     await sendVote(jurors, account7, disputeAddress, fakeEncryptionKey, 1)
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
@@ -222,6 +225,7 @@ describe('SLM Jurors', function () {
     currentTime = await increaseTime(2, currentTime)
     await ethers.provider.send('evm_mine', [])
 
+    // Check that jurors can still submit votes
     await sendVote(jurors, account2, disputeAddress, encryptionKey, 1)
 
     // Ensure that votes cannot be submitted after the voting end date has passed
@@ -255,35 +259,45 @@ describe('SLM Jurors', function () {
     const account9Balance = await token.balanceOf(account9.address)
     const storageBalance = await token.balanceOf(storage.address)
     const ownerBalance = await token.balanceOf(owner.address)
+
+    // Check beginning balances
     chai.expect(account9Balance).to.equal(100)
     chai.expect(await token.balanceOf(account8.address)).to.equal(100)
-    await escrow.connect(account9).withdrawFunds(encryptionKey)
-    const jurorFees = Math.round((disputeBalance * jurorFeePercent) / 100000)
-    const upkeepFees = Math.round((disputeBalance * upkeepFeesPercent) / 100000)
+
+    // Withdraw funds using account8
+    await escrow.connect(account8).withdrawFunds(encryptionKey)
+
+    // Calculate fees and remaining value transferred to winning party
+    const jurorFees = Math.round((disputeBalance * jurorFeePercent) / 100000) // 3%
+    const upkeepFees = Math.round((disputeBalance * upkeepFeesPercent) / 100000) // 2%
     const transferredAmount = disputeBalance - jurorFees - upkeepFees
     let expectedValue = account9Balance.add(ethers.BigNumber.from(transferredAmount))
+    
+    // Check that account9 gets the remaining funds
     chai.expect(await token.balanceOf(account9.address)).to.equal(expectedValue)
 
-    // Ensure fees were calculated correctly and distributed to the correct parties
+    // Ensure that dispute address has no remaining funds
     chai.expect(await token.balanceOf(disputeAddress)).to.equal(0)
 
+    // Ensure that the upkeep fees go to the owner address
     expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
     chai.expect(expectedValue).to.equal(upkeepFees)
 
+    // Ensure that juror fees go to the stakerStorage address
     expectedValue = storageBalance.add(ethers.BigNumber.from(jurorFees))
     chai.expect(await token.balanceOf(storage.address)).to.equal(expectedValue)
 
     // The winner can call the withdraw function afterwards, but nothing will happen
     await escrow.connect(account9).withdrawFunds(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(195)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(195) // 100 (starting balance) + 95 (remaining funds) 
   })
 
   it('Checks tie behavior', async function () {
     disputeAddress = chargeback.address
-
-    const endTime = currentTime + 259200
+    const quorum = 1
+    const endTime = currentTime + 259200 // 3 days later
     await jurors.setMinJurorCount(3)
-    await jurors.initializeDispute(disputeAddress, 1, endTime)
+    await jurors.initializeDispute(disputeAddress, quorum, endTime)
 
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3]
@@ -365,22 +379,25 @@ describe('SLM Jurors', function () {
 
     jurorFees = Math.floor(
       (disputeBalance * jurorFeePercent * (100 - discount)) / (100000 * 100),
-    )
+    ) // 3%
     upkeepFees = Math.floor(
       (disputeBalance * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
-    )
+    ) // 2%
+    // Check that the transferred amount takes into account all juror and upkeep fees and were transferred to the merchant
     transferredAmount = disputeBalance - jurorFees - upkeepFees
     const account9BalanceAfter = account9Balance.add(
       ethers.BigNumber.from(transferredAmount),
     )
     chai.expect(await token.balanceOf(account9.address)).to.equal(account9BalanceAfter)
 
-    // Ensure fees were calculated correctly and distributed to the correct parties
+    // Ensure that the dispute address does not have any residual tokens
     chai.expect(await token.balanceOf(disputeAddress)).to.equal(0)
 
+    // Check that the upkeep fees went to the owner
     expectedValue = (await token.balanceOf(owner.address)).sub(ownerBalance)
     chai.expect(expectedValue).to.equal(upkeepFees)
 
+    // Check that the juror fees went to the stakerStorage contract
     const remainingBalance = disputeBalance
       .sub(ethers.BigNumber.from(transferredAmount))
       .sub(ethers.BigNumber.from(upkeepFees))
@@ -391,13 +408,14 @@ describe('SLM Jurors', function () {
     await chargeback.connect(account9).merchantWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account9.address)).to.equal(account9BalanceAfter)
 
-    // Check outstanding votes and vote history for users
+    // Check account 1 has no outstanding votes since it participated in all votes
     chai.expect(await manager.getOutstandingVotes(account1.address)).to.equal(0)
     chai
       .expect(await manager.getDisputeVoteCount(account1.address, disputeAddress))
       .to.equal(0)
     chai.expect(await manager.getVoteHistoryCount(account1.address)).to.equal(2)
 
+    // Check that account 3 has an outstanding vote of 2 since it missed both of the last votes
     chai.expect(await manager.getOutstandingVotes(account3.address)).to.equal(2)
     chai
       .expect(await manager.getDisputeVoteCount(account3.address, disputeAddress))
@@ -418,13 +436,14 @@ describe('SLM Jurors', function () {
       chargebackAmount,
     )
 
+    // Sets up constants
+    const quorum = 4
     disputeAddress = chargeback2.address
-
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    let endTime = currentTime + 259200
+    let endTime = currentTime + 259200 // 3 days later
     await jurors.setMinJurorCount(5)
-    await jurors.initializeDispute(disputeAddress, 3, endTime)
+    await jurors.initializeDispute(disputeAddress, quorum, endTime)
 
     // Set access controls for merchant, buyer, and jurors
     const roleArray = [2, 1, 3, 3, 3, 3]
@@ -440,7 +459,7 @@ describe('SLM Jurors', function () {
     await sendVote(jurors, account1, disputeAddress, encryptionKey, 1)
     await sendVote(jurors, account2, disputeAddress, encryptionKey, 2)
 
-    // Fast forward to the end of the vote and confirm that there are not enough votes
+    // Fast forward to the end of the vote and confirm that there are not enough votes since quorum = 4 - set in initializeDispute()
     currentTime = await increaseTime(4, currentTime)
     await ethers.provider.send('evm_mine', [])
     await jurors.voteStatus(disputeAddress)
@@ -449,6 +468,10 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
+    // Check that the dispute is still active
+    chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(false)
+
+    // Check that votes cannot be submitted after vote has ended
     let encryptedVote = await encryptVote(account3.address, encryptionKey, 1)
     await chai
       .expect(jurors.connect(account3).vote(disputeAddress, encryptedVote))
@@ -456,27 +479,31 @@ describe('SLM Jurors', function () {
 
     // Initialize the dispute again to restart the voting process
     endTime = currentTime + 259200
-    await jurors.initializeDispute(disputeAddress, 4, endTime)
+    await jurors.initializeDispute(disputeAddress, quorum, endTime)
 
+    // Check that there still aren't enough votes
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
+    // Check that the dispute is still active
     chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(false)
 
-    // Have next user fulfill the minimum vote requirement
+    // Have next user vote twice
     encryptedVote = await encryptVote(account3.address, encryptionKey, 1)
     await jurors.connect(account3).vote(disputeAddress, encryptedVote)
     await jurors.connect(account3).vote(disputeAddress, encryptedVote)
 
+    // Check that there still aren't enough votes
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
+    // Have the final juror submit a vote
     await sendVote(jurors, account4, disputeAddress, encryptionKey, 1)
 
     // Fast forward to end of vote
@@ -489,13 +516,14 @@ describe('SLM Jurors', function () {
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(1)
 
-    // Update dispute status
+    // Update dispute status and expect the result to be a buyer win
     await jurors.voteStatus(disputeAddress)
     voteResult = await jurors
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(2)
 
+    // Check that the dispute has been set to inactive
     chai.expect(await jurors.inactiveDispute(disputeAddress)).to.equal(true)
 
     // Buyer withdrawal

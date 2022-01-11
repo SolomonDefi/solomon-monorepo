@@ -108,6 +108,7 @@ contract SlmChargeback is SlmShared {
         }
         require(eligibleWithdrawal || isTie, "Cannot withdraw");
 
+        // Handles withdrawal accordingly based on win or tie
         if (finalWithdrawal) {
             state = TransactionState.CompleteTie;
         } else {
@@ -136,6 +137,7 @@ contract SlmChargeback is SlmShared {
         }
         require(eligibleWithdrawal || isTie, "Cannot withdraw");
 
+        // Handles withdrawal accordingly based on win or tie
         if (finalWithdrawal) {
             state = TransactionState.CompleteTie;
         } else {
