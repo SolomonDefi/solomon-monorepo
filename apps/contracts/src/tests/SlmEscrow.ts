@@ -43,7 +43,7 @@ describe('SLM Escrow', function () {
     await chai
       .expect(escrow.connect(account2).party2Evidence(party2EvidenceURL))
       .to.be.revertedWith('Please first initiate dispute')
-    
+
     // Check that dispute cannot be initiated more than once
     await escrow.connect(account1).initiateDispute(party1EvidenceURL)
     await chai

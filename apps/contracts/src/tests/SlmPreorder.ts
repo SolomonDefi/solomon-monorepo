@@ -100,7 +100,7 @@ describe('SLM Preorders', function () {
     await chai
       .expect(preorder.connect(account1).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Please first initiate dispute')
-    
+
     // Check that only buyer can request a refund
     await chai
       .expect(preorder.connect(account1).requestRefund(buyerEvidenceURL))

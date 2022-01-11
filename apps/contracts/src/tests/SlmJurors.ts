@@ -185,7 +185,7 @@ describe('SLM Jurors', function () {
     await sendVote(jurors, account1, disputeAddress, fakeEncryptionKey, 1)
 
     // Check that the results of active votes cannot be accessed by anyone except the buyer or merchant
-    await jurors.voteStatus(disputeAddress)    
+    await jurors.voteStatus(disputeAddress)
     await chai
       .expect(jurors.getVoteResults(disputeAddress, encryptionKey))
       .to.be.revertedWith('Unauthorized role')
@@ -198,7 +198,7 @@ describe('SLM Jurors', function () {
       .connect(account8)
       .getVoteResults(disputeAddress, encryptionKey)
     chai.expect(voteResult).to.equal(3)
-    
+
     // Allow rest of jurors to submit their votes
     await sendVote(jurors, account7, disputeAddress, fakeEncryptionKey, 1)
     await jurors.voteStatus(disputeAddress)
@@ -272,7 +272,7 @@ describe('SLM Jurors', function () {
     const upkeepFees = Math.round((disputeBalance * upkeepFeesPercent) / 100000) // 2%
     const transferredAmount = disputeBalance - jurorFees - upkeepFees
     let expectedValue = account9Balance.add(ethers.BigNumber.from(transferredAmount))
-    
+
     // Check that account9 gets the remaining funds
     chai.expect(await token.balanceOf(account9.address)).to.equal(expectedValue)
 
@@ -289,7 +289,7 @@ describe('SLM Jurors', function () {
 
     // The winner can call the withdraw function afterwards, but nothing will happen
     await escrow.connect(account9).withdrawFunds(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(195) // 100 (starting balance) + 95 (remaining funds) 
+    chai.expect(await token.balanceOf(account9.address)).to.equal(195) // 100 (starting balance) + 95 (remaining funds)
   })
 
   it('Checks tie behavior', async function () {
