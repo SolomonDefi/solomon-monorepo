@@ -21,6 +21,7 @@ const jurorFees = 0
 const upkeepFees = 0
 const discount = 0
 
+// Print deployed addresses to console
 const printContractAddresses = (name, contractAddress) => {
   console.log('[DEPLOYED]', name, 'address:', contractAddress)
 }
@@ -64,6 +65,7 @@ async function main() {
     await erc20.unlock()
   }
 
+  // Deploy SlmStakerStorage contract and set contract references
   const { storage } = await deployStakerStorage(
     factories.StorageFactory,
     tokenAddress,
@@ -72,6 +74,7 @@ async function main() {
   )
   printContractAddresses('SlmStakerStorage', storage.address)
 
+  // Deploy SlmStakerManager contract and set contract references
   const { manager } = await deployStakerManager(
     factories.ManagerFactory,
     tokenAddress,
@@ -80,6 +83,7 @@ async function main() {
   printContractAddresses('SlmStakerManager', manager.address)
   await storage.setStakerManager(manager.address)
 
+  // Deploy SlmJudgement contract and set contract references
   const { judgement } = await deployJudgement(
     factories.JudgementFactory,
     manager.address,
@@ -88,15 +92,19 @@ async function main() {
   printContractAddresses('SlmJudgement', judgement.address)
   await manager.setJudgementContract(judgement.address)
 
+  // Deploy Chargeback master contract
   const { chargebackMaster } = await deployChargebackMaster(factories.ChargebackFactory)
   printContractAddresses('SlmChargeback Master', chargebackMaster.address)
 
+  // Deploy Preorder master contract
   const { preorderMaster } = await deployPreorderMaster(factories.PreorderFactory)
   printContractAddresses('SlmPreorder Master', preorderMaster.address)
 
+  // Deploy Escrow master contract
   const { escrowMaster } = await deployEscrowMaster(factories.EscrowFactory)
   printContractAddresses('SlmEscrow Master', escrowMaster.address)
 
+  // Deploy SLMFactory
   const { slmFactory } = await deploySlmFactory(
     factories.SLMFactory,
     judgement.address,

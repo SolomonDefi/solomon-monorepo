@@ -5,6 +5,7 @@ chai.use(solidity)
 import { stake, deployContracts, deployChargeback } from './testing'
 
 describe('SLM Staker Storage', function () {
+  // Set global variables
   let jurors, token, storage, manager, slmFactory, chargeback
   let owner, account1, account2, account3, account4, account5
   let userId1

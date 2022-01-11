@@ -12,6 +12,7 @@ import {
 } from './testing'
 
 describe('SLM Chargebacks', function () {
+  // Set global variables
   let chargeback, token, manager, storage, jurors, slmFactory
   let disputeAddress
   let owner, account1, account2, account3, account4, account5
@@ -66,7 +67,7 @@ describe('SLM Chargebacks', function () {
     // Set up end time for vote and dispute address
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    const endTime = currentTime + 259200
+    const endTime = currentTime + 259200 // 3 days later
     disputeAddress = chargeback.address
     const quorum = 2
     const stakeAmount = 100
@@ -96,18 +97,25 @@ describe('SLM Chargebacks', function () {
     // Test uploading of evidence by both parties
     const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
     const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
+
+    // Check that buyer or merchant evidence cannot be submitted before dispute is initiated
     await chai
       .expect(chargeback.connect(account2).buyerEvidence(buyerEvidenceURL))
       .to.be.revertedWith('Please first initiate dispute')
     await chai
       .expect(chargeback.connect(account1).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Please first initiate dispute')
+
+    // Check that only buyer can request a chargeback
     await chai
       .expect(chargeback.connect(account1).requestChargeback(buyerEvidenceURL))
       .to.be.revertedWith('Only buyer can chargeback')
     await chargeback.connect(account2).requestChargeback(buyerEvidenceURL)
+
+    // Check that buyer evidence is updated correctly
     chai.expect(await chargeback.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
 
+    // Check that only merchant can submit merchant evidence
     await chai
       .expect(chargeback.connect(account2).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Invalid sender')
@@ -137,13 +145,6 @@ describe('SLM Chargebacks', function () {
     chai.expect(voteResult).to.equal(0)
 
     await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
-
-    await jurors.voteStatus(disputeAddress)
-    voteResult = await jurors
-      .connect(account1)
-      .getVoteResults(disputeAddress, encryptionKey)
-    chai.expect(voteResult).to.equal(1)
-
     await sendVote(jurors, account4, disputeAddress, encryptionKey, 1)
     await sendVote(jurors, account5, disputeAddress, encryptionKey, 1)
 
@@ -189,10 +190,10 @@ describe('SLM Chargebacks', function () {
       chargebackAmount,
     )
 
-    // Setup end time and dispute address
+    // Set up constants
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    const endTime = currentTime + 259200
+    const endTime = currentTime + 259200 // 3 days later
     disputeAddress = chargeback2.address
 
     // Initialize dispute to allow voting to begin
@@ -211,13 +212,6 @@ describe('SLM Chargebacks', function () {
     chai.expect(voteResult).to.equal(0)
 
     await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
-
-    await jurors.voteStatus(disputeAddress)
-    voteResult = await jurors
-      .connect(account1)
-      .getVoteResults(disputeAddress, encryptionKey)
-    chai.expect(voteResult).to.equal(1)
-
     await sendVote(jurors, account4, disputeAddress, encryptionKey, 2)
     await sendVote(jurors, account5, disputeAddress, encryptionKey, 2)
 

@@ -154,6 +154,8 @@ contract SlmFactory is CloneFactory, Ownable {
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
+
+            // Incentivize payments using SlmToken with discounts
             if(paymentToken == slmToken) {
                 discount = slmDiscount;
             }
@@ -180,6 +182,8 @@ contract SlmFactory is CloneFactory, Ownable {
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
+
+            // Incentivize payments using SlmToken with discounts
             if(paymentToken == slmToken) {
                 discount = slmDiscount;
             }

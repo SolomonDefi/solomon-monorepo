@@ -83,6 +83,8 @@ contract SlmStakerManager is Ownable {
         address backer = msg.sender;
 
         uint256 unstakeCount = stakerStorage.getUnstakeCount(backer);
+
+        // Check timing from previous unstake
         if (unstakeCount > 0) {
             uint256 unstakeTime = stakerStorage.getUnstakedTime(backer, unstakeCount-1);
             uint256 unstakePeriod = stakerStorage.unstakePeriod();
@@ -114,6 +116,7 @@ contract SlmStakerManager is Ownable {
         stakerStorage.pushUnstakedInfo(backer, userStake, block.timestamp);
         stakerStorage.sendFunds(backer, userStake);
 
+        // Replace open spot from ustake with last staker in staker pool to prevent gaps in stakerPool array
         for (uint256 i = 0; i < stakerPool.length; i += 1) {
             uint256 beneficiary = stakerStorage.getUserId(backer);
             if (stakerPool[i] == beneficiary) {
@@ -150,9 +153,12 @@ contract SlmStakerManager is Ownable {
     /// @param slmContract Dispute contract address
     function updateOutstandingVotes(address walletAddress, address slmContract) external onlyOwnerOrJudgement {
         uint256 disputeVoteCount = stakerStorage.getDisputeVoteCount(walletAddress, slmContract);
+
+        // Update outstanding vote requirements accordingly
         if (disputeVoteCount == 0) {
             stakerStorage.increaseOutstandingVotes(walletAddress, 1);
             stakerStorage.increaseDisputeVoteCount(walletAddress, slmContract, 1);
+        // If staker already has one or more outstanding votes for a certain dispute, reset values accordingly
         } else {
             stakerStorage.decreaseOutstandingVotes(walletAddress, disputeVoteCount);
             stakerStorage.increaseOutstandingVotes(walletAddress, 1);
@@ -220,6 +226,7 @@ contract SlmStakerManager is Ownable {
         uint256 stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
         uint256 stakeRewards;
 
+        // Calculate stake rewards and update latest reward withdrawal index and time
         if (block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime() && stakerLatestIndex < latestIndex) {
             stakeRewards = (userStake * rewardAmount) / (stakerStorage.totalStaked());
             stakerStorage.setLastWithdrawalTime(walletAddress, block.timestamp);

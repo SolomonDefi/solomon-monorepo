@@ -19,12 +19,14 @@ import {
 // Temporary placeholders for blockchain-utils functions
 export const toBN = (num) => BigInt(toSafeNumber(num))
 
+// Function to add days to a certain date
 const addDays = (date, days) => {
   const result = new Date(date)
   result.setDate(result.getDate() + days)
   return result
 }
 
+// Used to convert scientific notation to number value
 const parseSci = (value) => {
   const eInd = value.indexOf('e')
   if (eInd !== -1) {
@@ -48,10 +50,12 @@ const parseSci = (value) => {
   return value
 }
 
+// Runs scientific notation parsing to convert to normal number notation
 export const toSafeNumber = (value) => parseSci(value.toString())
 
 // End of temporary placeholders
 
+// Runs contract functions to set user access to dispute contract
 export async function setAccess(
   jurorObject,
   disputeAddress,
@@ -80,6 +84,7 @@ export async function setAccess(
   )
 }
 
+// Runs solidity keccak encryption to create encrypted strings for setting access controls
 export async function createEncryptedString(role, address, encryptionKey) {
   if (role === 1 || role === 2) {
     return ethers.utils.solidityKeccak256(
@@ -94,6 +99,7 @@ export async function createEncryptedString(role, address, encryptionKey) {
   }
 }
 
+// Runs solidity keccak encryption to encrypt juror votes
 export async function encryptVote(address, encryptionKey, vote) {
   return ethers.utils.solidityKeccak256(
     ['address', 'bytes32', 'uint8'],
@@ -101,6 +107,7 @@ export async function encryptVote(address, encryptionKey, vote) {
   )
 }
 
+// Sends encrypted vote to juror contract
 export async function sendVote(
   jurorObject,
   userObject,
@@ -108,14 +115,12 @@ export async function sendVote(
   encryptionKey,
   vote,
 ) {
-  const encryptedVote = ethers.utils.solidityKeccak256(
-    ['address', 'bytes32', 'uint8'],
-    [userObject.address, encryptionKey, vote],
-  )
+  const encryptedVote = encryptVote(userObject.address, encryptionKey, vote)
 
   await jurorObject.connect(userObject).vote(disputeAddress, encryptedVote)
 }
 
+// Runs contract stake functions
 export async function stake(tokenObject, managerObject, userObject, userId, stakeAmount) {
   await tokenObject
     .connect(userObject)
@@ -123,10 +128,12 @@ export async function stake(tokenObject, managerObject, userObject, userId, stak
   await managerObject.connect(userObject).stake(userId, stakeAmount)
 }
 
+// Runs contract unstake functions
 export async function unstake(managerObject, userObject) {
   await managerObject.connect(userObject).unstake()
 }
 
+// Function to fast foward time to a later date in EVM
 export async function increaseTime(days, start) {
   const now = new Date(start * 1000)
   const later = addDays(now, days).getTime()
@@ -135,6 +142,7 @@ export async function increaseTime(days, start) {
   return start + time
 }
 
+// Deploy all contracts in testing environment
 export async function deployContracts(
   supplyAmount = 100000000,
   unstakePeriod = 1,
@@ -214,6 +222,7 @@ export async function deployContracts(
   return [token, manager, storage, jurors, slmFactory]
 }
 
+// Create a child chargeback contract
 export async function deployChargeback(
   slmFactory,
   token,
@@ -234,6 +243,7 @@ export async function deployChargeback(
   return chargeback
 }
 
+// Create a child preorder contract
 export async function deployPreorder(
   slmFactory,
   token,
@@ -254,6 +264,7 @@ export async function deployPreorder(
   return preorder
 }
 
+// Create a child escrow contract
 export async function deployEscrow(slmFactory, token, disputeID, party1, party2, amount) {
   const escrow = await deployEscrowChild(
     slmFactory,

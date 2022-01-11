@@ -5,6 +5,7 @@ chai.use(solidity)
 import { stake, unstake, increaseTime, deployContracts } from './testing'
 
 describe('SLM Staker Manager', function () {
+  // Set global variables
   let jurors, token, storage, manager, slmFactory
   let owner, account1, account2, account3, account4, account5
   let userId1, userId2, userId3, userId4, userId5
@@ -32,6 +33,7 @@ describe('SLM Staker Manager', function () {
     // Have users stake their tokens
     const stakeAmount = 100
 
+    // Check that the stake has been reflected in both the stakeManager and user wallet balances
     userId1 = 1
     await stake(token, manager, account1, userId1, stakeAmount)
     chai.expect(await manager.getStake(account1.address)).to.equal(stakeAmount)
@@ -43,15 +45,17 @@ describe('SLM Staker Manager', function () {
     const address = await manager.getUserAddress(userId)
     chai.expect(account1.address).to.equal(address)
 
+    // Check that the stake has been reflected in both the stakeManager and user wallet balances
     userId2 = 2
     await stake(token, manager, account2, userId2, stakeAmount)
     chai.expect(await manager.getStake(account2.address)).to.equal(stakeAmount)
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
 
+    // Check that the stakes have been stored in the stakeStorage contract
     chai.expect(await token.balanceOf(storage.address)).to.equal(200)
 
+    // Check that the stakerPool has been updated
     let stakerPool = await manager.getStakerPool()
-
     chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId1))
     chai.expect(stakerPool[1]).to.equal(ethers.BigNumber.from(userId2))
     chai.expect(stakerPool.length).to.equal(2)
@@ -66,6 +70,7 @@ describe('SLM Staker Manager', function () {
     chai.expect(stakerPool.length).to.equal(1)
     chai.expect(stakerPool[0]).to.equal(ethers.BigNumber.from(userId2))
 
+    // Ensure the unstake time has been recorded
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
     let timeFlag = false
@@ -75,23 +80,27 @@ describe('SLM Staker Manager', function () {
       timeFlag = true
     }
     chai.expect(timeFlag).to.equal(true)
+
+    // Check that the unstaked amount is correct
     chai.expect(await manager.getUnstakedSLM(account1.address)).to.equal(100)
 
+    // Check that the user stake has been updated in both the stakerManager and user wallet balances
     chai.expect(await manager.getStake(account1.address)).to.equal(0)
     chai.expect(await token.balanceOf(account1.address)).to.equal(200)
 
+    // Ensure that account2's stake remains unchanged
     chai.expect(await manager.getStake(account2.address)).to.equal(stakeAmount)
     chai.expect(await token.balanceOf(account2.address)).to.equal(100)
 
+    // Ensure the stakerStorage contract reflectes the change in stake balance
     chai.expect(await token.balanceOf(storage.address)).to.equal(100)
   })
 
   it('Handles rewards', async () => {
-    // Add more stakers
+    // Add more stakes
     const stakeAmount = 100
     userId1 = 1
     await stake(token, manager, account1, userId1, stakeAmount)
-
     userId2 = 2
     await stake(token, manager, account2, userId2, stakeAmount)
 
@@ -101,6 +110,7 @@ describe('SLM Staker Manager', function () {
     const rewardPercent2 = 30
     await manager.announceReward(rewardPercent2)
 
+    // Get initial balances for stakerStorage contract and stakes
     const storageBalance = await token.balanceOf(storage.address)
     const totalStaked = await storage.totalStaked()
 
@@ -110,13 +120,13 @@ describe('SLM Staker Manager', function () {
       .expect(await manager.getRewardAmountHistory(0))
       .to.equal((rewardPercent1 * storageBalance) / 100)
 
+    // Check that balance is updated correctly when reward is withdrawn
     let account1Balance = await token.balanceOf(account1.address)
     await manager.connect(account1).withdrawRewards()
     const acc1Stake = 100
     const account1Rewards = ethers.BigNumber.from(
       (acc1Stake * rewardPercent2 * storageBalance) / (totalStaked * 100),
     )
-
     let expectedBalance = account1Balance.add(account1Rewards)
     chai.expect(await token.balanceOf(account1.address)).to.equal(expectedBalance)
 
@@ -125,6 +135,7 @@ describe('SLM Staker Manager', function () {
       .expect(manager.connect(account1).withdrawRewards())
       .to.be.revertedWith('Cannot withdraw yet')
 
+    // Check that account 2 balance is reflected properly after withdrawal
     const account2Balance = await token.balanceOf(account2.address)
     await manager.connect(account2).withdrawRewards()
     const acc2Stake = 200
@@ -155,6 +166,7 @@ describe('SLM Staker Manager', function () {
     currentTime = await increaseTime(1, currentTime)
     await ethers.provider.send('evm_mine', [])
 
+    // Balance should not change for account 1 after withdrawal
     account1Balance = await token.balanceOf(account1.address)
     await manager.connect(account1).withdrawRewards()
     chai.expect(await token.balanceOf(account1.address)).to.equal(account1Balance)

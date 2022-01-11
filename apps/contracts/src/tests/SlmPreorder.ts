@@ -14,6 +14,7 @@ import {
 const { expect } = chai
 
 describe('SLM Preorders', function () {
+  // Set global variables
   let jurors, token, storage, manager, slmFactory, preorder
   let disputeAddress
   let owner, account1, account2, account3, account4, account5
@@ -58,10 +59,10 @@ describe('SLM Preorders', function () {
     chai.expect(await preorder.buyer()).to.equal(account2.address)
     chai.expect(await preorder.merchant()).to.equal(account1.address)
 
-    // Set up end time for vote and dispute address
+    // Set up constants
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    const endTime = currentTime + 259200
+    const endTime = currentTime + 259200 // 3 days later
     disputeAddress = preorder.address
     const quorum = 2
     const stakeAmount = 100
@@ -91,18 +92,25 @@ describe('SLM Preorders', function () {
     // Test uploading of evidence by both parties
     const buyerEvidenceURL = 'www.buyerEvidenceURL.com'
     const merchantEvidenceURL = 'www.merchantEvidenceURL.com'
+
+    // Check that buyer or merchant evidence cannot be submitted before dispute is initiated
     await chai
       .expect(preorder.connect(account2).buyerEvidence(buyerEvidenceURL))
       .to.be.revertedWith('Please first initiate dispute')
     await chai
       .expect(preorder.connect(account1).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Please first initiate dispute')
+    
+    // Check that only buyer can request a refund
     await chai
       .expect(preorder.connect(account1).requestRefund(buyerEvidenceURL))
       .to.be.revertedWith('Only buyer can preorder')
     await preorder.connect(account2).requestRefund(buyerEvidenceURL)
+
+    // Check that buyer evidence is updated correctly
     chai.expect(await preorder.buyerEvidenceURL()).to.equal(buyerEvidenceURL)
 
+    // Check that only merchant can submit merchant evidence
     await chai
       .expect(preorder.connect(account2).merchantEvidence(merchantEvidenceURL))
       .to.be.revertedWith('Invalid sender')
@@ -132,13 +140,6 @@ describe('SLM Preorders', function () {
     chai.expect(voteResult).to.equal(0)
 
     await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
-
-    await jurors.voteStatus(disputeAddress)
-    voteResult = await jurors
-      .connect(account1)
-      .getVoteResults(disputeAddress, encryptionKey)
-    chai.expect(voteResult).to.equal(1)
-
     await sendVote(jurors, account4, disputeAddress, encryptionKey, 1)
     await sendVote(jurors, account5, disputeAddress, encryptionKey, 1)
 
@@ -184,10 +185,10 @@ describe('SLM Preorders', function () {
       preorderAmount,
     )
 
-    // Setup end time and dispute address
+    // Set up constants
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    const endTime = currentTime + 259200
+    const endTime = currentTime + 259200 // 3 days later
     disputeAddress = preorder2.address
 
     // Initialize dispute to allow voting to begin
@@ -206,13 +207,6 @@ describe('SLM Preorders', function () {
     chai.expect(voteResult).to.equal(0)
 
     await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
-
-    await jurors.voteStatus(disputeAddress)
-    voteResult = await jurors
-      .connect(account1)
-      .getVoteResults(disputeAddress, encryptionKey)
-    chai.expect(voteResult).to.equal(1)
-
     await sendVote(jurors, account4, disputeAddress, encryptionKey, 2)
     await sendVote(jurors, account5, disputeAddress, encryptionKey, 2)
 
