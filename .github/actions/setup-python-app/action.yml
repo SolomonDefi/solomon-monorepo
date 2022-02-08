@@ -17,7 +17,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: apps/{{ inputs.app-name }}/.venv
-        key: venv-${{ runner.os }}-3.9-${{ hashFiles('**/poetry.lock') }}
+        key: venv-${{ runner.os }}-3.10.2-${{ hashFiles('**/poetry.lock') }}
     - name: Install poetry packages
       run: cd apps/${{ inputs.app-name }} && poetry install
       shell: bash
