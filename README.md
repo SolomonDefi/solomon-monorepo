@@ -40,7 +40,7 @@ Follow these instructions to set up your local development environment. Only Mac
 The `libs/shared/util-contract` is generated from `apps/contracts` with following command:
 
 ```shell
-pnpm run contract:compile
+pnpm run contract:generate-type
 ```
 
 **Start local dev environment**
@@ -134,8 +134,8 @@ A hosted frontend and backend will be provided by Solomon, based on this reposit
 
 ### Generate scripts
 
-- `watcher:generate-mail-template`: Generate mail html templates for watcher.
-- `watcher:generate-event-interface`: Generate api events TypeScript interface for watcher. Should call `api-dispute:generate-event-schema` first.
+- `blockchain-watcher:generate-mail-template`: Generate mail html templates for watcher.
+- `blockchain-watcher:generate-event-interface`: Generate api events TypeScript interface for watcher. Should call `api-dispute:generate-event-schema` first.
 - `contract:generate-type`: Generate contracts type definitions.
 - `api-dispute:generate-event-schema`: Generate JSON schema from `api-dispute`.
 

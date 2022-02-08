@@ -9,16 +9,13 @@ from pydantic.schema import schema
 from app.schemas import event
 
 
-def is_event(obj: typing.Any) -> bool:
-    if not inspect.isclass(obj):
-        return False
-    if obj is event.EventIn:
-        return False
-    return issubclass(obj, event.EventIn)
-
-
 def extract_schema(file: str) -> None:
-    models = [model for _, model in inspect.getmembers(event, is_event)]
+    models = [
+        event.DisputeCreatedEvent,
+        event.DisputeCompletedEvent,
+        event.EvidenceSubmittedEvent,
+        event.PaymentCreatedEvent,
+    ]
     top_level_schema = schema(models, title='Event Schema')
     os.makedirs(os.path.dirname(file), exist_ok=True)
     with open(file, 'w') as f:
