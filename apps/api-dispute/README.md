@@ -29,8 +29,8 @@ pip3 install poetry
 
 ```
 brew install poetry pyenv
-pyenv install 3.9.5
-pyenv local 3.9.5
+pyenv install 3.9.10
+pyenv local 3.9.10
 ```
 
 ### Install python packages
@@ -50,8 +50,7 @@ createdb -U <dbuser> <dbname>
 Then, initialize:
 
 ```
-cd backend
-poetry run python pre_start.py
+poetry run python src/pre_start.py
 ```
 
 Now you can run the server with live reload:

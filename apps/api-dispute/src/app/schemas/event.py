@@ -6,34 +6,37 @@ from app.utils.typing import EthAddress
 
 
 __all__ = [
-    'EventIn',
     'EvidenceSubmittedEvent',
     'DisputeCreatedEvent',
     'DisputeCompletedEvent',
     'PaymentCreatedEvent',
-    'EventCreate',
+    'AllEvents',
 ]
 
 
 class BaseEvent(BaseModel):
+    id: str
     type: str
     party1: EthAddress
     party2: EthAddress
     contract: EthAddress
 
+    def to_dict(self, data=None):
+        return {
+            "message_id": self.id,
+            **self.dict(include={'type', 'party1', 'party2', 'contract'}),
+            **({"data": data} if data else {}),
+        }
 
-class EventIn(BaseEvent):
-    id: str
 
-    def to_common_dict(self) -> dict[str, typing.Any]:
-        return self.dict(include={'message_id', 'type', 'party1', 'party2', 'contract'})
-
-
-class DisputeCreatedEvent(EventIn):
+class DisputeCreatedEvent(BaseEvent):
     judgeContract: EthAddress
 
+    def to_dict(self):
+        return super().to_dict(data={"judgeContract": self.judgeContract})
 
-class DisputeCompletedEvent(EventIn):
+
+class DisputeCompletedEvent(BaseEvent):
     judgeContract: EthAddress
     awardedTo: EthAddress
 
@@ -43,8 +46,16 @@ class DisputeCompletedEvent(EventIn):
             raise ValueError('awardee address do not match')
         return awardee
 
+    def to_dict(self):
+        return super().to_dict(
+            data={
+                "judgeContract": self.judgeContract,
+                "awardedTo": self.awardedTo,
+            }
+        )
 
-class EvidenceSubmittedEvent(EventIn):
+
+class EvidenceSubmittedEvent(BaseEvent):
     judgeContract: EthAddress
     evidenceUrl: str
     submitter: EthAddress
@@ -55,14 +66,35 @@ class EvidenceSubmittedEvent(EventIn):
             raise ValueError('submitter address do not match')
         return submitter
 
+    def to_dict(self):
+        return super().to_dict(
+            data={
+                "judgeContract": self.judgeContract,
+                "evidenceUrl": self.evidenceUrl,
+                "submitter": self.submitter,
+            }
+        )
 
-class PaymentCreatedEvent(EventIn):
+
+class PaymentCreatedEvent(BaseEvent):
     judgeContract: EthAddress
     token: EthAddress
     discount: int = Field(..., ge=0, le=100)
     ethPaid: str
 
+    def to_dict(self):
+        return super().to_dict(
+            data={
+                "judgeContract": self.judgeContract,
+                "evidenceUrl": self.evidenceUrl,
+                "submitter": self.submitter,
+            }
+        )
 
-class EventCreate(BaseEvent):
-    message_id: str
-    data: str
+
+AllEvents = (
+    DisputeCreatedEvent
+    | DisputeCompletedEvent
+    | EvidenceSubmittedEvent
+    | PaymentCreatedEvent
+)

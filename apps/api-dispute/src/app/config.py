@@ -46,8 +46,7 @@ class Config(BaseSettings):
     APP_DOMAIN: str = 'localhost'
     APP_PORT = 5000
 
-    SIGNATURE_HEADER_NAME: str = 'X-Signature'
-    MESSAGE_SECRET_KEY: bytes = secrets.token_bytes(32)
+    MESSAGE_SECRET_KEY: bytes
 
     class Config:
         case_sensitive = True

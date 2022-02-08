@@ -24,8 +24,8 @@ class Event(Base):
         return db.query(Event).get(id)
 
     @staticmethod
-    def create(db: Session, *, data: schemas.EventCreate) -> 'Event':
-        event = Event(**data.dict())
+    def create(db: Session, *, data: schemas.AllEvents) -> 'Event':
+        event = Event(**data.to_dict())
         db.add(event)
         db.commit()
         db.refresh(event)

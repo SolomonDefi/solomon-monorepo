@@ -44,9 +44,10 @@ Thumbs.db
 # Local test script
 test.sh
 
-# Package locks
+# Package manager
 package-lock.json
 pnpm-lock.yaml
+.pnpm-debug.log
 yarn.lock
 
 # sqlite file
