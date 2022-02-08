@@ -77,7 +77,6 @@ mypy-extensions = ">=0.4.3"
 pathspec = ">=0.9.0"
 platformdirs = ">=2"
 tomli = ">=1.1.0"
-typing-extensions = {version = ">=3.10.0.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
@@ -661,8 +660,8 @@ standard = ["websockets (>=9.1)", "httptools (>=0.2.0,<0.3.0)", "watchgod (>=0.6
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "fe4a3c3b4596e67460e41a9371fcb7da2323ffd2eb7ea9144af455fa6936bd26"
+python-versions = "^3.10"
+content-hash = "1463e4bbb44395315ce2f5f7e9e39f22f9cbef62f8f328f665b35daa74b81942"
 
 [metadata.files]
 alembic = [

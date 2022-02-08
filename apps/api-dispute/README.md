@@ -10,11 +10,11 @@ Some software is required to run the app. These instructions have been tested on
 
 #### Ubuntu:
 
-Install Python 3.9 or later:
+Install Python 3.10 or later:
 
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt install python3.9-dev
+sudo apt install python3.10-dev
 ```
 
 Install Pip and Poetry:
@@ -29,8 +29,8 @@ pip3 install poetry
 
 ```
 brew install poetry pyenv
-pyenv install 3.9.10
-pyenv local 3.9.10
+pyenv install 3.10.2
+pyenv local 3.10.2
 ```
 
 ### Install python packages
