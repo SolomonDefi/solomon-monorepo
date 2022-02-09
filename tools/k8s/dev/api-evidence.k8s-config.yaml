@@ -6,6 +6,7 @@ metadata:
     tier: backend
 data:
   NODE_ENV: 'dev'
+  POSTGRES_SERVER: postgresql
   API_AUTHORIZED_REFERRERS: "\
     http://web-evidence.localhost,\
     http://localhost:8080,\
