@@ -117,6 +117,13 @@ deploy:
         version: 10.12.3
         overrides:
           postgresqlPassword: 'postgres'
+          initdbScripts:
+            api-dispute.sql: |
+              CREATE DATABASE api_dispute;
+              GRANT ALL PRIVILEGES ON DATABASE solomon_dispute TO postgres;
+            api-evidence.sql: |
+              CREATE DATABASE api_evidence;
+              GRANT ALL PRIVILEGES ON DATABASE solomon_evidence TO postgres;
           persistence:
             enabled: false
   kubectl:
