@@ -1,18 +1,16 @@
 # INIT-DB IMAGE (? MB)
 # ------------------------------------------------------------------------------------
-FROM alpine:3.14.2
+FROM alpine:3.15
 
-ARG NODEJS_VER=14
+ARG NODEJS_VER=16
 ENV NODEJS_VER=$NODEJS_VER
 ARG TINI_VER=0.19
 ENV TINI_VER=$TINI_VER
-ARG POSTGRES_CLIENT_VER=13
-ENV POSTGRES_CLIENT_VER=$POSTGRES_CLIENT_VER
 
 RUN apk add --no-cache \
   jq~=1 \
   nodejs~="$NODEJS_VER" \
-  postgresql-client~="$POSTGRES_CLIENT_VER" \
+  postgresql13-client \
   tini~="$TINI_VER" \
   curl~=7
 RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
