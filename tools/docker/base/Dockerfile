@@ -1,8 +1,8 @@
 # BASE IMAGE (? MB)
 # ------------------------------------------------------------------------------------
-FROM alpine:3.14.2
+FROM python:3.10-alpine3.15
 
-ARG NODEJS_VER=14
+ARG NODEJS_VER=16
 ARG TINI_VER=0.19
 
 ENV NODEJS_VER=$NODEJS_VER
@@ -12,12 +12,13 @@ ENV SHELL=/bin/sh
 WORKDIR /usr/src
 
 RUN apk add --no-cache git make g++ nodejs~="$NODEJS_VER" tini~="$TINI_VER" curl~=7
-RUN apk add --no-cache python3 py3-pip && ln -sf python3 /usr/bin/python
+
+RUN apk add --no-cache py3-pip
 
 RUN curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm
 RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
 
-RUN apk add --no-cache build-base libffi-dev openssl-dev python3-dev rust cargo postgresql-dev
+RUN apk add --no-cache build-base libffi-dev openssl-dev python3-dev rust cargo postgresql13-dev
 RUN pip3 install --no-cache-dir --upgrade pip
 RUN pip3 install --no-cache-dir poetry
 
