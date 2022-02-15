@@ -1,44 +1,25 @@
-import {
-  deliverService,
-  envStore,
-  ethService,
-  stringHelper,
-  watcherService,
-} from '@solomon/blockchain-watcher/feature-app'
-import { deployContracts, deployPreorder } from '../../contracts/src/tests/testing'
+import { ethService, watcherService } from '@solomon/blockchain-watcher/feature-app'
+// todo: refactor as a nx lib
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { deployContracts } from '../../contracts/src/tests/testing'
 import hardhat from 'hardhat'
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/src/signers'
+import { SlmFactory } from '@solomon/shared/util-contract'
+import { Contract } from 'ethers'
 const ethers = hardhat['ethers']
-// import jest from 'jest'
-import { v4 } from 'uuid'
-import fetch, { Response } from 'node-fetch'
 
 describe('blockchain-watcher', () => {
+  // the contract methods with real blockchain are not so fast
   jest.setTimeout(60 * 1000)
 
-  let token, manager, storage, jurors, slmFactory, owner, buyer, merchant
-
-  const doFetch = async (
-    method: string,
-    url: string,
-    data: Record<string, unknown>,
-  ): Promise<Response> => {
-    const body = JSON.stringify(data)
-    const signature = stringHelper.generateDisputeApiSignature(
-      envStore.disputeApiSecretKey,
-      body,
-    )
-
-    const fetched = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-type': 'application/json',
-        'X-Signature': signature,
-      },
-      body: body,
-    })
-
-    return fetched
-  }
+  let owner: SignerWithAddress = null
+  let buyer: SignerWithAddress = null
+  let merchant: SignerWithAddress = null
+  let token: Contract = null
+  let manager: Contract = null
+  let storage: Contract = null
+  let jurors: Contract = null
+  let slmFactory: SlmFactory = null
 
   beforeAll(async () => {
     // Get hardhat addresses
@@ -56,24 +37,30 @@ describe('blockchain-watcher', () => {
 
     // Initialize services
     await watcherService.init()
-    // For testing, need to point to hardhat provider, owner address, and deployed SlmFactory contract
+    // Override for testing, need to point to hardhat provider, owner address, and deployed SlmFactory contract
     await ethService.testInit(ethers.provider, owner, slmFactory.address)
-    await watcherService.start()
 
     // Will error if it's not deployed
     await ethService.contract.deployed()
   })
 
   afterAll(async () => {
-    await watcherService.stop()
+    await ethService.stop()
   })
 
   it('onChargebackCreated()', async () => {
+    const originFn = ethService.onChargebackCreated
+    const mocked = jest.fn()
+    ethService.onChargebackCreated = mocked
+    await ethService.start()
+    expect(mocked.mock.calls.length).toEqual(0)
+
     // Create an allowance for transfer of funds into dispute contract
     const transferAmount = 100
     await token.approve(ethService.contract.address, transferAmount)
+    await ethService.start()
 
-    // Deploy dispute contract
+    // Deploy chargeback contract
     await ethService.contract.createChargeback(
       1,
       merchant.address,
@@ -81,15 +68,21 @@ describe('blockchain-watcher', () => {
       token.address,
     )
 
-    // Get contract event logs from the dispute contract deployment
-    await ethService.getChargebackCreatedLogs()
+    // There is a delay between function trigger and event emit
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20 * 1000)
+    })
+
+    expect(mocked.mock.calls.length).toEqual(1)
+    ethService.onChargebackCreated = originFn
   })
 
   it('onPreorderCreated()', async () => {
-    // const originFn = ethService.onPreorderCreated
-    // const mocked = jest.fn()
-    // ethService.onPreorderCreated = mocked
-    // expect(mocked.mock.calls.length).toEqual(0)
+    const originFn = ethService.onPreorderCreated
+    const mocked = jest.fn()
+    ethService.onPreorderCreated = mocked
+    await ethService.start()
+    expect(mocked.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
     const transferAmount = 100
@@ -103,14 +96,22 @@ describe('blockchain-watcher', () => {
       token.address,
     )
 
-    // Get contract event logs from the dispute contract deployment
-    await ethService.getPreorderCreatedLogs()
+    // There is a delay between function trigger and event emit
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20 * 1000)
+    })
 
-    // expect(mocked.mock.calls.length).toEqual(1)
-    // ethService.onPreorderCreated = originFn
+    expect(mocked.mock.calls.length).toEqual(1)
+    ethService.onPreorderCreated = originFn
   })
 
   it('onEscrowCreated()', async () => {
+    const originFn = ethService.onEscrowCreated
+    const mocked = jest.fn()
+    ethService.onEscrowCreated = mocked
+    await ethService.start()
+    expect(mocked.mock.calls.length).toEqual(0)
+
     // Create an allowance for transfer of funds into dispute contract
     const transferAmount = 100
     await token.approve(ethService.contract.address, transferAmount)
@@ -123,7 +124,18 @@ describe('blockchain-watcher', () => {
       token.address,
     )
 
-    // Get contract event logs from the dispute contract deployment
-    await ethService.getEscrowCreatedLogs()
+    // There is a delay between function trigger and event emit
+    await new Promise((resolve) => {
+      setTimeout(resolve, 20 * 1000)
+    })
+
+    expect(mocked.mock.calls.length).toEqual(1)
+    ethService.onEscrowCreated = originFn
   })
+
+  it('getChargebackCreatedLogs()', async () => {})
+
+  it('getPreorderCreatedLogs()', async () => {})
+
+  it('getEscrowCreatedLogs()', async () => {})
 })

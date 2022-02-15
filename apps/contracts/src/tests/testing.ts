@@ -1,4 +1,3 @@
-import assert from 'assert'
 import hardhat from 'hardhat'
 const ethers = hardhat['ethers']
 

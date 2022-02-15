@@ -37,8 +37,6 @@ export class EthService {
   }
 
   async onPreorderCreated(preorderAddress: string) {
-    // TODO: Figure out why this isn't triggering properly in tests
-
     if (!this.wallet) {
       throw 'Wallet is not defined.'
     }
@@ -92,12 +90,8 @@ export class EthService {
     }
 
     try {
-      console.log('I am inside created logs')
-
       let eventFilter = this.contract.filters.PreorderCreated()
-      console.log('filter', eventFilter, fromBlockHash)
       let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
-      console.log('event', events)
 
       await dbService.setLastScanned(events[events.length - 1].blockHash)
 
@@ -130,8 +124,6 @@ export class EthService {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
-
-    console.log('inside start')
 
     this.contract.on('ChargebackCreated', this.onChargebackCreated)
     this.contract.on('PreorderCreated', this.onPreorderCreated)
