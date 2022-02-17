@@ -7,7 +7,7 @@ import MailgunTransport from '../util/MailgunTransport'
 import { envStore } from '../store/envStore'
 import { SlmChargeback, SlmEscrow, SlmPreorder } from '@solomon/shared/util-contract'
 
-class MailService {
+export class MailService {
   mailer: Transporter = null as any
 
   async send(to: string | string[], subject: string, html: string, text: string) {
