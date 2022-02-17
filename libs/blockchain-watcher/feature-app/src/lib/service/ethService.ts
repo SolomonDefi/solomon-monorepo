@@ -18,7 +18,7 @@ export class EthService {
   wallet: Wallet | null = null
   contract: SlmFactory | null = null
 
-  async onChargebackCreated(chargebackAddress: string) {
+  onChargebackCreated = async (chargebackAddress: string) => {
     if (!this.wallet) {
       throw 'Wallet is not defined.'
     }
@@ -36,7 +36,7 @@ export class EthService {
     }
   }
 
-  async onPreorderCreated(preorderAddress: string) {
+  onPreorderCreated = async (preorderAddress: string) => {
     if (!this.wallet) {
       throw 'Wallet is not defined.'
     }
@@ -51,7 +51,7 @@ export class EthService {
     }
   }
 
-  async onEscrowCreated(escrowAddress: string) {
+  onEscrowCreated = async (escrowAddress: string) => {
     if (!this.wallet) {
       throw 'Wallet is not defined.'
     }
@@ -66,7 +66,7 @@ export class EthService {
     }
   }
 
-  async getChargebackCreatedLogs(fromBlockHash?: string) {
+  getChargebackCreatedLogs = async (fromBlockHash?: string) => {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
@@ -84,7 +84,7 @@ export class EthService {
     }
   }
 
-  async getPreorderCreatedLogs(fromBlockHash?: string) {
+  getPreorderCreatedLogs = async (fromBlockHash?: string) => {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
@@ -102,7 +102,7 @@ export class EthService {
     }
   }
 
-  async getEscrowCreatedLogs(fromBlockHash?: string) {
+  getEscrowCreatedLogs = async (fromBlockHash?: string) => {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
@@ -120,7 +120,7 @@ export class EthService {
     }
   }
 
-  async start() {
+  start = async () => {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
@@ -130,7 +130,7 @@ export class EthService {
     this.contract.on('EscrowCreated', this.onEscrowCreated)
   }
 
-  async stop() {
+  stop = async () => {
     if (!this.contract) {
       throw 'Contract is not defined.'
     }
@@ -140,7 +140,7 @@ export class EthService {
     this.contract.off('EscrowCreated', this.onEscrowCreated)
   }
 
-  async init() {
+  init = async () => {
     let provider = new ethers.providers.JsonRpcProvider(envStore.ethNetworkUrl)
     let wallet = ethers.Wallet.fromMnemonic(envStore.walletMnemonic).connect(provider)
     let contract = SlmFactory__factory.connect(envStore.contractAddress, wallet)
@@ -150,7 +150,11 @@ export class EthService {
     this.contract = contract
   }
 
-  async testInit(provider: JsonRpcProvider, wallet: Wallet, contractAddress: string) {
+  testInit = async (
+    provider: JsonRpcProvider,
+    wallet: Wallet,
+    contractAddress: string,
+  ) => {
     let contract = SlmFactory__factory.connect(contractAddress, wallet)
 
     this.provider = provider
