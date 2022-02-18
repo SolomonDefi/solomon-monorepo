@@ -12,6 +12,8 @@ describe('api-evidence', () => {
     expect(fetched.ok).toEqual(true)
   })
 
+  // Needs a S3 endpoint to test it
+  /*
   it('POST /api/evidence', async () => {
     const formData = new FormData()
     const fileBuffer = await readFile(
@@ -90,7 +92,11 @@ describe('api-evidence', () => {
   it('GET /api/evidence', async () => {})
 
   it('GET /api/evidence/:id', async () => {})
+  */
 
+  // Not done yet. Currently, /users is admin-only endpoints
+  // https://github.com/SolomonDefi/solomon-monorepo/issues/215
+  /*
   it('POST /api/users', async () => {
     const password = 'my_pass_word'
     const email = 'john.doe@example.com'
@@ -100,16 +106,11 @@ describe('api-evidence', () => {
       email: email,
       full_name: fullName,
     })
-    const signature = stringHelper.generateDisputeApiSignature(
-      envStore.disputeApiSecretKey,
-      body,
-    )
 
     const fetched = await fetch('http://127.0.0.1:3010/api/users', {
       method: 'post',
       headers: {
         'Content-type': 'application/json',
-        'X-Signature': signature,
       },
       body: body,
     })
@@ -124,4 +125,5 @@ describe('api-evidence', () => {
     expect(stringHelper.isEthAddress(json['eth_address'])).toEqual(true)
     expect(typeof json['id']).toEqual('number')
   })
+  */
 })
