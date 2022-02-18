@@ -19,7 +19,10 @@ describe('blockchain-watcher', () => {
   jest.setTimeout(60 * 1000)
 
   const ethers = hardhat['ethers']
-  const TIMEOUT = 10 * 1000
+  const TIMEOUT = 5 * 1000
+  const TRANSFER_AMOUNT = 100
+
+  // fixme: should not be "any" type, but there is an error when using "SignerWithAddress" type
   let owner: any = null
   let buyer: any = null
   let merchant: any = null
@@ -38,7 +41,7 @@ describe('blockchain-watcher', () => {
   let originSendPreorderEvent = deliverService.sendPreorderEvent
   let originSendEscrowEvent = deliverService.sendEscrowEvent
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     // Get hardhat addresses
     ;[owner, buyer, merchant] = await ethers.getSigners()
 
@@ -60,8 +63,6 @@ describe('blockchain-watcher', () => {
     await ethService.contract.deployed()
   })
 
-  beforeEach(async () => {})
-
   afterEach(async () => {
     ethService.onChargebackCreated = originChargebackCreated
     ethService.onPreorderCreated = originPreorderCreated
@@ -72,7 +73,7 @@ describe('blockchain-watcher', () => {
     deliverService.sendChargebackEvent = originSendChargebackEvent
     deliverService.sendPreorderEvent = originSendPreorderEvent
     deliverService.sendEscrowEvent = originSendEscrowEvent
-    await ethService.stop()
+    await watcherService.stop()
   })
 
   it('onChargebackCreated() triggered', async () => {
@@ -89,8 +90,7 @@ describe('blockchain-watcher', () => {
     expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
-    const transferAmount = 100
-    await token.approve(ethService.contract.address, transferAmount)
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
 
     // Deploy chargeback contract
     await ethService.contract.createChargeback(
@@ -121,8 +121,7 @@ describe('blockchain-watcher', () => {
     expect(mockedSendChargebackCreatedEmail.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
-    const transferAmount = 100
-    await token.approve(ethService.contract.address, transferAmount)
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
 
     // Deploy chargeback contract
     await ethService.contract.createChargeback(
@@ -155,8 +154,7 @@ describe('blockchain-watcher', () => {
     expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
-    const transferAmount = 100
-    await token.approve(ethService.contract.address, transferAmount)
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
 
     // Deploy dispute contract
     await ethService.contract.createPreorder(
@@ -187,8 +185,7 @@ describe('blockchain-watcher', () => {
     expect(mockedSendPreorderCreatedEmail.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
-    const transferAmount = 100
-    await token.approve(ethService.contract.address, transferAmount)
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
 
     // Deploy dispute contract
     await ethService.contract.createPreorder(
@@ -221,8 +218,7 @@ describe('blockchain-watcher', () => {
     expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
-    const transferAmount = 100
-    await token.approve(ethService.contract.address, transferAmount)
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
 
     // Deploy dispute contract
     await ethService.contract.createEscrow(
@@ -253,8 +249,7 @@ describe('blockchain-watcher', () => {
     expect(mockedSendEscrowCreatedEmail.mock.calls.length).toEqual(0)
 
     // Create an allowance for transfer of funds into dispute contract
-    const transferAmount = 100
-    await token.approve(ethService.contract.address, transferAmount)
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
 
     // Deploy chargeback contract
     await ethService.contract.createEscrow(
@@ -273,9 +268,177 @@ describe('blockchain-watcher', () => {
     expect(mockedSendEscrowCreatedEmail.mock.calls.length).toEqual(1)
   })
 
-  it('getChargebackCreatedLogs()', async () => {})
+  it('start()', async () => {
+    const mockedChargebackCreated = jest.fn()
+    const mockedPreorderCreated = jest.fn()
+    const mockedEscrowCreated = jest.fn()
+    ethService.onChargebackCreated = mockedChargebackCreated
+    ethService.onPreorderCreated = mockedPreorderCreated
+    ethService.onEscrowCreated = mockedEscrowCreated
+    // await ethService.start()
 
-  it('getPreorderCreatedLogs()', async () => {})
+    expect(mockedChargebackCreated.mock.calls.length).toEqual(0)
+    expect(mockedPreorderCreated.mock.calls.length).toEqual(0)
+    expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
 
-  it('getEscrowCreatedLogs()', async () => {})
+    // Create an allowance for transfer of funds into dispute contract
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createChargeback(
+      1,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createPreorder(
+      2,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createEscrow(
+      3,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, TIMEOUT)
+    })
+
+    expect(mockedChargebackCreated.mock.calls.length).toEqual(0)
+    expect(mockedPreorderCreated.mock.calls.length).toEqual(0)
+    expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
+  })
+
+  it('stop()', async () => {
+    const mockedChargebackCreated = jest.fn()
+    const mockedPreorderCreated = jest.fn()
+    const mockedEscrowCreated = jest.fn()
+    ethService.onChargebackCreated = mockedChargebackCreated
+    ethService.onPreorderCreated = mockedPreorderCreated
+    ethService.onEscrowCreated = mockedEscrowCreated
+    await ethService.start()
+
+    await ethService.stop()
+
+    expect(mockedChargebackCreated.mock.calls.length).toEqual(0)
+    expect(mockedPreorderCreated.mock.calls.length).toEqual(0)
+    expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
+
+    // Create an allowance for transfer of funds into dispute contract
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createChargeback(
+      1,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createPreorder(
+      2,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createEscrow(
+      3,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, TIMEOUT)
+    })
+
+    expect(mockedChargebackCreated.mock.calls.length).toEqual(0)
+    expect(mockedPreorderCreated.mock.calls.length).toEqual(0)
+    expect(mockedEscrowCreated.mock.calls.length).toEqual(0)
+  })
+
+  it('getChargebackCreatedLogs()', async () => {
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createChargeback(
+      0,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    let events = await ethService.getChargebackCreatedLogs()
+
+    expect(events.length).toEqual(1)
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createChargeback(
+      1,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    events = await ethService.getChargebackCreatedLogs()
+
+    expect(events.length).toEqual(2)
+  })
+
+  it('getPreorderCreatedLogs()', async () => {
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createPreorder(
+      0,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    let events = await ethService.getPreorderCreatedLogs()
+
+    expect(events.length).toEqual(1)
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createPreorder(
+      1,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    events = await ethService.getPreorderCreatedLogs()
+
+    expect(events.length).toEqual(2)
+  })
+
+  it('getEscrowCreatedLogs()', async () => {
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createEscrow(
+      0,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    let events = await ethService.getEscrowCreatedLogs()
+
+    expect(events.length).toEqual(1)
+
+    await token.approve(ethService.contract.address, TRANSFER_AMOUNT)
+    await ethService.contract.createEscrow(
+      1,
+      merchant.address,
+      buyer.address,
+      token.address,
+    )
+
+    events = await ethService.getEscrowCreatedLogs()
+
+    expect(events.length).toEqual(2)
+  })
 })
