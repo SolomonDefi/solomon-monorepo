@@ -10,7 +10,7 @@ import 'solidity-coverage'
 import 'tsconfig-paths/register'
 import { HardhatUserConfig } from 'hardhat/types'
 import { task } from 'hardhat/config'
-import { pathStore } from '@solomon/shared/util-path-store'
+import { pathStore } from './libs/shared/util-path-store/src/index'
 
 task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners()
@@ -71,8 +71,8 @@ const config: HardhatUserConfig = {
   },
   paths: {
     root: './',
-    sources: 'src/contracts',
-    tests: 'src/tests',
+    sources: './apps/contracts/src/contracts',
+    tests: './apps/contracts/src/tests',
     cache: `${pathStore.root}/dist/apps/contracts/cache`,
     artifacts: `${pathStore.root}/dist/apps/contracts/artifacts`,
   },
