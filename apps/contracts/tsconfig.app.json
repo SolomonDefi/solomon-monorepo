@@ -5,6 +5,6 @@
     "outDir": "../../dist/out-tsc",
     "types": ["node"]
   },
-  "files": ["./hardhat.config.ts"],
+  "files": ["../../hardhat.config.ts"],
   "include": ["./scripts", "./typechain"]
 }

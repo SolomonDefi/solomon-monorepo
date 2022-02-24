@@ -5,6 +5,6 @@
     "outDir": "../../dist/out-tsc",
     "types": ["mocha", "chai", "node"]
   },
-  "files": ["hardhat.config.ts"],
+  "files": ["../../hardhat.config.ts"],
   "include": ["./test", "./scripts", "./typechain"]
 }
