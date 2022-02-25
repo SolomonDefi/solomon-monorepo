@@ -227,30 +227,30 @@ jobs:
           create-db: true
       - name: Run unit tests
         run: pnpx nx affected:test --base=origin/main --parallel
-
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code into workspace directory
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Set up NodeJS (v16)
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - name: Cache pnpm modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 6.0.2
-      - name: Install npm modules
-        run: pnpm i
-      - name: Run E2E tests
-        run: pnpx nx affected:e2e --base=origin/main
+## Not ready yet
+#  e2e:
+#    name: E2E Tests
+#    runs-on: ubuntu-20.04
+#    steps:
+#      - name: Checkout code into workspace directory
+#        uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#      - name: Set up NodeJS (v16)
+#        uses: actions/setup-node@v2
+#        with:
+#          node-version: '16'
+#      - name: Cache pnpm modules
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.pnpm-store
+#          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-
+#      - uses: pnpm/action-setup@v2.0.1
+#        with:
+#          version: 6.0.2
+#      - name: Install npm modules
+#        run: pnpm i
+#      - name: Run E2E tests
+#        run: pnpx nx affected:e2e --base=origin/main
