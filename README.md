@@ -108,10 +108,16 @@ pnpx nx serve <app-name>
 pnpx nx build <app-name>
 ```
 
-**Test**
+**Unit test**
 
 ```bash
 pnpx nx test <app-name>
+```
+
+**E2E test**
+
+```bash
+pnpx nx e2e <app-name>
 ```
 
 ### Solomon Evidence Uploader
@@ -134,7 +140,7 @@ A hosted frontend and backend will be provided by Solomon, based on this reposit
 
 ### E2E test
 
-Currently, e2e test is not integrated to CI/CD yet. Please run `skaffold dev` first, and run `pnpm test:e2e` in another console.
+Currently, e2e test is not integrated to CI/CD yet. Please run `skaffold dev` first, and run `nx run app-e2e:e2e` in another console.
 
 ### Generate scripts
 
