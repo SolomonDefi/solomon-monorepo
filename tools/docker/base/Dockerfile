@@ -29,4 +29,6 @@ COPY nx.json workspace.json tsconfig.base.json ./
 RUN node ./tools/scripts/package-subset.js base subset.config.js package.json package.json
 RUN pnpm install
 
+COPY hardhat.config.ts ./
+
 ENTRYPOINT ["/sbin/tini", "-v", "--"]

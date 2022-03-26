@@ -21,6 +21,25 @@ class BaseEvent(BaseModel):
     party2: EthAddress
     contract: EthAddress
 
+    @validator('type')
+    def valid_type(cls, type: str, values: dict) -> str:
+        if type in [
+            'dispute.preorder.created',
+            'dispute.preorder.completed',
+            'evidence.preorder.submitted',
+            'payment.preorder.created',
+        ]:
+            return type
+        raise ValueError('Invalid type')
+
+    # TODO -- this should be handled by a decorator
+    # Currently it's done this way to ensure validation order
+    def validate_parties(values: dict):
+        parties = [values.get('party1'), values.get('party2')]
+        if not parties[0] or not parties[1]:
+            raise ValueError('a party is missing or invalid')
+        return parties
+
     def to_dict(self, data=None):
         return {
             "message_id": self.id,
@@ -42,7 +61,8 @@ class DisputeCompletedEvent(BaseEvent):
 
     @validator('awardedTo')
     def awardee_in_party(cls, awardee: EthAddress, values: dict) -> EthAddress:
-        if awardee not in [values['party1'], values['party2']]:
+        parties = cls.validate_parties(values)
+        if awardee not in parties:
             raise ValueError('awardee address do not match')
         return awardee
 
@@ -62,7 +82,8 @@ class EvidenceSubmittedEvent(BaseEvent):
 
     @validator('submitter')
     def submitter_in_party(cls, submitter: EthAddress, values: dict) -> EthAddress:
-        if submitter not in [values['party1'], values['party2']]:
+        parties = cls.validate_parties(values)
+        if submitter not in parties:
             raise ValueError('submitter address do not match')
         return submitter
 
@@ -86,15 +107,16 @@ class PaymentCreatedEvent(BaseEvent):
         return super().to_dict(
             data={
                 "judgeContract": self.judgeContract,
-                "evidenceUrl": self.evidenceUrl,
-                "submitter": self.submitter,
+                "token": self.token,
+                "discount": self.discount,
+                "ethPaid": self.ethPaid,
             }
         )
 
 
 AllEvents = (
-    DisputeCreatedEvent
+    PaymentCreatedEvent
     | DisputeCompletedEvent
     | EvidenceSubmittedEvent
-    | PaymentCreatedEvent
+    | DisputeCreatedEvent
 )

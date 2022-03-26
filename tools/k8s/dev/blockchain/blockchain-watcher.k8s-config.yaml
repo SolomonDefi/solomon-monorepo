@@ -9,3 +9,5 @@ data:
   API_AUTHORIZED_REFERRERS: "\
     http://api-evidence.localhost,\
     http://api-dispute.localhost"
+  MAILGUN_API: 'test'
+  ETH_NETWORK_URL: 'http://127.0.0.1:8545'

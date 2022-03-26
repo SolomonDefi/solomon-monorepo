@@ -61,7 +61,7 @@ def test_events(db: Session, client: TestClient, message: dict, expected: bool) 
         config.MESSAGE_SECRET_KEY, dumps(message).encode('utf-8')
     )
     rsp = client.post(
-        '/api/events',
+        f'/api/events/{message["type"]}',
         json=message,
         headers={'X-Signature': signature},
     )

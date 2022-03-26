@@ -1,126 +1,151 @@
-import fetch, { Response } from 'node-fetch'
-import { envStore, stringHelper } from '@solomon/blockchain-watcher/feature-app'
+import supertest from 'supertest'
+import { stringHelper } from '@solomon/blockchain-watcher/feature-app'
 import { v4 } from 'uuid'
 
+jest.setTimeout(60 * 1000)
+
+const generateSignature = (data: Record<string, unknown>): string => {
+  const body = JSON.stringify(data)
+  const signature = stringHelper.generateDisputeApiSignature(
+    'bpNL2QWDZwJhuF-kJCBnB_jIDDuZ4ODzBTPoaXSjVNU',
+    body,
+  )
+  return signature
+}
+
 describe('api-dispute', () => {
-  jest.setTimeout(60 * 1000)
+  let api: supertest.SuperTest<supertest.Test>
+  let apiSignature: string
 
-  const doFetch = async (
-    method: string,
-    url: string,
-    data: Record<string, unknown>,
-  ): Promise<Response> => {
-    const body = JSON.stringify(data)
-    const signature = stringHelper.generateDisputeApiSignature(
-      envStore.disputeApiSecretKey,
-      body,
-    )
-
-    const fetched = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-type': 'application/json',
-        'X-Signature': signature,
-      },
-      body: body,
-    })
-
-    return fetched
-  }
-
-  test('/api/health/app', async () => {
-    const fetched = await fetch('http://127.0.0.1:3000/api/health/app')
-
-    expect(fetched.ok).toEqual(true)
+  beforeAll(() => {
+    api = supertest('http://127.0.0.1:3000')
   })
 
-  test('/api/events/ping', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events/ping', {})
-
-    expect(fetched.ok).toEqual(true)
+  it('Health check responds with 200 code', () => {
+    return api.get('/api/health/app').expect(200)
   })
 
-  test('/api/events dispute.preorder.created', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('Ping response with 200 code', () => {
+    const payload = {}
+    apiSignature = generateSignature(payload)
+    return api
+      .post('/api/events/ping')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(200)
+  })
+
+  it('/api/events dispute.preorder.created returns 200', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(true)
+    return api
+      .post('/api/events/dispute.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(200)
   })
 
-  test('/api/events Invalid type', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events Invalid type returns error response', () => {
+    const payload = {
       id: v4(),
-      type: 'Invalid type',
+      type: 'invalid_type',
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.created invalid party1', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.created invalid party1 returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.created',
       party1: 'Invalid address',
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422) // TODO -- Should this be 400?
   })
 
-  test('/api/events dispute.preorder.created invalid party2', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.created invalid party2 returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
       party2: 'Invalid address',
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.created invalid contract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.created invalid contract returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: 'Invalid address',
       judgeContract: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.created invalid judgeContract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.created invalid judgeContract returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: 'Invalid address',
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.completed', async () => {
+  it('/api/events dispute.preorder.completed returns 200 response', () => {
     const party1 = stringHelper.generateRandomEthAddr()
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.completed',
       party1: party1,
@@ -128,13 +153,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       awardedTo: party1,
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(true)
+    return api
+      .post('/api/events/dispute.preorder.completed')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(200)
   })
 
-  test('/api/events dispute.preorder.completed invalid party1', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.completed invalid party1 returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.completed',
       party1: 'Invalid address',
@@ -142,13 +172,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       awardedTo: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.completed')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.completed invalid party2', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.completed invalid party2 returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.completed',
       party1: stringHelper.generateRandomEthAddr(),
@@ -156,13 +191,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       awardedTo: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.completed')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.completed invalid contract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.completed invalid contract returns error response', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.completed',
       party1: stringHelper.generateRandomEthAddr(),
@@ -170,13 +210,18 @@ describe('api-dispute', () => {
       contract: 'Invalid address',
       judgeContract: stringHelper.generateRandomEthAddr(),
       awardedTo: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.completed')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.completed invalid judgeContract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.completed invalid judgeContract returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.completed',
       party1: stringHelper.generateRandomEthAddr(),
@@ -184,13 +229,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: 'Invalid address',
       awardedTo: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.completed')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events dispute.preorder.completed invalid awardedTo', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events dispute.preorder.completed invalid awardedTo returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'dispute.preorder.completed',
       party1: stringHelper.generateRandomEthAddr(),
@@ -198,14 +248,19 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       awardedTo: 'Invalid address',
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/dispute.preorder.completed')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events evidence.preorder.submitted', async () => {
+  it('/api/events evidence.preorder.submitted returns 200 response', () => {
     const party1 = stringHelper.generateRandomEthAddr()
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+    const payload = {
       id: v4(),
       type: 'evidence.preorder.submitted',
       party1: party1,
@@ -214,13 +269,18 @@ describe('api-dispute', () => {
       judgeContract: stringHelper.generateRandomEthAddr(),
       evidenceUrl: '',
       submitter: party1,
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(true)
+    return api
+      .post('/api/events/evidence.preorder.submitted')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(200)
   })
 
-  test('/api/events evidence.preorder.submitted invalid party1', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events evidence.preorder.submitted invalid party1 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'evidence.preorder.submitted',
       party1: 'Invalid address',
@@ -228,13 +288,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       submitter: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/evidence.preorder.submitted')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events evidence.preorder.submitted invalid party2', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events evidence.preorder.submitted invalid party2 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'evidence.preorder.submitted',
       party1: stringHelper.generateRandomEthAddr(),
@@ -242,13 +307,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       submitter: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/evidence.preorder.submitted')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events evidence.preorder.submitted invalid contract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events evidence.preorder.submitted invalid contract returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'evidence.preorder.submitted',
       party1: stringHelper.generateRandomEthAddr(),
@@ -256,13 +326,18 @@ describe('api-dispute', () => {
       contract: 'Invalid address',
       judgeContract: stringHelper.generateRandomEthAddr(),
       submitter: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/evidence.preorder.submitted')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events evidence.preorder.submitted invalid judgeContract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events evidence.preorder.submitted invalid judgeContract returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'evidence.preorder.submitted',
       party1: stringHelper.generateRandomEthAddr(),
@@ -270,13 +345,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: 'Invalid address',
       submitter: stringHelper.generateRandomEthAddr(),
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/evidence.preorder.submitted')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events evidence.preorder.submitted invalid submitter', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events evidence.preorder.submitted invalid submitter returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'evidence.preorder.submitted',
       party1: stringHelper.generateRandomEthAddr(),
@@ -284,13 +364,18 @@ describe('api-dispute', () => {
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       submitter: 'Invalid address',
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/evidence.preorder.submitted')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(422)
   })
 
-  test('/api/events payment.preorder.created', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created returns 200 response', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -300,13 +385,18 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 40,
       ethPaid: '1000000',
-    })
+    }
+    apiSignature = generateSignature(payload)
 
-    expect(fetched.ok).toEqual(true)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(200)
   })
 
-  test('/api/events payment.preorder.created invalid party1', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid party1 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: 'Invalid address',
@@ -316,13 +406,17 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 40,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid party2', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid party2 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -332,13 +426,17 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 40,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid contract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid contract returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -348,13 +446,17 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 40,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid judgeContract', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid judgeContract returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -364,13 +466,17 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 40,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid token', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid token returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -380,13 +486,17 @@ describe('api-dispute', () => {
       token: 'Invalid address',
       discount: 40,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid discount -1', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid discount -1 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -396,13 +506,17 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: -1,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid discount 101', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid discount 101 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -412,13 +526,17 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 101,
       ethPaid: '1000000',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 
-  test('/api/events payment.preorder.created invalid ethPaid -1', async () => {
-    const fetched = await doFetch('POST', 'http://127.0.0.1:3000/api/events', {
+  it('/api/events payment.preorder.created invalid ethPaid -1 returns error message', () => {
+    const payload = {
       id: v4(),
       type: 'payment.preorder.created',
       party1: stringHelper.generateRandomEthAddr(),
@@ -428,8 +546,12 @@ describe('api-dispute', () => {
       token: stringHelper.generateRandomEthAddr(),
       discount: 101,
       ethPaid: '-1',
-    })
+    }
 
-    expect(fetched.ok).toEqual(false)
+    return api
+      .post('/api/events/payment.preorder.created')
+      .set('X-Signature', apiSignature)
+      .send(payload)
+      .expect(400)
   })
 })
