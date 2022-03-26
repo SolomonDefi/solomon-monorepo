@@ -1,8 +1,8 @@
 apiVersion: skaffold/v2beta26
 kind: Config
 requires:
-  - path: ./skaffold.backend.yaml
-  - path: ./skaffold.frontend.yaml
+  - path: ./skaffold.api.yaml
+  - path: ./skaffold.blockchain.yaml
 build:
   local:
     concurrency: 4

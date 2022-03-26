@@ -1,18 +1,29 @@
-import fetch from 'node-fetch'
+import supertest from 'supertest'
+/*
 import FormData from 'form-data'
 import { readFile } from 'node:fs/promises'
 import path from 'path'
 import { pathStore } from '@solomon/shared/util-path-store'
 import { envStore, stringHelper } from '@solomon/blockchain-watcher/feature-app'
+*/
 
 describe('api-evidence', () => {
-  it('GET /api/health/app', async () => {
-    let fetched = await fetch('http://127.0.0.1:3010/api/health/app')
+  let api: supertest.SuperTest<supertest.Test>
 
-    expect(fetched.ok).toEqual(true)
+  beforeAll(() => {
+    // TODO -- replace with env/config
+    api = supertest('http://127.0.0.1:3010')
   })
 
-  // Needs a S3 endpoint to test it
+  beforeEach(async () => {
+    // TODO -- reset database here
+  })
+
+  it('Ping responds successfully', () => {
+    return api.get('/api/health/app').expect(200)
+  })
+
+  // TODO -- Needs a S3 endpoint to test it
   /*
   it('POST /api/evidence', async () => {
     const formData = new FormData()

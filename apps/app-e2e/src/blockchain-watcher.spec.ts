@@ -58,7 +58,7 @@ describe('blockchain-watcher', () => {
     // Initialize services
     await watcherService.init()
     // Override for testing, need to point to hardhat provider, owner address, and deployed SlmFactory contract
-    await ethService.testInit(ethers.provider, owner, slmFactory.address)
+    await ethService.testInit(ethers.provider, slmFactory)
     // Will error if it's not deployed
     await ethService.contract.deployed()
   })

@@ -1,4 +1,4 @@
-import { ethers, Wallet } from 'ethers'
+import { ethers } from 'ethers'
 import { mailService } from './mailService'
 import { envStore } from '../store/envStore'
 import {
@@ -14,19 +14,18 @@ import { dbService } from './dbService'
 import { loggerService } from '@solomon/shared/util-logger'
 
 export class EthService {
-  provider: JsonRpcProvider | null = null
-  wallet: Wallet | null = null
-  contract: SlmFactory | null = null
+  provider: JsonRpcProvider
+  contract: SlmFactory | undefined = undefined
+
+  constructor() {
+    this.provider = new ethers.providers.JsonRpcProvider(envStore.ethNetworkUrl)
+  }
 
   onChargebackCreated = async (chargebackAddress: string) => {
-    if (!this.wallet) {
-      throw 'Wallet is not defined.'
-    }
-
     try {
       let slmChargeback = await SlmChargeback__factory.connect(
         chargebackAddress,
-        this.wallet,
+        this.provider,
       )
 
       await deliverService.sendChargebackEvent(slmChargeback)
@@ -37,12 +36,8 @@ export class EthService {
   }
 
   onPreorderCreated = async (preorderAddress: string) => {
-    if (!this.wallet) {
-      throw 'Wallet is not defined.'
-    }
-
     try {
-      let slmPreorder = await SlmPreorder__factory.connect(preorderAddress, this.wallet)
+      let slmPreorder = await SlmPreorder__factory.connect(preorderAddress, this.provider)
 
       await deliverService.sendPreorderEvent(slmPreorder)
       await mailService.sendPreorderCreatedEmail(slmPreorder)
@@ -52,12 +47,8 @@ export class EthService {
   }
 
   onEscrowCreated = async (escrowAddress: string) => {
-    if (!this.wallet) {
-      throw 'Wallet is not defined.'
-    }
-
     try {
-      let slmEscrow = await SlmEscrow__factory.connect(escrowAddress, this.wallet)
+      let slmEscrow = await SlmEscrow__factory.connect(escrowAddress, this.provider)
 
       await deliverService.sendEscrowEvent(slmEscrow)
       await mailService.sendEscrowCreatedEmail(slmEscrow)
@@ -141,24 +132,13 @@ export class EthService {
   }
 
   init = async () => {
-    let provider = new ethers.providers.JsonRpcProvider(envStore.ethNetworkUrl)
-    let wallet = ethers.Wallet.fromMnemonic(envStore.walletMnemonic).connect(provider)
-    let contract = SlmFactory__factory.connect(envStore.contractAddress, wallet)
+    let contract = SlmFactory__factory.connect(envStore.contractAddress, this.provider)
 
-    this.provider = provider
-    this.wallet = wallet
     this.contract = contract
   }
 
-  testInit = async (
-    provider: JsonRpcProvider,
-    wallet: Wallet,
-    contractAddress: string,
-  ) => {
-    let contract = SlmFactory__factory.connect(contractAddress, wallet)
-
+  testInit = async (provider: JsonRpcProvider, contract: SlmFactory) => {
     this.provider = provider
-    this.wallet = wallet
     this.contract = contract
   }
 }

@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import path from 'path'
 import { MikroORM } from '@mikro-orm/core'
-import { QueryOrderNumeric } from '@mikro-orm/core/enums'
+import { QueryOrderNumeric } from '@mikro-orm/core'
 import { pathExists, remove } from 'fs-extra'
 import { ScanLogEntity } from '../Entity/ScanLogEntity'
 import { envStore } from '../store/envStore'

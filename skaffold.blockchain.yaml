@@ -1,0 +1,53 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+requires:
+  - path: ./skaffold.base.yaml
+build:
+  local:
+    concurrency: 4
+    useBuildkit: true
+    push: false
+  artifacts:
+    - image: contracts.dev
+      context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
+      sync:
+        manual:
+          - src: 'apps/contracts/src/**/*'
+            dest: '/usr/src'
+      docker:
+        dockerfile: apps/contracts/Dockerfile
+        target: dev
+    - image: blockchain-watcher.dev
+      context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
+      sync:
+        manual:
+          - src: 'apps/blockchain-watcher/src/**/*'
+            dest: '/usr/src'
+          - src: 'libs/blockchain-watcher/*/src/**/*'
+            dest: '/usr/src'
+          - src: 'libs/shared/*/src/**/*'
+            dest: '/usr/src'
+      docker:
+        dockerfile: apps/blockchain-watcher/Dockerfile
+        target: dev
+        buildArgs:
+          # These vars are different per each developer and cannot be part of ConfigMap in git
+          SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
+deploy:
+  kubeContext: docker-desktop
+  kubectl:
+    manifests:
+      - tools/k8s/dev/blockchain/*.yaml
+portForward:
+  - resourceType: service
+    resourceName: blockchain-watcher
+    port: 4000
+  - resourceType: service
+    resourceName: contracts
+    port: 8545

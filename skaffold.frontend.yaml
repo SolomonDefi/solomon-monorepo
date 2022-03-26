@@ -1,0 +1,47 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+requires:
+  - path: ./skaffold.base.yaml
+build:
+  local:
+    concurrency: 4
+    useBuildkit: true
+    push: false
+  artifacts:
+    - image: web-evidence.dev
+      context: .
+      requires:
+        - image: solomon_base
+          alias: SOLOMON_BASE
+      sync:
+        manual:
+          - src: 'apps/web-evidence/src/**/*'
+            dest: '/usr/src'
+          - src: 'libs/shared/*/src/**/*'
+            dest: '/usr/src'
+          - src: 'libs/web/*/src/**/*'
+            dest: '/usr/src'
+      docker:
+        dockerfile: apps/web-evidence/Dockerfile
+        target: dev
+deploy:
+  kubeContext: docker-desktop
+  helm:
+    releases:
+      - name: nginx-ingress
+        repo: https://kubernetes.github.io/ingress-nginx
+        remoteChart: ingress-nginx
+        version: 4.0.13
+        # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+        overrides:
+          controller:
+            admissionWebhooks:
+              enabled: false
+  kubectl:
+    manifests:
+      - tools/k8s/dev/frontend/*.yaml
+portForward:
+  # Enable live reload for the web app
+  - resourceType: deployment
+    resourceName: web-evidence
+    port: 8000

@@ -30,10 +30,6 @@ class EnvStore {
       return process.env['ETH_NETWORK_URL_TEST'] ?? 'http://127.0.0.1:8545'
     }
 
-    if (this.isDev) {
-      return process.env['ETH_NETWORK_URL_DEV'] ?? 'http://127.0.0.1:8545'
-    }
-
     if (this.isStage) {
       return (
         process.env['ETH_NETWORK_URL_STAGE'] ??
@@ -46,8 +42,11 @@ class EnvStore {
         process.env['ETH_NETWORK_URL_PROD'] ?? `https://infura.io/v3/${this.infuraId}`
       )
     }
+    if (!process.env['ETH_NETWORK_URL']) {
+      throw new Error('Missing ETH_NETWORK_URL')
+    }
 
-    return ''
+    return process.env['ETH_NETWORK_URL']
   }
 
   get contractAddress(): string {
@@ -56,16 +55,6 @@ class EnvStore {
     }
 
     return process.env['CONTRACT_ADDRESS'] ?? ''
-  }
-
-  get walletMnemonic(): string {
-    if (this.isTest) {
-      return (
-        process.env['WALLET_MNEMONIC'] ?? ethers.Wallet.createRandom().mnemonic.phrase
-      )
-    }
-
-    return process.env['WALLET_MNEMONIC'] ?? ''
   }
 
   get mailgunApiKey(): string {

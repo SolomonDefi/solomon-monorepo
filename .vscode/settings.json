@@ -16,5 +16,5 @@
   },
   "python.formatting.provider": "black",
   "python.terminal.activateEnvironment": false,
-  "python.pythonPath": "apps/api-evidence/.venv/bin/python"
+  "python.defaultInterpreterPath": "apps/api-evidence/.venv/bin/python"
 }

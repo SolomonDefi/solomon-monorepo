@@ -40,16 +40,10 @@ Follow these instructions to set up your local development environment. Only Mac
 The `libs/shared/util-contract` is generated from `apps/contracts` with following command:
 
 ```shell
-pnpm run contract:generate-type
+pnpm run contracts:generate-type
 ```
 
 **Start local dev environment**
-
-> :warning: On Mac M1 devices, you must set the following environment variable, or the docker multi-stage build will fail
-
-```
-export DOCKER_DEFAULT_PLATFORM=linux/arm64
-```
 
 ```sh
 $ pnpm install

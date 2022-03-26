@@ -1,4 +1,6 @@
+from http.client import HTTPException
 from typing import Any, Callable, Generator
+from fastapi import HTTPException, status
 
 from eth_utils.address import is_address, to_normalized_address
 from pydantic.errors import PydanticValueError
@@ -15,7 +17,9 @@ class EthAddress(str):
 
     @classmethod
     def validate(cls, v: Any) -> 'EthAddress':
-        v = to_normalized_address(v)
-        if is_address(v):
-            return cls(v)
-        raise EthAddressError()
+        try:
+            v = to_normalized_address(v)
+            if is_address(v):
+                return cls(v)
+        except:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
