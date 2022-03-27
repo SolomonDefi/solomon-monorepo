@@ -10,7 +10,7 @@
         </div>
         <SlmSelect
           v-model="currency"
-          :options="tr('chargebacks.currency')"
+          :options="(tr('chargebacks.currency') as Record<string, string>)"
           class="slm-plugin-row-right"
         />
       </div>
@@ -61,7 +61,7 @@
         </div>
         <div class="slm-plugin-row-right">
           <div class="slm-plugin-price">
-            {{ price || '0' }}
+            {{ roundedPrice || '0' }}
             <div class="slm-plugin-currency">
               {{ currency }}
             </div>
@@ -73,34 +73,35 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
 import { ts, tr } from './i18n'
 import { SlmSelect } from '@solomon/web/ui-widgets'
+import { usePrice } from './composables'
 
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-const props = defineProps({
-  prices: {
-    type: Object,
-    default: () => ({ priceEth: 0, priceSlm: 0, priceUsd: 0 }),
+const props = withDefaults(
+  defineProps<{
+    prices: Record<string, number>
+  }>(),
+  {
+    prices: () => ({ priceEth: 0, priceSlm: 0, priceUsd: 0 }),
   },
-})
+)
 const { prices } = toRefs(props)
 
-const getDays = (month: number) => [...Array(monthDays[month - 1] + 1).keys()].slice(1)
+const { currency, roundedPrice } = usePrice(prices)
 
-const round = (n: number): number => Math.round((n + Number.EPSILON) * 1000000) / 1000000
+const getDays = (month: number) => [...Array(monthDays[month - 1] + 1).keys()].slice(1)
 
 const month = ref(1)
 const days = getDays(1)
 const day = ref(1)
 const year = ref('2021')
-const currency = ref('ETH')
 const protection = ref('0%')
-
-const price = computed(() =>
-  round(currency.value === 'ETH' ? prices.value.priceEth : prices.value.priceSlm),
-)
 </script>
 
-<style lang="postcss"></style>
+<style lang="postcss">
+.slm-plugin-escrow {
+}
+</style>

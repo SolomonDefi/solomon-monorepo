@@ -26,34 +26,35 @@
 
 <script lang="ts" setup>
 import { ref, computed, toRefs } from 'vue'
-import Caret from './Caret.vue'
-import Dropdown from './Dropdown.vue'
+import Caret from '../Caret.vue'
+import Dropdown from '../Dropdown.vue'
 
 const emit = defineEmits(['update:modelValue'])
-const props = defineProps({
-  modelValue: {
-    type: [String, Number],
-    default: '',
+const props = withDefaults(
+  defineProps<{
+    modelValue: string | number
+    options: Record<string, string> | Array<string | number>
+    disabled?: boolean
+  }>(),
+  {
+    modelValue: '',
+    options: () => [],
+    disabled: false,
   },
-  options: {
-    type: [Object, Array],
-    default: () => ({}),
-  },
-  disabled: Boolean,
-})
+)
 const { options, modelValue, disabled } = toRefs(props)
 
 const open = ref(false)
 
 const sOptions = computed(() => {
   if (Array.isArray(options.value)) {
-    const obj: Record<string, unknown> = {}
+    const obj: Record<string, string> = {}
     for (const option of options.value) {
-      obj[option as string] = option
+      obj[option] = option.toString()
     }
     return obj
   }
-  return options as unknown as Record<string, string>
+  return options.value
 })
 const unselected = computed(() =>
   Object.keys(sOptions.value).filter((opt) => opt !== modelValue.value),
@@ -74,13 +75,14 @@ const setOpen = (newOpen: boolean) => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  .caret {
-    margin-top: 4px;
-    border-color: $grey1;
-  }
 }
 .slm-select {
   @mixin select;
+  color: var(--solomon-color-text-form);
+  .slm-select-value .caret {
+    border-color: $disabled1;
+    margin-top: 4px;
+  }
   &.open {
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
@@ -88,9 +90,9 @@ const setOpen = (newOpen: boolean) => {
   &.disabled {
     cursor: default;
     background-color: #ddd;
-    color: $disabled1;
+    color: var(--solomon-color-text-disabled);
     .slm-select-value .caret {
-      border-color: $disabled1;
+      border-color: var(--solomon-color-text-disabled);
     }
   }
 }

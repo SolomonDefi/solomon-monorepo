@@ -24,6 +24,7 @@
     "web-data-access-api": "libs/web/data-access-api",
     "web-data-access-state": "libs/web/data-access-state",
     "web-evidence": "apps/web-evidence",
-    "web-ui-assets": "libs/web/ui-assets"
+    "web-ui-assets": "libs/web/ui-assets",
+    "web-util-vite-config": "libs/web/util-vite-config"
   }
 }

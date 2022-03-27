@@ -38,7 +38,6 @@ module.exports = {
       '@samatech/postcss-basics',
       'nx-vue3-vite',
       'vite',
-      'unplugin-vue-components',
       'vite-plugin-vue-images',
     ],
   },
