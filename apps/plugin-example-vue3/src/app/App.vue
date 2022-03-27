@@ -14,23 +14,7 @@
           <div>{{ text.charge_amount }}</div>
           <SlmInput v-model="price" />
         </div>
-        <div class="payment-options">
-          <div v-for="(plugin, idx) in plugins" :key="idx">
-            <Checkbox
-              v-model="plugin.checked"
-              class="slm-check"
-              :label="`Enable ${plugin.name}`"
-            />
-            <div
-              v-if="plugin.checked"
-              class="payment-solomon title"
-              @click="paymentType = plugin.name"
-            >
-              {{ plugin.name }}
-            </div>
-            <div v-else />
-          </div>
-        </div>
+        <ExamplePaymentOptions v-model="paymentType" :plugins="plugins" />
       </div>
     </div>
     <SlmPlugin
@@ -44,9 +28,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 // eslint-disable-next-line import/extensions
 import { SlmPlugin } from '../../../../dist/libs/web/plugin/plugin.es.js'
+import { SlmInput } from '@solomon/web/ui-widgets'
+import ExamplePaymentOptions from './components/ExamplePaymentOptions.vue'
 
 const text = {
   title: 'Solomon Plugin Example',
@@ -56,21 +42,19 @@ const text = {
 
 const price = ref('5')
 const paymentType = ref<string | null>(null)
-// const enableChargebacks = ref(true)
-// const enablePreorder = ref(true)
-// const enableEscrow = ref(true)
+
 const priceCents = computed(() => {
   if (Number.isNaN(price.value)) {
     return 0
   }
   return parseFloat(price.value) * 100
 })
-const plugins = ref([
+const plugins = reactive([
   { name: 'chargebacks', checked: true },
   { name: 'preorder', checked: true },
   { name: 'escrow', checked: true },
 ])
-const enabled = computed(() => plugins.value.filter((p) => p.checked).map((p) => p.name))
+const enabled = computed(() => plugins.filter((p) => p.checked).map((p) => p.name))
 </script>
 
 <style lang="postcss">

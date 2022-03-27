@@ -18,7 +18,7 @@
         </div>
         <SlmSelect
           v-model="currency"
-          :options="tr('chargebacks.currency')"
+          :options="(tr('chargebacks.currency') as Record<string, string>)"
           class="slm-plugin-row-right"
         />
       </div>
@@ -28,7 +28,7 @@
         </div>
         <div class="slm-plugin-row-right">
           <div class="slm-plugin-price">
-            {{ price || '0' }}
+            {{ roundedPrice || '0' }}
             <div class="slm-plugin-currency">
               {{ currency }}
             </div>
@@ -40,25 +40,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, toRefs } from 'vue'
-import { ts, tr } from './i18n'
+import { computed, toRefs } from 'vue'
 import { SlmSelect } from '@solomon/web/ui-widgets'
+import { ts, tr } from './i18n'
+import { usePrice } from './composables'
 
-const props = defineProps({
-  prices: {
-    type: Object,
-    default: () => ({ priceEth: 0, priceSlm: 0, priceUsd: 0 }),
+const props = withDefaults(
+  defineProps<{
+    prices: Record<string, number>
+  }>(),
+  {
+    prices: () => ({ priceEth: 0, priceSlm: 0, priceUsd: 0 }),
   },
-})
+)
 const { prices } = toRefs(props)
 
-const currency = ref('SLM')
+const { currency, roundedPrice } = usePrice(prices)
 
-const round = (n: number): number => Math.round((n + Number.EPSILON) * 1000000) / 1000000
-
-const price = computed(() =>
-  round(currency.value === 'ETH' ? prices.value.priceEth : prices.value.priceSlm),
-)
 const priceUsd = computed(() => {
   return `$${(prices.value.priceUsd / 100).toLocaleString()}`
 })

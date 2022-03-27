@@ -13,13 +13,14 @@ module.exports = {
   parser: 'vue-eslint-parser',
   parserOptions: { ecmaVersion: 2020 },
   ignorePatterns: ['node_modules/'],
+  settings: {
+    'vue-i18n': {
+      localeDir: '../../../libs/frontend/util-translations/src/lib/*.json',
+    },
+  },
   rules: {
     'no-console': 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'space-before-function-paren': [
-      'error',
-      { anonymous: 'never', named: 'never', asyncArrow: 'always' },
-    ],
+    'no-debugger': process.env.NODE_ENV === 'prod' ? 'error' : 'off',
     'padded-blocks': 'off',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
@@ -43,6 +44,7 @@ module.exports = {
         vue: 'always',
         json: 'always',
         png: 'always',
+        svg: 'always',
         jpg: 'always',
         mp3: 'always',
         mp4: 'always',
@@ -60,6 +62,7 @@ module.exports = {
       },
     ],
     'vue/no-v-html': 'off',
+    'vue/v-on-event-hyphenation': 'off',
     '@intlify/vue-i18n/no-v-html': 'off',
     '@intlify/vue-i18n/no-unused-keys': [
       'error',

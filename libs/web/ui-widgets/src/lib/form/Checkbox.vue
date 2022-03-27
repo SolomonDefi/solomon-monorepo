@@ -1,6 +1,10 @@
 <template>
-  <div class="slm-checkbox" :class="{ disabled }" @click="handleCheck($event, !checked)">
-    <input type="checkbox" :value="label" :checked="checked" :disabled="disabled" />
+  <div
+    class="slm-checkbox"
+    :class="{ disabled }"
+    @click="handleCheck($event, !modelValue)"
+  >
+    <input type="checkbox" :value="label" :checked="modelValue" :disabled="disabled" />
     <span class="checkmark" :class="internalCheckedClass" />
     <span v-if="label" class="checkbox-text" v-html="label" />
   </div>
@@ -9,9 +13,9 @@
 <script lang="ts" setup>
 import { computed, toRefs } from 'vue'
 
-const emit = defineEmits(['checked'])
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
-  checked: Boolean,
+  modelValue: Boolean,
   label: {
     type: String,
     default: '',
@@ -23,21 +27,19 @@ const props = defineProps({
     validator: (value: string | null) =>
       ['partial', 'checked', ''].indexOf(value || '') !== -1,
   },
-  disabled: {
-    type: Boolean,
-  },
+  disabled: Boolean,
 })
-const { checkedClass, disabled, checked } = toRefs(props)
+const { checkedClass, disabled, modelValue } = toRefs(props)
 
 const internalCheckedClass = computed(() => {
   if (checkedClass.value === null) {
-    return checked.value ? 'checked' : ''
+    return modelValue.value ? 'checked' : ''
   }
   return checkedClass
 })
 const handleCheck = (event: MouseEvent, checked: boolean) => {
   if (!disabled.value && (event.target as HTMLElement).nodeName !== 'A') {
-    emit('checked', checked)
+    emit('update:modelValue', checked)
   }
 }
 </script>

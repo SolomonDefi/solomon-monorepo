@@ -5,6 +5,8 @@
     "strict": true,
     "allowJs": true
   },
+  "include": [],
+  "exclude": ["**/*.spec.ts"],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -1,29 +1,16 @@
 <template>
   <transition name="modal">
     <div v-if="show" class="slm-plugin-modal">
-      <div class="slm-plugin-mask" @click="$emit('cancel')" />
+      <div class="slm-plugin-mask" @click="emit('cancel')" />
       <div class="slm-plugin-wrap">
         <div class="slm-plugin">
           <div class="slm-plugin-title">
             {{ ts('title') }}
           </div>
-          <div class="slm-plugin-types-wrap">
-            <div class="slm-plugin-types">
-              <div
-                v-for="plugin in plugins"
-                :id="pluginTypes[plugin].selectId"
-                :key="plugin"
-                :class="{ active: pluginType.name === plugin }"
-                @click="selectType(pluginTypes[plugin])"
-              >
-                {{ ts(`${plugin}.label`) }}
-              </div>
-            </div>
-            <div
-              class="slm-plugin-types-arrow"
-              :style="{ left: pluginType.arrowPosition }"
-            />
-          </div>
+          <SlmPluginTypes
+            v-model:pluginType="pluginType"
+            :availableTypes="availableTypes"
+          />
           <div class="slm-plugin-content-wrap">
             <transition name="plugin-content" mode="out-in">
               <SlmPluginChargebacks
@@ -44,7 +31,7 @@
               <div>{{ ts('secure') }}</div>
             </div>
             <div class="slm-plugin-buttons">
-              <div class="slm-plugin-continue" @click="$emit('cancel')">
+              <div class="slm-plugin-continue" @click="emit('cancel')">
                 {{ ts('continue') }}
               </div>
               <div class="slm-plugin-confirm">
@@ -59,10 +46,23 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch, onMounted, onBeforeUnmount, toRefs, onUpdated } from 'vue'
-import { allPlugins } from './defaults'
+import {
+  computed,
+  ref,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  toRefs,
+  onUpdated,
+  reactive,
+} from 'vue'
+import { allPlugins, pluginTypes as defaultPluginTypes } from './defaults'
 import { ts } from './i18n'
 import IcLock from '../assets/img/ic_lock.png'
+import SlmPluginTypes from './SlmPluginTypes.vue'
+import SlmPluginChargebacks from './SlmPluginChargebacks.vue'
+import SlmPluginPreorder from './SlmPluginPreorder.vue'
+import SlmPluginEscrow from './SlmPluginEscrow.vue'
 
 const emit = defineEmits(['cancel'])
 
@@ -76,7 +76,7 @@ const props = defineProps({
     validator: (value) =>
       value === null ||
       (Array.isArray(value) && value.every((v) => allPlugins.includes(v))),
-    default: null,
+    default: [],
   },
   store: {
     type: Object,
@@ -89,33 +89,11 @@ const props = defineProps({
 })
 const { initialType, availableTypes, store, priceUsdCents } = toRefs(props)
 
-interface PluginType {
-  name: string
-  selectId: string
-  arrowPosition: string
-}
+const pluginTypes = reactive(defaultPluginTypes)
 
-const pluginTypes: Record<string, PluginType> = {
-  chargebacks: {
-    name: 'chargebacks',
-    selectId: 'chargebacks-select',
-    arrowPosition: '140px',
-  },
-  preorder: {
-    name: 'preorder',
-    selectId: 'preorder-select',
-    arrowPosition: '208px',
-  },
-  escrow: {
-    name: 'escrow',
-    selectId: 'escrow-select',
-    arrowPosition: '326px',
-  },
-}
 const pluginType = ref(
   pluginTypes[initialType.value || (availableTypes.value || allPlugins)[0]],
 )
-const plugins = computed(() => availableTypes.value || allPlugins)
 const priceCents = computed(() =>
   store.value ? store.value.totalPrice : priceUsdCents.value,
 )
@@ -133,9 +111,6 @@ const escapeListener = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     emit('cancel')
   }
-}
-const selectType = (newType: PluginType) => {
-  pluginType.value = newType
 }
 
 onUpdated(() => {
@@ -157,6 +132,13 @@ onBeforeUnmount(() => {
 
 <style lang="postcss">
 @import '@theme/css/global.css';
+
+/* Variables for clients to override */
+:root {
+  --solomon-color-text-dark: $text-main;
+  --solomon-color-text-form: $grey4;
+  --solomon-color-text-disabled: $disabled1;
+}
 
 .slm-plugin-modal {
   position: fixed;
@@ -201,44 +183,6 @@ onBeforeUnmount(() => {
     border-bottom: 1px solid #eee;
     color: $grey4;
   }
-  .slm-plugin-types-wrap {
-    position: relative;
-  }
-  .slm-plugin-types {
-    @mixin flex-center;
-    @mixin title 11px;
-    color: $bg1;
-    letter-spacing: 2px;
-    height: 56px;
-    > div {
-      @mixin flex-center;
-      padding: 0 16px;
-      cursor: pointer;
-      border-radius: 14px;
-      height: 28px;
-      &.active {
-        background-color: $purple;
-        color: white;
-      }
-      &:not(:last-child) {
-        margin-right: 8px;
-      }
-    }
-  }
-  .slm-plugin-types-arrow {
-    width: 0;
-    height: 0;
-    bottom: -1px;
-    position: absolute;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid $grey4;
-    transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .slm-plugin-type {
-    height: 48px;
-    display: flex;
-  }
   .plugin-content-enter-active,
   .plugin-content-leave-active {
     transition: opacity 0.35s ease;
@@ -250,7 +194,6 @@ onBeforeUnmount(() => {
   }
   .slm-plugin-content-wrap {
     background-color: $grey4;
-    transition: height 0.3s;
   }
   .slm-plugin-content-title {
     @mixin text 17px;
@@ -259,13 +202,13 @@ onBeforeUnmount(() => {
     height: 96px;
   }
   .slm-plugin-content {
-    width: 340px;
-    height: 184px;
-    margin: 0 auto;
     @mixin flex-center-col;
+    width: 340px;
+    margin: 0 auto;
     background-color: white;
     border-radius: 4px;
-    padding: 32px 16px 32px 8px;
+    padding: 16px 16px 24px 8px;
+
     .slm-plugin-content-row {
       display: flex;
       width: 100%;
@@ -285,12 +228,12 @@ onBeforeUnmount(() => {
     .slm-plugin-row-right {
       @mixin flex-center;
       @mixin title-medium 15px;
-      color: $grey4;
       justify-content: flex-start;
       flex-grow: 1;
     }
     .slm-plugin-price {
       @mixin select;
+      color: var(--solomon-color-text-dark);
       flex-grow: 1;
       position: relative;
       justify-content: flex-start;

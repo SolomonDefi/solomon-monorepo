@@ -3,8 +3,9 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": ["vue-i18n", "node"],
-    "composite": true
+    "composite": true,
+    "declaration": true
   },
-  "exclude": ["**/*.spec.js", "**/*.spec.jsx", "**/*.spec.ts", "**/*.spec.tsx"],
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue", "**/*.json"]
+  "exclude": ["**/*.spec.js", "**/*.spec.ts"],
+  "include": ["**/*.js", "**/*.ts", "**/*.vue", "**/*.json"]
 }

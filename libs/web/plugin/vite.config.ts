@@ -1,38 +1,24 @@
 import path from 'path'
 import { defineConfig } from 'vite'
-import Components from 'unplugin-vue-components/vite'
-import ViteImages from 'vite-plugin-vue-images'
 import Vue from '@vitejs/plugin-vue'
-import tsconfigBase from '../../../tsconfig.base.json'
+import {
+  assetsInclude,
+  tsconfigBaseAliases,
+} from '../../../libs/web/util-vite-config/src'
 
-const resolve = (p: string) => path.resolve(__dirname, p)
+const resolve = (p: string): string => path.resolve(__dirname, p)
 
-const tsconfigBaseAliases = (rootOffset: string): Record<string, string> => {
-  const paths: Record<string, string[]> = tsconfigBase.compilerOptions?.paths || []
-  const aliases: Record<string, string> = {}
-  for (const [name, path] of Object.entries(paths)) {
-    const simplePath = path[0].replace('/*', '/')
-    const relative = `${rootOffset}${simplePath}`
-    if (name.includes('/*')) {
-      const resolved = `${resolve(relative)}/`
-      aliases[name.replace('/*', '/')] = resolved
-    } else {
-      aliases[name] = resolve(relative)
-    }
-  }
-  return aliases
-}
-
-module.exports = defineConfig({
-  assetsInclude: /\.(pdf|jpg|png|svg)$/,
+export default defineConfig({
+  assetsInclude,
   resolve: {
     alias: {
       '@theme/': `${resolve('../../../libs/web/ui-theme/src')}/`,
-      ...tsconfigBaseAliases('../../../'),
+      ...tsconfigBaseAliases(),
     },
   },
-  plugins: [Vue(), Components({ dirs: ['src/lib'] }), ViteImages()],
+  plugins: [Vue()],
   build: {
+    emptyOutDir: true,
     minify: false,
     lib: {
       entry: path.resolve(__dirname, './src/index.ts'),
