@@ -107,6 +107,7 @@
     "vue-eslint-parser": "^8.3.0"
   },
   "dependencies": {
+    "@ethersproject/abi": "^5.6.0",
     "@ethersproject/bytes": "^5.6.1",
     "@ethersproject/providers": "^5.5.0",
     "@mikro-orm/core": "^5.1.1",
