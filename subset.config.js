@@ -72,6 +72,7 @@ module.exports = {
       'class-validator',
       'js-sha256',
       '@ethersproject/providers',
+      '@ethersproject/abi',
       '@types/express',
       'express',
       '@types/node-fetch',
