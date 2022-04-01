@@ -1,6 +1,7 @@
 {
   "version": 2,
   "projects": {
+    "api": "apps/api",
     "api-dispute": "apps/api-dispute",
     "api-evidence": "apps/api-evidence",
     "app-e2e": "apps/app-e2e",
