@@ -1,5 +1,5 @@
 const all = [
-  '@nrwl/cli',
+  'nx',
   '@nrwl/workspace',
   'sqlite3',
   'ts-node',
@@ -11,12 +11,41 @@ const all = [
   'js-base64',
 ]
 
-const allPython = [
-  ...all,
+const python = [
   // devDependencies
   '@nrwl/cypress',
   'nx-python-fastapi',
   'shelljs',
+]
+
+const node = [
+  '@ethersproject/providers',
+  '@ethersproject/abi',
+  '@mikro-orm/core',
+  '@mikro-orm/sqlite',
+  '@nrwl/node',
+  '@types/mjml',
+  '@types/fs-extra',
+  '@types/nodemailer',
+  '@types/uuid',
+  '@types/express',
+  '@types/node-fetch',
+  'mjml',
+  'fs-extra',
+  'uuid',
+  'ethers',
+  'nodemailer',
+  'mailgun.js',
+  'handlebars',
+  'form-data',
+  'typescript',
+  'tslib',
+  'reflect-metadata',
+  'pkg-dir',
+  'class-validator',
+  'js-sha256',
+  'express',
+  'node-fetch',
 ]
 
 module.exports = {
@@ -42,43 +71,17 @@ module.exports = {
       'vite-plugin-vue-images',
     ],
   },
+  api: {
+    include: [...all, ...node],
+  },
   'api-evidence': {
-    include: [...allPython],
+    include: [...all, ...python],
   },
   'api-dispute': {
-    include: [...allPython],
+    include: [...all, ...python],
   },
   'blockchain-watcher': {
-    include: [
-      ...all,
-      'mjml',
-      '@types/mjml',
-      'fs-extra',
-      '@types/fs-extra',
-      '@mikro-orm/core',
-      '@mikro-orm/sqlite',
-      '@nrwl/node',
-      'uuid',
-      '@types/uuid',
-      'ethers',
-      'nodemailer',
-      '@types/nodemailer',
-      'mailgun.js',
-      'handlebars',
-      'form-data',
-      'typescript',
-      'tslib',
-      'reflect-metadata',
-      'pkg-dir',
-      'class-validator',
-      'js-sha256',
-      '@ethersproject/providers',
-      '@ethersproject/abi',
-      '@types/express',
-      'express',
-      '@types/node-fetch',
-      'node-fetch',
-    ],
+    include: [...all, ...node],
   },
   contracts: {
     include: [
