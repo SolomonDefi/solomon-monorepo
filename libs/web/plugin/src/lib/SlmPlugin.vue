@@ -80,7 +80,7 @@ const props = defineProps({
   },
   store: {
     type: Object,
-    default: null,
+    default: undefined,
   },
   priceUsdCents: {
     type: Number,

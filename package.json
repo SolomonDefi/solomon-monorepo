@@ -112,6 +112,7 @@
     "@ethersproject/providers": "^5.5.0",
     "@mikro-orm/core": "^5.1.1",
     "@mikro-orm/sqlite": "^5.1.1",
+    "@samatech/vue3-eth": "^0.6.0",
     "@sampullman/vue3-fetch-api": "^0.5.0",
     "@types/fs-extra": "^9.0.13",
     "@types/supertest": "^2.0.12",

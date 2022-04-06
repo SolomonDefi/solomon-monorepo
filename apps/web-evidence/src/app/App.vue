@@ -9,6 +9,10 @@
   </div>
 </template>
 
+<script lang="ts" setup>
+import SlmHeader from './components/widgets/SlmHeader.vue'
+</script>
+
 <style lang="postcss">
 @import '@theme/css/font.css';
 @import '@theme/css/global.css';
@@ -54,6 +58,11 @@ h1 {
   height: 44px;
   padding: 0 24px;
   cursor: pointer;
+  margin-top: 24px;
+  min-width: 160px;
+  &:not(:first-child) {
+    margin-left: 24px;
+  }
 }
 .button-back {
   background-color: $dark3;

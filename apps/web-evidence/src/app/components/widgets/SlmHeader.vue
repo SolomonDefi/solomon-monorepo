@@ -2,7 +2,7 @@
   <div class="header-wrap">
     <div class="header container">
       <div class="header-left">
-        <img :src="IcLogo" />
+        <img src="../../../assets/img/ic_logo.png" />
         <div class="header-left-text">
           {{ $t('header.title') }}
         </div>
