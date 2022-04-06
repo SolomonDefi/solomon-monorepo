@@ -1,12 +1,12 @@
 <template>
   <div class="page-wrap solomon-link">
     <div class="page container">
-      <h1>{{ $t('upload.solomon') }}</h1>
+      <h1>{{ t('upload.solomon') }}</h1>
       <div class="section">
-        {{ $t('upload.solomon_text1') }}
+        {{ t('upload.solomon_text1') }}
       </div>
       <div class="section">
-        {{ $t('upload.solomon_text2') }}
+        {{ t('upload.solomon_text2') }}
       </div>
       <FileUpload :currentFile="fileName" @file-select="fileSelect" />
       <ErrorMessage :errorMessage="uploadError" />
@@ -15,10 +15,10 @@
           class="button button-back"
           @click="$router.push({ name: 'select', params: { type: $route.params.type } })"
         >
-          {{ $t('back') }}
+          {{ t('back') }}
         </div>
         <div class="button" @click="upload">
-          {{ $t('submit') }}
+          {{ t('submit') }}
         </div>
       </div>
     </div>
@@ -26,26 +26,42 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { FileUpload, ErrorMessage } from '@solomon/web/ui-widgets'
 
-function validateFile(requirements, file) {
+export interface MediaRequirements {
+  width?: number
+  height?: number
+  ext?: string[]
+  size?: number
+}
+
+const { t } = useI18n()
+
+function validateFile(requirements: MediaRequirements, file: File) {
   const { ext, size } = requirements
-  if (file.size > size) {
+  const reqSize = size ?? 0
+
+  if (file.size > reqSize) {
     return 'errors.FILE_SIZE_BIG'
   }
-  if (!ext.includes(file.name.substr(file.name.length - 3))) {
+  const fileExt = file.name.split('.').pop()
+  if (ext && (!fileExt || !ext.includes(fileExt))) {
     return 'errors.FILE_TYPE'
   }
   return null
 }
 
-const { t } = useI18n()
 // const link = ref('')
-const uploadError = ref(null)
-const file = ref(null)
+const uploadError = ref()
+const file = ref()
 
-const fileSelect = (f) => {
+const fileName = computed(() => {
+  return file.value?.name
+})
+
+const fileSelect = (f: File) => {
   const requirements = {
     ext: ['jpg', 'txt', 'jpeg', 'png', 'pdf', 'mp4', 'zip'],
     size: 20000000,
@@ -70,13 +86,6 @@ const upload = () => {
 @import '@theme/css/defines.css';
 
 .solomon-link {
-  .button {
-    margin-top: 24px;
-    min-width: 160px;
-    &:not(:first-child) {
-      margin-left: 24px;
-    }
-  }
   padding-bottom: 40px;
 }
 </style>

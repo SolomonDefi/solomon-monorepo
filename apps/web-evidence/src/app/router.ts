@@ -3,6 +3,7 @@ import Home from './views/Home.vue'
 import SelectMethod from './views/SelectMethod.vue'
 import ExternalLink from './views/ExternalLink.vue'
 import SolomonLink from './views/SolomonLink.vue'
+import ContractSubmit from './views/ContractSubmit.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -52,6 +53,12 @@ const router = createRouter({
       name: 'upload-solomon',
       component: SolomonLink,
       meta: { title: 'Solomon Link' },
+    },
+    {
+      path: '/submit',
+      name: 'contract-submit',
+      component: ContractSubmit,
+      meta: { title: 'Solomon Submit' },
     },
   ],
 })

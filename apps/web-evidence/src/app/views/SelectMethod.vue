@@ -1,39 +1,39 @@
 <template>
   <div class="page-wrap select-method">
     <div class="page container">
-      <h1>{{ $t('select.title') }}</h1>
+      <h1>{{ t('select.title') }}</h1>
       <div class="methods selection-wrap">
         <div
           class="method selection"
-          :class="{ selected: method === 'upload-external' }"
-          @click="select('upload-external')"
+          :class="{ selected: method === EvidenceMethod.UploadExternal }"
+          @click="select(EvidenceMethod.UploadExternal)"
         >
           <div class="method-title">
-            {{ $t('select.external') }}
+            {{ t('select.external') }}
           </div>
           <div class="method-text">
-            {{ $t('select.external_text') }}
+            {{ t('select.external_text') }}
           </div>
         </div>
         <div
           class="method selection"
-          :class="{ selected: method === 'upload-solomon' }"
-          @click="select('upload-solomon')"
+          :class="{ selected: method === EvidenceMethod.UploadSolomon }"
+          @click="select(EvidenceMethod.UploadSolomon)"
         >
           <div class="method-title">
-            {{ $t('select.solomon') }}
+            {{ t('select.solomon') }}
           </div>
           <div class="method-text">
-            {{ $t('select.solomon_text') }}
+            {{ t('select.solomon_text') }}
           </div>
         </div>
       </div>
       <div class="buttons">
         <div class="button button-back" @click="$router.push({ name: 'home' })">
-          {{ $t('back') }}
+          {{ t('back') }}
         </div>
         <div class="button" @click="goMethod">
-          {{ $t('next') }}
+          {{ t('next') }}
         </div>
       </div>
     </div>
@@ -42,16 +42,23 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 
+enum EvidenceMethod {
+  UploadExternal = 'upload-external',
+  UploadSolomon = 'upload-solomon',
+}
+
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
-const method = ref('upload-external')
+const method = ref(EvidenceMethod.UploadExternal)
 
 const goMethod = () => {
   router.push({ name: method.value, params: { type: route.params.type } })
 }
-const select = (newMethod) => {
+const select = (newMethod: EvidenceMethod) => {
   method.value = newMethod
 }
 </script>
@@ -73,13 +80,6 @@ const select = (newMethod) => {
   .method-text {
     @mixin text 14px;
     margin-top: 8px;
-  }
-  .button {
-    margin-top: 24px;
-    min-width: 160px;
-    &:not(:first-child) {
-      margin-left: 24px;
-    }
   }
 }
 </style>

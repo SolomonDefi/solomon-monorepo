@@ -2,6 +2,8 @@
   "next": "Next",
   "back": "Back",
   "submit": "Submit",
+  "connect": "Connect",
+  "disconnect": "Disconnect",
   "header": {
     "title": "Solomon Evidence",
     "docs": "Docs"
@@ -38,9 +40,16 @@
     "drag_drop": "Drag and Drop to Upload",
     "browse_file": "Or browse to choose a file"
   },
+  "contract": {
+    "title": "Submit Evidence to the Blockchain",
+    "text1": "Connect to MetaMask with the same account used during purchase.",
+    "text2": "WalletConnect support coming soon"
+  },
   "errors": {
     "FILE_SIZE_BIG": "File too large",
     "FILE_TYPE": "File type not supported",
-    "FILE_REQUIRED": "Please choose a file to upload"
+    "FILE_REQUIRED": "Please choose a file to upload",
+    "user_rejected": "MetaMask connect rejected",
+    "no_metamask": "MetaMask must be installed to proceed"
   }
 }

@@ -12,12 +12,11 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
-  errorMessage: {
-    type: String,
-    default: null,
-  },
-})
+import Info from './svg/Info.vue'
+
+defineProps<{
+  errorMessage: string | undefined
+}>()
 </script>
 
 <style lang="postcss">

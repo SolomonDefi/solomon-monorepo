@@ -12,17 +12,12 @@ module.exports = {
   plugins: ['import'],
   parser: 'vue-eslint-parser',
   parserOptions: { ecmaVersion: 2020 },
-  ignorePatterns: ['node_modules/', 'vue3-jest/'],
+  ignorePatterns: ['node_modules/'],
   rules: {
     'no-console': 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'space-before-function-paren': [
-      'error',
-      { anonymous: 'never', named: 'never', asyncArrow: 'always' },
-    ],
+    'no-debugger': process.env.NODE_ENV === 'prod' ? 'error' : 'off',
     'padded-blocks': 'off',
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': 'off',
     'no-multiple-empty-lines': ['error', { max: 1 }],
     'keyword-spacing': ['error', { after: true }],
     'max-len': ['error', { code: 100, ignorePattern: '^\\s*<path' }],
@@ -43,6 +38,7 @@ module.exports = {
         vue: 'always',
         json: 'always',
         png: 'always',
+        svg: 'always',
         jpg: 'always',
         mp3: 'always',
         mp4: 'always',
@@ -59,13 +55,9 @@ module.exports = {
         ignoreWhenEmpty: true,
       },
     ],
-    'vue/max-attributes-per-line': [
-      'error',
-      {
-        singleline: 3,
-      },
-    ],
     'vue/no-v-html': 'off',
+    'vue/v-on-event-hyphenation': 'off',
+    '@intlify/vue-i18n/no-missing-keys': 'off',
     '@intlify/vue-i18n/no-v-html': 'off',
     '@intlify/vue-i18n/no-unused-keys': [
       'error',
@@ -74,12 +66,14 @@ module.exports = {
         extensions: ['.js', '.vue'],
       },
     ],
-    '@intlify/vue-i18n/no-raw-text': 'error',
+    '@intlify/vue-i18n/no-raw-text': [
+      'error',
+      {
+        ignoreText: ['Test'],
+      },
+    ],
   },
   settings: {
-    'vue-i18n': {
-      localeDir: './src/app/translations/*.json',
-    },
     'import/resolver': {
       node: {
         extensions: ['.js', '.ts', '.vue', '.json'],

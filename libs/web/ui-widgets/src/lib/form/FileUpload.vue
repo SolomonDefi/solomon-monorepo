@@ -17,8 +17,8 @@
         </div>
         <div v-else class="file-upload-button">
           <Upload color="#277cea" />
-          <h4>{{ $t('upload.drag_drop') }}</h4>
-          <div>{{ $t('upload.browse_file') }}</div>
+          <h4>{{ t('upload.drag_drop') }}</h4>
+          <div>{{ t('upload.browse_file') }}</div>
         </div>
       </label>
       <input
@@ -34,6 +34,10 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import Upload from '../svg/Upload.vue'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['file-select'])
 defineProps({
@@ -52,25 +56,29 @@ defineProps({
 })
 const dragging = ref(false)
 
-const handleFileSelect = (e) => {
-  if (e.type === 'input') {
-    const file = e.target.files[0]
-    emit('file-select', file)
-  } else if (e.type === 'drop') {
-    const file = e.dataTransfer.files[0]
-    emit('file-select', file)
+const handleFileSelect = (e: InputEvent | Event) => {
+  if (e && e.target && e.type === 'input') {
+    const files = (e.target as HTMLInputElement).files
+    if (files) {
+      emit('file-select', files[0])
+    }
+  } else if (e && e.type === 'drop') {
+    const files = (e as InputEvent).dataTransfer?.files
+    if (files) {
+      emit('file-select', files[0])
+    }
   }
   dragging.value = false
 }
-const dragStart = (e) => {
+const dragStart = (e: Event) => {
   e.preventDefault()
   dragging.value = true
 }
-const dragEnd = (e) => {
+const dragEnd = (e: Event) => {
   e.preventDefault()
   dragging.value = false
 }
-const dropFile = (e) => {
+const dropFile = (e: Event) => {
   e.preventDefault()
   handleFileSelect(e)
 }

@@ -36,6 +36,7 @@ module.exports = {
       '@vitejs/plugin-vue',
       '@vue/compiler-sfc',
       '@samatech/postcss-basics',
+      '@samatech/vue3-eth',
       'nx-vue3-vite',
       'vite',
       'vite-plugin-vue-images',

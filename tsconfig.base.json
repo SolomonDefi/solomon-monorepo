@@ -40,7 +40,8 @@
       "@solomon/web/data-access-api": ["libs/web/data-access-api/src/index.ts"],
       "@solomon/web/data-access-state": ["libs/web/data-access-state/src/index.ts"],
       "@solomon/web/ui-theme": ["libs/web/ui-theme/src"],
-      "@solomon/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"]
+      "@solomon/web/ui-widgets": ["libs/web/ui-widgets/src/index.ts"],
+      "@ui-assets/*": ["libs/web/ui-assets/src/*"]
     }
   },
   "include": ["json-schema-to-typescript.d.ts"],
