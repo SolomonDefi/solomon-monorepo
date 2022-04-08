@@ -19,7 +19,8 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
-      "@monorepo/web/util-vite-config": ["libs/web/util-vite-config/src/index.ts"],
+      "@solomon/web/util-validate": ["libs/web/util-validate/src/index.ts"],
+      "@solomon/web/util-vite-config": ["libs/web/util-vite-config/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/blockchain-watcher/feature-app": [

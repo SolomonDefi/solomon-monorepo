@@ -32,7 +32,7 @@ const defaultResponseInterceptors = [
   },
 ]
 
-export class NftApi extends FetchApi {
+export class WebApi extends FetchApi {
   constructor(options: FetchApiOptions) {
     super({
       responseInterceptors: defaultResponseInterceptors,

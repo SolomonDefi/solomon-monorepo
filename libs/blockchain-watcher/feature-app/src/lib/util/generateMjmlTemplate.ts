@@ -8,16 +8,16 @@ export const generateMjmlTemplate = async (): Promise<boolean> => {
     const templateDirPath = pathStore.mailTemplates
     const templateNames = await readdir(templateDirPath)
 
-    for (let templateName of templateNames) {
+    for (const templateName of templateNames) {
       if (!templateName.endsWith('.mjml')) {
         continue
       }
 
-      let templatePath = path.resolve(templateDirPath, templateName)
-      let htmlName = templateName.replace('.mjml', '.html')
-      let htmlPath = path.resolve(templateDirPath, htmlName)
-      let template = await readFile(templatePath, 'utf-8')
-      let mjmlParseResults = mjml2html(template)
+      const templatePath = path.resolve(templateDirPath, templateName)
+      const htmlName = templateName.replace('.mjml', '.html')
+      const htmlPath = path.resolve(templateDirPath, htmlName)
+      const template = await readFile(templatePath, 'utf-8')
+      const mjmlParseResults = mjml2html(template)
 
       await writeFile(htmlPath, mjmlParseResults.html)
       console.log(`${htmlName} generated`)

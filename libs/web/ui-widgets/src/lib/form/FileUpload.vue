@@ -13,7 +13,12 @@
     >
       <label class="file-upload-area" :for="`image-upload-input${id}`">
         <div v-if="currentFile" class="file-upload-current">
-          {{ currentFile }}
+          <div>
+            {{ currentFile }}
+          </div>
+          <div class="file-upload-change-text">
+            {{ t('upload.change_file') }}
+          </div>
         </div>
         <div v-else class="file-upload-button">
           <Upload color="#277cea" />
@@ -140,9 +145,14 @@ const dropFile = (e: Event) => {
   }
 }
 .file-upload-current {
-  @mixin flex-center;
+  @mixin flex-center-col;
   font-size: 16px;
   padding: 0 32px;
   height: 100%;
+  .file-upload-change-text {
+    font-size: 15px;
+    margin-top: 24px;
+    color: $text-light;
+  }
 }
 </style>

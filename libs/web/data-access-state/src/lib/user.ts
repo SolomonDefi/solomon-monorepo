@@ -1,6 +1,6 @@
 import { computed, ComputedRef } from 'vue'
 import { PrivateProfileApiResponse } from '@solomon/shared/util-api-evidence-types'
-import { NftApi, useUserApi } from '@solomon/web/data-access-api'
+import { WebApi, useUserApi } from '@solomon/web/data-access-api'
 import { StoreData, StoreApi } from './store'
 
 export interface TxState {
@@ -43,7 +43,7 @@ export interface UserStoreApi extends StoreApi<UserStoreData> {
   logout(): void
 }
 
-export const useUserStoreApi = (api: NftApi, data: UserStoreData): UserStoreApi => {
+export const useUserStoreApi = (api: WebApi, data: UserStoreData): UserStoreApi => {
   const userApi = useUserApi(api)
 
   const mutations = {

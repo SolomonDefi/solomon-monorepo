@@ -1,20 +1,17 @@
-import { plainToClass } from 'class-transformer'
 import { EvidenceApiResponse } from '@solomon/shared/util-api-evidence-types'
-import { NftApi } from './api'
+import { WebApi } from './api'
 
-export default (api: NftApi) => {
-  const createEvidence = async (
-    evidence: Record<string, unknown>,
-  ): Promise<EvidenceApiResponse> => {
+export const useEvidenceApi = (api: WebApi) => {
+  const uploadEvidenceFile = async (file: File): Promise<EvidenceApiResponse> => {
     const { data } = await api.authRequest({
       url: 'evidence',
       method: 'POST',
-      data: evidence,
+      data: file,
     })
-    return plainToClass(EvidenceApiResponse, data)
+    return data as unknown as EvidenceApiResponse
   }
 
   return {
-    createEvidence,
+    uploadEvidenceFile,
   }
 }
