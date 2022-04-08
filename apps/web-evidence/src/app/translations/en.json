@@ -38,7 +38,8 @@
     "solomon_text1": "Upload an evidence file to Solomon's temporary storage. The file will last 30 days.",
     "solomon_text2": "Accepted file types: jpg, png, txt, pdf, gif, mp4, zip. Maximum file size: 20MB",
     "drag_drop": "Drag and Drop to Upload",
-    "browse_file": "Or browse to choose a file"
+    "browse_file": "Or browse to choose a file",
+    "change_file": "Click \"Submit\" to upload, or click here to select a different file"
   },
   "contract": {
     "title": "Submit Evidence to the Blockchain",

@@ -13,7 +13,7 @@
       <div class="buttons">
         <div
           class="button button-back"
-          @click="$router.push({ name: 'select', params: { type: $route.params.type } })"
+          @click="router.push({ name: 'select', params: { type: $route.params.type } })"
         >
           {{ t('back') }}
         </div>
@@ -28,56 +28,54 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { FileUpload, ErrorMessage } from '@solomon/web/ui-widgets'
-
-export interface MediaRequirements {
-  width?: number
-  height?: number
-  ext?: string[]
-  size?: number
-}
+import {
+  MediaRequirements,
+  ValidatedFile,
+  validateMedia,
+} from '@solomon/web/util-validate'
+import { useEvidenceApi } from '@solomon/web/data-access-api'
+import { evidenceApi } from '../utils/config'
 
 const { t } = useI18n()
-
-function validateFile(requirements: MediaRequirements, file: File) {
-  const { ext, size } = requirements
-  const reqSize = size ?? 0
-
-  if (file.size > reqSize) {
-    return 'errors.FILE_SIZE_BIG'
-  }
-  const fileExt = file.name.split('.').pop()
-  if (ext && (!fileExt || !ext.includes(fileExt))) {
-    return 'errors.FILE_TYPE'
-  }
-  return null
-}
+const router = useRouter()
+const api = useEvidenceApi(evidenceApi)
 
 // const link = ref('')
+const loading = ref(false)
 const uploadError = ref()
 const file = ref()
 
 const fileName = computed(() => {
-  return file.value?.name
+  return file.value?.file.name
 })
 
-const fileSelect = (f: File) => {
-  const requirements = {
+const validateCallback = (validFile: ValidatedFile, errors: string[] | null) => {
+  if (errors && errors.length) {
+    uploadError.value = t(errors[0])
+  } else {
+    file.value = validFile
+  }
+}
+
+const fileSelect = (file: File) => {
+  const requirements: MediaRequirements = {
     ext: ['jpg', 'txt', 'jpeg', 'png', 'pdf', 'mp4', 'zip'],
     size: 20000000,
   }
-  const error = validateFile(requirements, f)
-  if (error) {
-    uploadError.value = t(error)
-  } else {
-    file.value = f
-  }
+
+  validateMedia(requirements, file, validateCallback)
 }
-const upload = () => {
+
+const upload = async () => {
+  if (loading.value) {
+    return
+  }
   if (file.value) {
-    uploadError.value = t('errors.FILE_REQUIRED')
+    await api.uploadEvidenceFile(file.value)
   } else {
-    uploadError.value = t('upload.unavailable')
+    uploadError.value = t('errors.FILE_REQUIRED')
   }
 }
 </script>

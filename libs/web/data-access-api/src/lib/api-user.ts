@@ -1,8 +1,8 @@
 import { plainToClass } from 'class-transformer'
 import { PrivateProfileApiResponse } from '@solomon/shared/util-api-evidence-types'
-import { NftApi } from './api'
+import { WebApi } from './api'
 
-export default (api: NftApi) => {
+export const useUserApi = (api: WebApi) => {
   const getProfilePrivate = async () => {
     const { data } = await api.authRequest({
       url: 'user',

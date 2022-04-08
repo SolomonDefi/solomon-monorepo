@@ -1,0 +1,23 @@
+{
+  "root": "libs/web/util-validate",
+  "sourceRoot": "libs/web/util-validate/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/web/util-validate/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/web/util-validate"],
+      "options": {
+        "jestConfig": "libs/web/util-validate/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:web", "type:util"]
+}

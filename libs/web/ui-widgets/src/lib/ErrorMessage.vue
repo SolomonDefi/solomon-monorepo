@@ -15,7 +15,7 @@
 import Info from './svg/Info.vue'
 
 defineProps<{
-  errorMessage: string | undefined
+  errorMessage?: string
 }>()
 </script>
 
