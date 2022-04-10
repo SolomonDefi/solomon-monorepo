@@ -1,7 +1,6 @@
-const all = [
+const base = [
   'nx',
   '@nrwl/workspace',
-  'sqlite3',
   'ts-node',
   'tsconfig-paths',
   'tslib',
@@ -11,25 +10,11 @@ const all = [
   'js-base64',
 ]
 
-const python = [
-  // devDependencies
-  '@nrwl/cypress',
-  'nx-python-fastapi',
-  'shelljs',
-]
-
 const node = [
+  // dependencies
+  '@mikro-orm/core',
   '@ethersproject/providers',
   '@ethersproject/abi',
-  '@mikro-orm/core',
-  '@mikro-orm/sqlite',
-  '@nrwl/node',
-  '@types/mjml',
-  '@types/fs-extra',
-  '@types/nodemailer',
-  '@types/uuid',
-  '@types/express',
-  '@types/node-fetch',
   'mjml',
   'fs-extra',
   'uuid',
@@ -38,7 +23,6 @@ const node = [
   'mailgun.js',
   'handlebars',
   'form-data',
-  'typescript',
   'tslib',
   'reflect-metadata',
   'pkg-dir',
@@ -46,16 +30,22 @@ const node = [
   'js-sha256',
   'express',
   'node-fetch',
+  // devDependencies
+  '@nrwl/node',
+  '@types/mjml',
+  '@types/fs-extra',
+  '@types/nodemailer',
+  '@types/uuid',
+  '@types/express',
+  '@types/node-fetch',
+  'typescript',
 ]
 
 module.exports = {
-  base: {
-    include: all,
-  },
   'web-evidence': {
     workspace: ['libs/web'],
     include: [
-      ...all,
+      ...base,
       // dependencies
       'vue',
       '@sampullman/vue3-fetch-api',
@@ -72,20 +62,40 @@ module.exports = {
     ],
   },
   api: {
-    include: [...all, ...node],
-  },
-  'api-evidence': {
-    include: [...all, ...python],
-  },
-  'api-dispute': {
-    include: [...all, ...python],
+    include: [
+      ...base,
+      ...node,
+      // dependencies
+      '@nestjs/common',
+      '@nestjs/core',
+      '@nestjs/jwt',
+      '@nestjs/passport',
+      '@nestjs/platform-express',
+      '@nestjs/swagger',
+      'class-validator',
+      'date-fns',
+      'knex',
+      'lodash',
+      'multer',
+      'passport-anonymous',
+      'passport-headerapikey',
+      'reflect-metadata',
+      'swagger-ui-express',
+      // devDependencies
+      '@nestjs/schematics',
+      '@nestjs/testing',
+      '@types/lodash',
+      '@types/multer',
+      '@types/passport-anonymous',
+      'typescript',
+    ],
   },
   'blockchain-watcher': {
-    include: [...all, ...node],
+    include: [...base, ...node, 'sqlite3', '@mikro-orm/sqlite'],
   },
   contracts: {
     include: [
-      ...all,
+      ...base,
       '@nomiclabs/hardhat-ethers',
       '@nomiclabs/hardhat-etherscan',
       '@nomiclabs/hardhat-solhint',

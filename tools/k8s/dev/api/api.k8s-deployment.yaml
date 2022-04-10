@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-evidence
+  name: api
   labels:
-    component: api-evidence
+    component: api
     tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: api-evidence
+      component: api
       tier: backend
   template:
     metadata:
       labels:
-        component: api-evidence
+        component: api
         tier: backend
     spec:
       containers:
-        - name: api-evidence
-          image: api-evidence.dev
+        - name: api
+          image: api.dev
           imagePullPolicy: Never
           ports:
-            - containerPort: 3010
+            - containerPort: 3000
           envFrom:
             - configMapRef:
-                name: api-evidence-config
+                name: api-config
             - configMapRef:
                 name: db-config

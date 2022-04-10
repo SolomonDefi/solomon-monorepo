@@ -1,0 +1,18 @@
+name: 'Test database setup'
+description: 'Set up test database'
+runs:
+  using: 'composite'
+  steps:
+    - id: random-generator
+      run: echo "::set-output name=random-id::test$(echo $RANDOM)"
+      shell: bash
+    - name: Set a random db name for testing
+      run: 'TEST_DB=${{ steps.random-generator.outputs.random-id }}'
+      shell: bash
+    - name: Create testing database
+      run: |
+        ./.github/actions/setup-python-app/create_db.sh ${{ steps.random-generator.outputs.random-id }} || true
+      shell: bash
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres

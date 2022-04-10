@@ -63,30 +63,36 @@ It's possible to run apps individually, which can be useful if you're verifying 
 Build the base image:
 
 ```
-docker build --progress=plain -t solomon_base:test -f tools/docker/base/Dockerfile .
+docker build --no-cache --progress=plain -t solomon_base:test -f tools/docker/base/Dockerfile .
 ```
 
 Build app images
 
 ```bash
+# Contracts
+docker build --progress=plain --no-cache -t contracts:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/contracts/Dockerfile --target=dev .
+
+# Blockchain watcher
 docker build --progress=plain --no-cache -t blockchain-watcher:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/blockchain-watcher/Dockerfile --target=dev .
 
-docker build --progress=plain --no-cache -t api-evidence:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/api-evidence/Dockerfile --target=dev .
-
-docker build --progress=plain --no-cache -t api-dispute:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/api-dispute/Dockerfile --target=dev .
-
-docker build --progress=plain --no-cache -t web-evidence:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/web-evidence/Dockerfile --target=dev .
-
+# API Database
 docker build --progress=plain --no-cache -t db-api -f apps/db-api/Dockerfile .
+
+# API
+docker build --progress=plain --no-cache -t api:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/api/Dockerfile --target=dev .
+
+# Web evidence
+docker build --progress=plain --no-cache -t web-evidence:dev --build-arg SOLOMON_BASE=solomon_base:test -f apps/web-evidence/Dockerfile --target=dev .
 ```
 
 ## Apps
 
 The following table outlines all the apps available. Each app is located in `apps/<app-name>`, and `<app-name>` can be substituted in the next section to serve, build, or test specific apps.
 
-| app-name           | Description                                                             |
-| ------------------ | ----------------------------------------------------------------------- |
-| blockchain-watcher | Watches Solomon contracts and emails relevant parties when events occur |
+| app-name           | Description                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| blockchain-watcher | Watches Solomon contracts and informs other apps when events occur |
+| api                | Handles evidence upload and emailing parties during disputes       |
 
 ### App Commands
 
@@ -139,9 +145,8 @@ Currently, e2e test is not integrated to CI/CD yet. Please run `skaffold dev` fi
 ### Generate scripts
 
 - `blockchain-watcher:generate-mail-template`: Generate mail html templates for watcher.
-- `blockchain-watcher:generate-event-interface`: Generate api events TypeScript interface for watcher. Should call `api-dispute:generate-event-schema` first.
+- `blockchain-watcher:generate-event-interface`: Generate api events TypeScript interface for watcher.
 - `contract:generate-type`: Generate contracts type definitions.
-- `api-dispute:generate-event-schema`: Generate JSON schema from `api-dispute`.
 
 ### Commit hooks
 

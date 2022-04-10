@@ -16,8 +16,7 @@
     "watcher:generate-mail-template": "nx run blockchain-watcher:generate-mail-template",
     "watcher:generate-event-interface": "nx run blockchain-watcher:generate-event-interface",
     "contract:generate-type": "nx run contracts:generate-type",
-    "contract:deploy": "nx run contracts:deploy",
-    "api-dispute:generate-event-schema": "nx run api-dispute:generate-event-schema"
+    "contract:deploy": "nx run contracts:deploy"
   },
   "private": true,
   "devDependencies": {
@@ -151,5 +150,10 @@
     "vue": "^3.2.31",
     "vue-i18n": "v9.1.9",
     "vue-router": "^4.0.14"
+  },
+  "pnpm": {
+    "overrides": {
+      "@parcel/watcher": "link:tools/prebuilds/@parcel/watcher"
+    }
   }
 }

@@ -1,3 +1,6 @@
+import { Express } from 'express'
+import 'multer'
+import { FileInterceptor } from '@nestjs/platform-express'
 import {
   Body,
   Controller,
@@ -7,9 +10,9 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common'
 import { EvidenceService } from './evidence.service'
-import 'multer'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 @Controller({
@@ -68,6 +71,7 @@ export class EvidenceController {
     status: 400,
     description: '',
   })
+  @UseInterceptors(FileInterceptor('file'))
   @Post('/')
   uploadEvidence(@UploadedFile() file: Express.Multer.File, @Body() body) {
     const title = body['title']

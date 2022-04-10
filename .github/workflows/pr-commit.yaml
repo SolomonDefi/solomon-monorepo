@@ -29,24 +29,6 @@ jobs:
           version: 6.0.2
       - name: Install modules
         run: pnpm i
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.10.2
-      - name: Install Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
-      - name: Setup api-evidence
-        uses: ./.github/actions/setup-python-app
-        with:
-          app-name: 'api-evidence'
-          create-db: false
-      - name: Setup api-dispute
-        uses: ./.github/actions/setup-python-app
-        with:
-          app-name: 'api-dispute'
-          create-db: false
-      - name: Check Python code format
-        run: pnpx nx run-many --target=format --check --all --parallel
       - name: Check code format
         run: pnpx nx format:check --base=origin/main
 
@@ -74,26 +56,6 @@ jobs:
           version: 6.0.2
       - name: Install modules
         run: pnpm i
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.10.2
-      - name: Install Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
-      - name: Checkout code into workspace directory
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup api-evidence
-        uses: ./.github/actions/setup-python-app
-        with:
-          app-name: 'api-evidence'
-          create-db: false
-      - name: Setup api-dispute
-        uses: ./.github/actions/setup-python-app
-        with:
-          app-name: 'api-dispute'
-          create-db: false
       - name: Lint source code
         run: pnpx nx affected:lint --base=origin/main --parallel
   # TODO
@@ -123,53 +85,41 @@ jobs:
   #         target: production
   #         tags: ${{env.APP_NAME}}-${{github.head_ref}}-${{steps.slug.outputs.sha7}}
 
-  build-apps:
-    name: Build Apps
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code into workspace directory
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+  # build-apps:
+  #   name: Build Apps
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Checkout code into workspace directory
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
 
-      # Setup Node.js env
-      - name: Set up NodeJS (v16)
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - name: Cache pnpm modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 6.0.2
-      - name: Install modules
-        run: pnpm i
-      - name: Build plugin
-        run: pnpx nx build plugin
+  #     # Setup Node.js env
+  #     - name: Set up NodeJS (v16)
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '16'
+  #     - name: Cache pnpm modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ~/.pnpm-store
+  #         key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-
+  #     - uses: pnpm/action-setup@v2.0.1
+  #       with:
+  #         version: 6.0.2
+  #     - name: Install modules
+  #       run: pnpm i
 
-      # Setup Python env
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.10.2
-      - uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: 1.1.11
+  #     # Generate files
+  #     - name: Generate contract TypeScript definition
+  #       run: pnpx nx run contracts:generate-type
+  #     - name: Generate event interface
+  #       run: pnpx nx run blockchain-watcher:generate-event-interface
 
-      # Generate files
-      - name: Generate contract TypeScript definition
-        run: pnpx nx run contracts:generate-type
-      - name: Generate event JSON schema
-        run: pnpx nx run api-dispute:generate-event-schema
-      - name: Generate event interface
-        run: pnpx nx run blockchain-watcher:generate-event-interface
-
-      - name: Build apps
-        run: pnpx nx affected:build --base=origin/main --parallel
+  #     - name: Build apps
+  #       run: pnpx nx affected:build --base=origin/main --parallel
 
   test:
     name: Unit Tests
@@ -205,26 +155,6 @@ jobs:
           version: 6.0.2
       - name: Install modules
         run: pnpm i
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.10.2
-      - name: Install Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
-      - name: Checkout code into workspace directory
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup api-evidence
-        uses: ./.github/actions/setup-python-app
-        with:
-          app-name: 'api-evidence'
-          create-db: true
-      - name: Setup api-dispute
-        uses: ./.github/actions/setup-python-app
-        with:
-          app-name: 'api-dispute'
-          create-db: true
       - name: Run unit tests
         run: pnpx nx affected:test --base=origin/main --parallel
 ## Not ready yet

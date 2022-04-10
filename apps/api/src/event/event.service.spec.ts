@@ -11,4 +11,8 @@ describe('EventService', () => {
 
     service = app.get<EventService>(EventService)
   })
+
+  it('is a placeholder', () => {
+    // TODO
+  })
 })

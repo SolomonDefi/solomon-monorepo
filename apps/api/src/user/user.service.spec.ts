@@ -11,4 +11,8 @@ describe('UserService', () => {
 
     service = app.get<UserService>(UserService)
   })
+
+  it('is a placeholder', () => {
+    // TODO
+  })
 })
