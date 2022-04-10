@@ -14,36 +14,23 @@ build:
         buildArgs:
           # These vars are different per each developer and cannot be part of ConfigMap in git
           SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
-    - image: api-dispute.dev
+    - image: api.dev
       context: .
       requires:
         - image: solomon_base
           alias: SOLOMON_BASE
       sync:
         manual:
-          - src: 'apps/api-dispute/src/**/*'
+          - src: 'apps/api/src/**/*'
             dest: '/usr/src'
-          # - src: 'libs/api-dispute/*/src/**/*'
-          #   dest: '/usr/src'
-      docker:
-        dockerfile: apps/api-dispute/Dockerfile
-        target: dev
-        buildArgs:
-          # These vars are different per each developer and cannot be part of ConfigMap in git
-          SOLOMON_DEV_NAMESPACE: '{{.SOLOMON_DEV_NAMESPACE}}'
-    - image: api-evidence.dev
-      context: .
-      requires:
-        - image: solomon_base
-          alias: SOLOMON_BASE
-      sync:
-        manual:
-          - src: 'apps/api-evidence/src/**/*'
+          - src: 'libs/api/*/src/**/*'
             dest: '/usr/src'
-          # - src: 'libs/api-evidence/*/src/**/*'
-          #   dest: '/usr/src'
+          - src: 'libs/backend/*/src/**/*'
+            dest: '/usr/src'
+          - src: 'libs/shared/*/src/**/*'
+            dest: '/usr/src'
       docker:
-        dockerfile: apps/api-evidence/Dockerfile
+        dockerfile: apps/api/Dockerfile
         target: dev
         buildArgs:
           # These vars are different per each developer and cannot be part of ConfigMap in git
@@ -59,12 +46,9 @@ deploy:
         overrides:
           postgresqlPassword: 'postgres'
           initdbScripts:
-            api-dispute.sql: |
-              CREATE DATABASE api_dispute;
-              GRANT ALL PRIVILEGES ON DATABASE solomon_dispute TO postgres;
-            api-evidence.sql: |
-              CREATE DATABASE api_evidence;
-              GRANT ALL PRIVILEGES ON DATABASE solomon_evidence TO postgres;
+            solomon-db.sql: |
+              CREATE DATABASE solomon;
+              GRANT ALL PRIVILEGES ON DATABASE solomon_db TO postgres;
           persistence:
             enabled: false
   kubectl:
@@ -74,8 +58,5 @@ deploy:
 portForward:
   # Expose API for E2E testing
   - resourceType: service
-    resourceName: api-dispute
+    resourceName: api
     port: 3000
-  - resourceType: service
-    resourceName: api-evidence
-    port: 3010

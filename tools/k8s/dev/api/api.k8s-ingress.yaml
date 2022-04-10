@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-api-dispute
+  name: ingress-api
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: 'false'
 spec:
   rules:
-    - host: api-dispute.localhost
+    - host: api.localhost
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: api-dispute
+                name: api
                 port:
                   number: 3000
