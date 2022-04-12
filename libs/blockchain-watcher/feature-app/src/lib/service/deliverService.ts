@@ -1,9 +1,9 @@
 import fetch from 'node-fetch'
 import { SlmChargeback, SlmEscrow, SlmPreorder } from '@solomon/shared/util-contract'
-import { envStore } from '../store/envStore'
 import { PaymentCreatedEvent } from '../Klass/PaymentCreatedEvent'
 import { stringHelper } from '../helper/stringHelper'
 import { PaymentCreatedEventType } from '../Enum/PaymentCreatedEventType'
+import { envStore } from '@solomon/shared/store-env'
 
 export class DeliverService {
   async sendEventToDisputeApi(event: PaymentCreatedEvent) {

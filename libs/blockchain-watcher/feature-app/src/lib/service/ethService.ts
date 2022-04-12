@@ -1,6 +1,5 @@
 import { ethers } from 'ethers'
 import { mailService } from './mailService'
-import { envStore } from '../store/envStore'
 import {
   SlmChargeback__factory,
   SlmEscrow__factory,
@@ -10,8 +9,9 @@ import {
 } from '@solomon/shared/util-contract'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
-import { dbService } from './dbService'
-import { loggerService } from '@solomon/shared/util-logger'
+import { envStore } from '@solomon/shared/store-env'
+import { loggerService } from '@solomon/shared/service-logger'
+import { dbService } from '@solomon/backend/service-db'
 
 export class EthService {
   provider: JsonRpcProvider

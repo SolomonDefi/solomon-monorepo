@@ -1,4 +1,4 @@
-import { AppService, appService } from '../service/appService'
+import { AppService, appService } from './appService'
 
 describe('appService', () => {
   afterEach(async () => {

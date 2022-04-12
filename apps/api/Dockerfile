@@ -13,9 +13,9 @@ COPY hardhat.config.ts ./
 COPY apps/api/tsconfig*.json ./apps/api/
 COPY apps/api/project.json ./apps/api/
 COPY apps/api/src ./apps/api/src
-COPY libs/api ./libs/api
 COPY libs/backend ./libs/backend
 COPY libs/shared ./libs/shared
+COPY libs/api ./libs/api
 
 # DEV API APP IMAGE (? MB)
 # ------------------------------------------------------------------------------------

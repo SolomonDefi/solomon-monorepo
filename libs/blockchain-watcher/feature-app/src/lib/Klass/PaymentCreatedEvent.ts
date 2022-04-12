@@ -47,7 +47,6 @@ export class PaymentCreatedEvent implements IPaymentCreatedEvent {
   @IsNumber()
   discount: number = 0
 
-  @Min(0)
   @IsString()
   ethPaid: string = ''
 
