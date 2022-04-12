@@ -1,0 +1,23 @@
+{
+  "root": "libs/shared/service-logger",
+  "sourceRoot": "libs/shared/service-logger/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/service-logger/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/service-logger"],
+      "options": {
+        "jestConfig": "libs/shared/service-logger/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

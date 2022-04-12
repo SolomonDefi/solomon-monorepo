@@ -1,0 +1,7 @@
+{
+  "root": "libs/blockchain-watcher/feature-template",
+  "sourceRoot": "libs/blockchain-watcher/feature-template/src",
+  "projectType": "library",
+  "targets": {},
+  "tags": ["scope:service", "type:feature"]
+}

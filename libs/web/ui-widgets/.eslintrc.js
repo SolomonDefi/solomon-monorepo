@@ -72,5 +72,6 @@ module.exports = {
       },
     ],
     '@intlify/vue-i18n/no-raw-text': 'error',
+    'vue/multi-word-component-names': 'warn',
   },
 }

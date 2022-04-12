@@ -2,10 +2,10 @@ import path from 'path'
 import nodemailer, { Transporter } from 'nodemailer'
 import { readFile } from 'fs-extra'
 import Handlebars from 'handlebars'
-import { pathStore } from '@solomon/shared/util-path-store'
 import MailgunTransport from '../util/MailgunTransport'
-import { envStore } from '../store/envStore'
 import { SlmChargeback, SlmEscrow, SlmPreorder } from '@solomon/shared/util-contract'
+import { pathStore } from '@solomon/shared/store-path'
+import { envStore } from '@solomon/shared/store-env'
 
 export class MailService {
   mailer: Transporter = null as any

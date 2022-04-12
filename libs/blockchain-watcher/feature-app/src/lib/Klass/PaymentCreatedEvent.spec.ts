@@ -28,7 +28,7 @@ describe('PaymentCreatedEvent', () => {
       judgeContract: addr4,
       token: addr5,
       discount: 50,
-      ethPaid: 0.1,
+      ethPaid: '0.1',
     })
 
     expect(p.isValid()).toEqual(true)
@@ -40,7 +40,7 @@ describe('PaymentCreatedEvent', () => {
     expect(p.judgeContract).toEqual(addr4)
     expect(p.token).toEqual(addr5)
     expect(p.discount).toEqual(50)
-    expect(p.ethPaid).toEqual(0.1)
+    expect(p.ethPaid).toEqual('0.1')
   })
 
   it('constructor() with invalid props', () => {
@@ -52,7 +52,7 @@ describe('PaymentCreatedEvent', () => {
     const badJudgeContract = new PaymentCreatedEvent({ judgeContract: '' })
     const badToken = new PaymentCreatedEvent({ token: '' })
     const badDiscount = new PaymentCreatedEvent({ discount: -1 })
-    const badEthPaid = new PaymentCreatedEvent({ ethPaid: -1 })
+    const badEthPaid = new PaymentCreatedEvent({ ethPaid: '-1' })
 
     expect(badId.isValid()).toEqual(false)
     expect(badType.isValid()).toEqual(false)
@@ -76,7 +76,7 @@ describe('PaymentCreatedEvent', () => {
     p.judgeContract = ethers.Wallet.createRandom().address
     p.token = ethers.Wallet.createRandom().address
     p.discount = 0
-    p.ethPaid = 1
+    p.ethPaid = '1'
 
     expect(p.isValid()).toEqual(true)
   })
@@ -91,7 +91,7 @@ describe('PaymentCreatedEvent', () => {
       judgeContract: ethers.Wallet.createRandom().address,
       token: ethers.Wallet.createRandom().address,
       discount: 50,
-      ethPaid: 0.1,
+      ethPaid: '0.1',
     })
     let badP = _.cloneDeep(p)
 
@@ -133,7 +133,7 @@ describe('PaymentCreatedEvent', () => {
     expect(badP.isValid()).toEqual(false)
 
     badP = p
-    badP.ethPaid = -1
+    badP.ethPaid = '-1'
     expect(badP.isValid()).toEqual(false)
   })
 })

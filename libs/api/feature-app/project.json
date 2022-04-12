@@ -1,0 +1,23 @@
+{
+  "root": "libs/api/feature-app",
+  "sourceRoot": "libs/api/feature-app/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/api/feature-app/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/api/feature-app"],
+      "options": {
+        "jestConfig": "libs/api/feature-app/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,4 +1,4 @@
-import { WatcherService, watcherService } from '@solomon/blockchain-watcher/feature-app'
+import { WatcherService, watcherService } from './watcherService'
 
 describe('watcherService basic', () => {
   test('constructor()', async () => {
@@ -29,4 +29,6 @@ describe('watcherService', () => {
   afterAll(async () => {
     await watcherService.stop()
   })
+
+  test('', async () => {})
 })

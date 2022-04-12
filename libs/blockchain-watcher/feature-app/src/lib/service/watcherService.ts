@@ -1,11 +1,9 @@
-import {
-  appService,
-  dbService,
-  deliverService,
-  ethService,
-  mailService,
-  webhookService,
-} from '@solomon/blockchain-watcher/feature-app'
+import { dbService } from '@solomon/backend/service-db'
+import { appService } from './appService'
+import { webhookService } from './webhookService'
+import { ethService } from './ethService'
+import { mailService } from './mailService'
+import { deliverService } from './deliverService'
 
 export class WatcherService {
   isWatching: boolean = false

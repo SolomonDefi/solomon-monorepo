@@ -51,8 +51,6 @@ const connectOrDisconnect = () => {
     connectWallet('metamask')
   }
 }
-
-const submit = () => {}
 </script>
 
 <style lang="postcss">

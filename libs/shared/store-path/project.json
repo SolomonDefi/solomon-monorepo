@@ -1,0 +1,23 @@
+{
+  "root": "libs/shared/store-path",
+  "sourceRoot": "libs/shared/store-path/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/store-path/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/store-path"],
+      "options": {
+        "jestConfig": "libs/shared/store-path/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
