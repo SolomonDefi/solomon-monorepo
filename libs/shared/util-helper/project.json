@@ -1,0 +1,23 @@
+{
+  "root": "libs/shared/util-helper",
+  "sourceRoot": "libs/shared/util-helper/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/util-helper/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/util-helper"],
+      "options": {
+        "jestConfig": "libs/shared/util-helper/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

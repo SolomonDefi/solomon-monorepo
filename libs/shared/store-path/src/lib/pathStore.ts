@@ -18,6 +18,10 @@ export class PathStore {
     return path.resolve(this.root, 'tools')
   }
 
+  get testAssets(): string {
+    return path.resolve(this.root, 'test-assets')
+  }
+
   get watcher() {
     return path.resolve(this.apps, 'blockchain-watcher')
   }

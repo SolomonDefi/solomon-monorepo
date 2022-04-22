@@ -1,8 +1,9 @@
 import 'reflect-metadata'
 import { MikroORM } from '@mikro-orm/core'
-import { QueryOrderNumeric } from '@mikro-orm/core'
-import { ScanLogEntity } from './ScanLogEntity'
+import { ScanLogEntity } from '../entity/ScanLogEntity'
+import { EvidenceEntity } from '../entity/EvidenceEntity'
 import { envStore } from '@solomon/shared/store-env'
+import { UserEntity } from '../entity/UserEntity'
 
 export class DbService {
   orm: MikroORM = null as any
@@ -11,32 +12,17 @@ export class DbService {
     return this.orm.em.getRepository(ScanLogEntity)
   }
 
-  async setLastScanned(blockHash: string) {
-    let newLog = this.scanLogRepository.create({
-      blockHash: blockHash,
-      lastScanned: Date.now(),
-    })
-
-    await this.scanLogRepository.persistAndFlush(newLog)
+  get evidenceRepository() {
+    return this.orm.em.getRepository(EvidenceEntity)
   }
 
-  async getLastScanned() {
-    let lastLog = await this.scanLogRepository.find(
-      {},
-      {
-        orderBy: {
-          lastScanned: QueryOrderNumeric.DESC,
-        },
-        limit: 1,
-      },
-    )
-
-    return lastLog[0]
+  get userRepository() {
+    return this.orm.em.getRepository(UserEntity)
   }
 
   async init() {
     const orm = await MikroORM.init({
-      entities: [ScanLogEntity],
+      entities: [ScanLogEntity, EvidenceEntity, UserEntity],
       type: 'postgresql',
       dbName: envStore.dbName,
       user: envStore.dbUser,
@@ -57,9 +43,9 @@ export class DbService {
   async reset() {
     const generator = await this.orm.getSchemaGenerator()
 
+    await generator.ensureDatabase()
     await generator.dropSchema()
     await generator.createSchema()
-    await generator.updateSchema()
   }
 
   async resetForTest() {

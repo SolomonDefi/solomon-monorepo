@@ -1,15 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { EvidenceController } from './evidence.controller'
 import { EvidenceService } from './evidence.service'
 
 describe('EvidenceController', () => {
-  let app: TestingModule
+  let evidenceController: EvidenceController
 
   beforeAll(async () => {
-    app = await Test.createTestingModule({
+    const testingModule = await Test.createTestingModule({
       controllers: [EvidenceController],
       providers: [EvidenceService],
     }).compile()
+
+    evidenceController = testingModule.get<EvidenceController>(EvidenceController)
   })
 
   it('', () => {})

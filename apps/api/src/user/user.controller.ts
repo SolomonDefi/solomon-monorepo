@@ -1,6 +1,21 @@
-import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+  UseGuards,
+} from '@nestjs/common'
 import { UserService } from './user.service'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { Response } from 'express'
+import { UserDto } from '@solomon/shared/util-klass'
+import { validate } from 'class-validator'
+import { loggerService } from '@solomon/shared/service-logger'
+import { AuthGuard } from '../auth/auth.guard'
 
 @Controller({
   path: '/user',
@@ -26,62 +41,179 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Get user by id',
+    description: 'Get user by id.',
   })
   @ApiResponse({
     status: 200,
-    description: '',
+    description: 'Get user success.',
   })
   @ApiResponse({
     status: 404,
-    description: '',
+    description: 'User not found.',
   })
   @Get('/:id')
-  getUserById(@Param('id') id: string) {
-    // TODO: Get user by Id.
+  async getUserById(@Param('id') id: string, @Res() res: Response) {
+    try {
+      let userResult = await this.userService.getUserById(id)
+
+      if (!userResult) {
+        return res.status(404).json({
+          message: 'User not found',
+        })
+      }
+
+      return res.status(200).send(userResult)
+    } catch (err) {
+      return res.status(500).json({
+        message: 'Get user error',
+        error: err,
+      })
+    }
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Add public user',
+    description: 'Add public user.',
   })
   @ApiResponse({
-    status: 200,
-    description: '',
+    status: 201,
+    description: 'User created',
   })
   @ApiResponse({
-    status: 404,
-    description: '',
+    status: 400,
+    description: 'Invalid request.',
   })
   @Post('/')
-  addUser(@Param('id') id: string) {
-    // TODO: Create user.
+  async addPublicUser(@Body() userDto: UserDto, @Res() res: Response) {
+    try {
+      await validate(userDto)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(400).json({
+        message: 'Invalid request',
+        error: err,
+      })
+    }
+
+    try {
+      await this.userService.addPublicUser(userDto)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(500).json({
+        message: 'Add public user error',
+        error: err,
+      })
+    }
+
+    res.status(201).send()
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Add admin user',
+    description: 'Add admin user.',
   })
   @ApiResponse({
-    status: 200,
-    description: '',
+    status: 201,
+    description: 'User created',
   })
-  @Put('/:id')
-  upsertUser(@Param('id') id: string) {
-    // TODO: Upsert user.
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Permission denied.',
+  })
+  @Post('/admin')
+  @UseGuards(AuthGuard)
+  async addAdminUser(@Body() userDto: UserDto, @Res() res: Response) {
+    try {
+      await validate(userDto)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(400).json({
+        message: 'Invalid request',
+        error: err,
+      })
+    }
+
+    try {
+      await this.userService.addAdminUser(userDto)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(500).json({
+        message: 'Add admin user error',
+        error: err,
+      })
+    }
+
+    res.status(201).send()
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Update user',
+    description: 'Update exist user.',
   })
   @ApiResponse({
     status: 200,
-    description: '',
+    description: 'Update success.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Permission denied',
+  })
+  @Put('/')
+  @UseGuards(AuthGuard)
+  async upsertUser(@Body() userDto: UserDto, @Res() res: Response) {
+    try {
+      await validate(userDto)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(400).json({
+        message: 'Invalid request',
+        error: err,
+      })
+    }
+
+    try {
+      await this.userService.updateUser(userDto)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(500).json({
+        message: 'Update user error',
+        error: err,
+      })
+    }
+
+    return res.status(200).send()
+  }
+
+  @ApiOperation({
+    summary: 'Delete user',
+    description: 'Delete user.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete user success.',
   })
   @Delete('/:id')
-  deleteUser() {
-    // TODO: Delete user. Set as deleted rather then delete row.
+  @UseGuards(AuthGuard)
+  async deleteUserById(@Param() id: string, @Res() res: Response) {
+    try {
+      await this.userService.deleteUserById(id)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(500).json({
+        message: 'Update user error',
+        error: err,
+      })
+    }
+
+    return res.status(200).send()
   }
 }
