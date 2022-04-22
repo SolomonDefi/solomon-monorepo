@@ -19,19 +19,21 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
-      "@solomon/shared/service-logger": ["libs/shared/service-logger/src/index.ts"],
-      "@solomon/shared/store-env": ["libs/shared/store-env/src/index.ts"],
-      "@solomon/shared/store-path": ["libs/shared/store-path/src/index.ts"],
+      "@solomon/shared/util-helper": ["libs/shared/util-helper/src/index.ts"],
       "@solomon/api/feature-app": ["libs/api/feature-app/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
       "@solomon/backend/service-db": ["libs/backend/service-db/src/index.ts"],
+      "@solomon/backend/service-upload": ["libs/backend/service-upload/src/index.ts"],
       "@solomon/blockchain-watcher/feature-app": [
         "libs/blockchain-watcher/feature-app/src/index.ts"
       ],
       "@solomon/blockchain-watcher/feature-template": [
         "libs/blockchain-watcher/feature-template/src/index.ts"
       ],
+      "@solomon/shared/service-logger": ["libs/shared/service-logger/src/index.ts"],
+      "@solomon/shared/store-env": ["libs/shared/store-env/src/index.ts"],
+      "@solomon/shared/store-path": ["libs/shared/store-path/src/index.ts"],
       "@solomon/shared/util-api-evidence-types": [
         "libs/shared/util-api-evidence-types/src/index.ts"
       ],
@@ -39,7 +41,10 @@
       "@solomon/shared/util-core": ["libs/shared/util-core/src/index.ts"],
       "@solomon/shared/util-event": ["libs/shared/util-event/src/index.ts"],
       "@solomon/shared/util-i18n": ["libs/shared/util-i18n/src/index.ts"],
+      "@solomon/shared/util-interface": ["libs/shared/util-interface/src/index.ts"],
+      "@solomon/shared/util-klass": ["libs/shared/util-klass/src/index.ts"],
       "@solomon/shared/util-logger": ["libs/shared/util-logger/src/index.ts"],
+      "@solomon/shared/util-validator": ["libs/shared/util-validator/src/index.ts"],
       "@solomon/web/data-access-api": ["libs/web/data-access-api/src/index.ts"],
       "@solomon/web/data-access-state": ["libs/web/data-access-state/src/index.ts"],
       "@solomon/web/ui-theme": ["libs/web/ui-theme/src"],

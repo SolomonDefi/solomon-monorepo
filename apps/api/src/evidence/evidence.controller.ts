@@ -1,4 +1,4 @@
-import { Express } from 'express'
+import { Express, Response } from 'express'
 import 'multer'
 import { FileInterceptor } from '@nestjs/platform-express'
 import {
@@ -9,11 +9,17 @@ import {
   Param,
   Post,
   Put,
+  Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { EvidenceService } from './evidence.service'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { validate } from 'class-validator'
+import { EvidenceDto } from '@solomon/shared/util-klass'
+import { loggerService } from '@solomon/shared/service-logger'
+import { AuthGuard } from '../auth/auth.guard'
 
 @Controller({
   path: '/evidence',
@@ -34,96 +40,169 @@ export class EvidenceController {
     description: '',
   })
   @Get('/')
+  @UseGuards(AuthGuard)
   getEvidence() {
     // TODO: Get all evidences, with paging and sorting. Only for admin.
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Get evidence',
+    description: 'Get evidence',
   })
   @ApiResponse({
     status: 200,
-    description: '',
+    description: 'Get success.',
   })
   @ApiResponse({
     status: 403,
-    description: '',
+    description: 'Permission denied.',
   })
   @ApiResponse({
     status: 404,
-    description: '',
+    description: 'Not found',
   })
   @Get('/:id')
-  getEvidenceById(@Param('id') id: string) {
-    // TODO: Get evidence by id. only for admin.
+  @UseGuards(AuthGuard)
+  async getEvidenceById(@Param('id') id: string, @Res() res: Response) {
+    let evidences = await this.evidenceService.getEvidenceById(id)
+
+    if (!evidences) {
+      return res.status(404).json({
+        message: 'Not found',
+        error: `Evidence with id ${id} not exist.`,
+      })
+    }
+
+    return res.status(200).json(evidences[0])
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Upload evidence',
+    description: 'Upload evidence file and save data to db.',
   })
   @ApiResponse({
     status: 201,
-    description: '',
+    description: 'Evidence created.',
   })
   @ApiResponse({
     status: 400,
-    description: '',
+    description: 'Invalid request.',
   })
   @UseInterceptors(FileInterceptor('file'))
   @Post('/')
-  uploadEvidence(@UploadedFile() file: Express.Multer.File, @Body() body) {
-    const title = body['title']
-    const description = body['description']
-    // TODO: Upload evidence to S3 & insert into db
+  async createEvidence(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: EvidenceDto,
+    @Res() res: Response,
+  ) {
+    const evidence = new EvidenceDto(body)
+
+    try {
+      await validate(evidence)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(400).json({
+        message: 'Invalid request',
+        error: err,
+      })
+    }
+
+    try {
+      await this.evidenceService.addEvidence(evidence, file.buffer)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(500).json({
+        message: 'Add evidence error',
+        error: err,
+      })
+    }
+
+    return res.status(201).send()
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Update evidence',
+    description: 'Update exist evidence.',
   })
   @ApiResponse({
     status: 201,
-    description: '',
+    description: 'Evidence updated.',
   })
   @ApiResponse({
     status: 400,
-    description: '',
+    description: 'Invalid request.',
   })
   @ApiResponse({
     status: 404,
-    description: '',
+    description: 'Evidence not exist.',
   })
-  @Put('/:id')
-  upsertEvidence(
-    @Param('id') id: string,
+  @Put('/')
+  async updateEvidence(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body,
+    @Body() body: EvidenceDto,
+    @Res() res: Response,
   ) {
-    const title = body['title']
-    const description = body['description']
-    // TODO: Upsert evidence to S3 & upsert to db
+    const evidence = new EvidenceDto(body)
+
+    try {
+      await validate(evidence)
+    } catch (err) {
+      loggerService.error(err)
+      return res.status(400).json({
+        message: 'Invalid request',
+        error: err,
+      })
+    }
+
+    try {
+      await this.evidenceService.updateEvidence(evidence, file.buffer)
+    } catch (err) {
+      return res.status(500).json({
+        message: 'Update evidence error',
+        error: err,
+      })
+    }
+
+    return res.status(200).send()
   }
 
   @ApiOperation({
-    summary: '',
-    description: '',
+    summary: 'Delete evidence',
+    description: 'Delete evidence.',
   })
   @ApiResponse({
     status: 200,
-    description: '',
+    description: 'Evidence deleted.',
   })
   @ApiResponse({
     status: 403,
-    description: '',
+    description: 'Permission denied.',
   })
   @ApiResponse({
     status: 404,
-    description: '',
+    description: 'Evidence not exist.',
   })
   @Delete('/:id')
-  deleteEvidence(@Param('id') id: string) {
-    // TODO: Delete evidence
+  @UseGuards(AuthGuard)
+  async deleteEvidence(@Param('id') id: string, @Res() res: Response) {
+    const entity = await this.evidenceService.getEvidenceById(id)
+
+    if (!entity) {
+      return res.status(400).json({
+        message: 'Invalid request',
+        error: `Evidence with id ${id} not found.`,
+      })
+    }
+
+    try {
+      await this.evidenceService.deleteEvidenceById(id)
+    } catch (err) {
+      return res.status(400).json({
+        message: 'Delete evidence error',
+        error: err,
+      })
+    }
+
+    return res.status(200).send()
   }
 }

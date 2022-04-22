@@ -10,7 +10,7 @@ import {
   Min,
   validateSync,
 } from 'class-validator'
-import { IsEthAddress } from '../util/IsEthAddress'
+import { IsEthAddress } from '@solomon/shared/util-validator'
 import { PaymentCreatedEvent as IPaymentCreatedEvent } from '@solomon/shared/util-event'
 
 export class PaymentCreatedEvent implements IPaymentCreatedEvent {

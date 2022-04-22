@@ -1,6 +1,11 @@
-import { dbService, DbService } from './dbService'
+import { dbService } from './dbService'
+import { scanLogDbService, ScanLogDbService } from './scanLogDbService'
 
-describe('dbService', () => {
+describe('scanLogDbService', () => {
+  beforeAll(async () => {
+    await dbService.init()
+  })
+
   beforeEach(async () => {
     await dbService.resetForTest()
   })
@@ -10,15 +15,11 @@ describe('dbService', () => {
   })
 
   test('constructor()', async () => {
-    expect(dbService).toBeInstanceOf(DbService)
-  })
-
-  test('init()', async () => {
-    expect(dbService.orm).not.toEqual(null)
+    expect(scanLogDbService).toBeInstanceOf(ScanLogDbService)
   })
 
   test('setLastScanned()', async () => {
-    await dbService.setLastScanned('block1')
+    await scanLogDbService.setLastScanned('block1')
 
     const r1 = await dbService.scanLogRepository.findAll()
 
@@ -26,8 +27,8 @@ describe('dbService', () => {
     expect(r1[0].blockHash).toEqual('block1')
     expect(r1[0].lastScanned).toBeGreaterThan(0)
 
-    await dbService.setLastScanned('block2')
-    await dbService.setLastScanned('block3')
+    await scanLogDbService.setLastScanned('block2')
+    await scanLogDbService.setLastScanned('block3')
 
     const r2 = await dbService.scanLogRepository.findAll()
     const hashArr = r2.map((entity) => entity.blockHash).sort()
@@ -52,7 +53,7 @@ describe('dbService', () => {
 
     await dbService.scanLogRepository.persistAndFlush([log1, log2, log3])
 
-    const r1 = await dbService.getLastScanned()
+    const r1 = await scanLogDbService.getLastScanned()
 
     expect(r1?.id).toEqual(log3.id)
   })

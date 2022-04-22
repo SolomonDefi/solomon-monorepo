@@ -1,0 +1,23 @@
+{
+  "root": "libs/backend/service-upload",
+  "sourceRoot": "libs/backend/service-upload/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/backend/service-upload/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/backend/service-upload"],
+      "options": {
+        "jestConfig": "libs/backend/service-upload/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

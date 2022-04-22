@@ -1,6 +1,6 @@
 import supertest from 'supertest'
-import { stringHelper } from '@solomon/blockchain-watcher/feature-app'
 import { v4 } from 'uuid'
+import { stringHelper } from '@solomon/shared/util-helper'
 
 jest.setTimeout(60 * 1000)
 

@@ -11,7 +11,7 @@ import { JsonRpcProvider } from '@ethersproject/providers'
 import { deliverService } from './deliverService'
 import { envStore } from '@solomon/shared/store-env'
 import { loggerService } from '@solomon/shared/service-logger'
-import { dbService } from '@solomon/backend/service-db'
+import { scanLogDbService } from '@solomon/backend/service-db'
 
 export class EthService {
   provider: JsonRpcProvider
@@ -66,7 +66,7 @@ export class EthService {
       let eventFilter = this.contract.filters.ChargebackCreated()
       let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-      await dbService.setLastScanned(events[events.length - 1].blockHash)
+      await scanLogDbService.setLastScanned(events[events.length - 1].blockHash)
 
       return events
     } catch (err) {
@@ -84,7 +84,7 @@ export class EthService {
       let eventFilter = this.contract.filters.PreorderCreated()
       let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-      await dbService.setLastScanned(events[events.length - 1].blockHash)
+      await scanLogDbService.setLastScanned(events[events.length - 1].blockHash)
 
       return events
     } catch (err) {
@@ -102,7 +102,7 @@ export class EthService {
       let eventFilter = this.contract.filters.EscrowCreated()
       let events = await this.contract.queryFilter(eventFilter, fromBlockHash)
 
-      await dbService.setLastScanned(events[events.length - 1].blockHash)
+      await scanLogDbService.setLastScanned(events[events.length - 1].blockHash)
 
       return events
     } catch (err) {

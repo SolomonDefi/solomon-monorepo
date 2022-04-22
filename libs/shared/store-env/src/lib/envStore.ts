@@ -89,6 +89,16 @@ class EnvStore {
   get dbPassword(): string {
     return process.env['DB_PASSWORD'] ?? 'postgres'
   }
+
+  get s3Region(): string {
+    return process.env['S3_REGION'] ?? 'us-west-1'
+  }
+
+  get apiPort(): number {
+    return typeof process.env['API_PORT'] === 'undefined'
+      ? 3333
+      : parseInt(process.env['API_PORT'])
+  }
 }
 
 export const envStore = new EnvStore()

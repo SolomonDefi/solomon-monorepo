@@ -3,7 +3,7 @@ import {
   ValidationOptions,
   ValidationArguments,
 } from 'class-validator'
-import { stringHelper } from '../helper/stringHelper'
+import { stringHelper } from '@solomon/shared/util-helper'
 
 export function IsEthAddress(validationOptions?: ValidationOptions) {
   // eslint-disable-next-line @typescript-eslint/ban-types
