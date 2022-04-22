@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import { MikroORM } from '@mikro-orm/core'
 import { QueryOrderNumeric } from '@mikro-orm/core'
 import { ScanLogEntity } from './ScanLogEntity'
+import { envStore } from '@solomon/shared/store-env'
 
 export class DbService {
   orm: MikroORM = null as any
@@ -37,10 +38,9 @@ export class DbService {
     const orm = await MikroORM.init({
       entities: [ScanLogEntity],
       type: 'postgresql',
-      // todo: get from env
-      dbName: 'solomon_db',
-      user: 'postgres',
-      password: 'postgres',
+      dbName: envStore.dbName,
+      user: envStore.dbUser,
+      password: envStore.dbPassword,
     })
 
     this.orm = orm

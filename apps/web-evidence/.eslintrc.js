@@ -72,6 +72,7 @@ module.exports = {
         ignoreText: ['Test'],
       },
     ],
+    'vue/multi-word-component-names': 'warn',
   },
   settings: {
     'import/resolver': {

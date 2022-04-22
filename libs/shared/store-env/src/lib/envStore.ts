@@ -77,6 +77,18 @@ class EnvStore {
   get disputeApiSecretKey(): string {
     return process.env['DISPUTE_API_SECRET_KEY'] ?? ''
   }
+
+  get dbName(): string {
+    return process.env['DB_NAME'] ?? 'solomon_db'
+  }
+
+  get dbUser(): string {
+    return process.env['DB_USER'] ?? 'postgres'
+  }
+
+  get dbPassword(): string {
+    return process.env['DB_PASSWORD'] ?? 'postgres'
+  }
 }
 
 export const envStore = new EnvStore()
