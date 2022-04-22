@@ -5,6 +5,10 @@ describe('dbService', () => {
     await dbService.resetForTest()
   })
 
+  afterAll(async () => {
+    await dbService.close(true)
+  })
+
   test('constructor()', async () => {
     expect(dbService).toBeInstanceOf(DbService)
   })

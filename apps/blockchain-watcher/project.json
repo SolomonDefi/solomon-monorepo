@@ -50,13 +50,13 @@
     "generate-mail-template": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateMailTemplates.ts"
+        "command": "ts-node -r tsconfig-paths/register --project tools/tsconfig.json tools/scripts/generateMailTemplates.ts"
       }
     },
     "generate-event-interface": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "ts-node -r tsconfig-paths/register --project tools/tsconfig.tools.json tools/scripts/generateEventInterface.ts"
+        "command": "ts-node -r tsconfig-paths/register --project tools/tsconfig.json tools/scripts/generateEventInterface.ts"
       }
     }
   },
