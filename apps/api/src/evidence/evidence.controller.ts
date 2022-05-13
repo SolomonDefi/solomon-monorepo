@@ -19,7 +19,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { validate } from 'class-validator'
 import { EvidenceDto } from '@solomon/shared/util-klass'
 import { loggerService } from '@solomon/shared/service-logger'
-import { AuthGuard } from '../auth/auth.guard'
+import { AdminGuard } from '../auth/admin.guard'
 
 @Controller({
   path: '/evidence',
@@ -40,7 +40,7 @@ export class EvidenceController {
     description: '',
   })
   @Get('/')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   getEvidence() {
     // TODO: Get all evidences, with paging and sorting. Only for admin.
   }
@@ -62,7 +62,7 @@ export class EvidenceController {
     description: 'Not found',
   })
   @Get('/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async getEvidenceById(@Param('id') id: string, @Res() res: Response) {
     let evidences = await this.evidenceService.getEvidenceById(id)
 
@@ -183,7 +183,7 @@ export class EvidenceController {
     description: 'Evidence not exist.',
   })
   @Delete('/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async deleteEvidence(@Param('id') id: string, @Res() res: Response) {
     const entity = await this.evidenceService.getEvidenceById(id)
 

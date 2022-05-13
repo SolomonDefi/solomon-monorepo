@@ -1,13 +1,15 @@
 import { UserDto } from '@solomon/shared/util-klass'
 import { dbService } from './dbService'
+import { UserEntity } from '../entity/UserEntity'
 
 export class UserDbService {
   async createPublicUsers(users: UserDto[]) {
     for (const user of users) {
       const entity = dbService.userRepository.create(user)
+      const now = new Date()
       entity.isAdmin = false
-      entity.createDate = new Date()
-      entity.updateDate = new Date()
+      entity.createDate = now
+      entity.updateDate = now
       dbService.userRepository.persist(entity)
     }
 
@@ -17,9 +19,10 @@ export class UserDbService {
   async createAdminUser(users: UserDto[]) {
     for (const user of users) {
       const entity = dbService.userRepository.create(user)
+      const now = new Date()
       entity.isAdmin = true
-      entity.createDate = new Date()
-      entity.updateDate = new Date()
+      entity.createDate = now
+      entity.updateDate = now
       dbService.userRepository.persist(entity)
     }
 
@@ -63,6 +66,16 @@ export class UserDbService {
     }
 
     await dbService.userRepository.flush()
+  }
+
+  async getUserByAccountPassword(email: string, password: string): Promise<UserEntity> {
+    const entity = await dbService.userRepository.findOne({
+      email: email,
+      password: password,
+      isDeleted: false,
+    })
+
+    return entity
   }
 }
 
