@@ -27,6 +27,8 @@ export class DbService {
       dbName: envStore.dbName,
       user: envStore.dbUser,
       password: envStore.dbPassword,
+      // fixme: I think it's an issue about how we use MikroORM with NestJS
+      allowGlobalContext: true,
     })
 
     this.orm = orm

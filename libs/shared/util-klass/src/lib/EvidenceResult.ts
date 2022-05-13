@@ -31,5 +31,8 @@ export class EvidenceResult implements Partial<IEvidence> {
         this[key] = props[key]
       }
     }
+
+    this.createDate = new Date(this.createDate)
+    this.updateDate = new Date(this.updateDate)
   }
 }

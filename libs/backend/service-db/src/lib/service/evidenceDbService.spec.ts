@@ -44,6 +44,8 @@ describe('evidenceDbService', () => {
     expect(res[1].createDate.getTime()).toBeGreaterThan(0)
     expect(res[0].updateDate.getTime()).toBeGreaterThan(0)
     expect(res[1].updateDate.getTime()).toBeGreaterThan(0)
+    expect(res[0].createDate).toEqual(res[0].updateDate)
+    expect(res[1].createDate).toEqual(res[1].updateDate)
   })
 
   it('getEvidenceByIds()', async () => {

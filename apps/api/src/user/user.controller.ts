@@ -15,7 +15,7 @@ import { Response } from 'express'
 import { UserDto } from '@solomon/shared/util-klass'
 import { validate } from 'class-validator'
 import { loggerService } from '@solomon/shared/service-logger'
-import { AuthGuard } from '../auth/auth.guard'
+import { AdminGuard } from '../auth/admin.guard'
 
 @Controller({
   path: '/user',
@@ -86,13 +86,13 @@ export class UserController {
   })
   @Post('/')
   async addPublicUser(@Body() userDto: UserDto, @Res() res: Response) {
-    try {
-      await validate(userDto)
-    } catch (err) {
-      loggerService.error(err)
+    let validateError = await validate(new UserDto(userDto))
+
+    if (validateError.length > 0) {
+      loggerService.error(validateError)
       return res.status(400).json({
         message: 'Invalid request',
-        error: err,
+        error: validateError,
       })
     }
 
@@ -126,15 +126,15 @@ export class UserController {
     description: 'Permission denied.',
   })
   @Post('/admin')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async addAdminUser(@Body() userDto: UserDto, @Res() res: Response) {
-    try {
-      await validate(userDto)
-    } catch (err) {
-      loggerService.error(err)
+    let validateError = await validate(new UserDto(userDto))
+
+    if (validateError.length > 0) {
+      loggerService.error(validateError)
       return res.status(400).json({
         message: 'Invalid request',
-        error: err,
+        error: validateError,
       })
     }
 
@@ -168,15 +168,14 @@ export class UserController {
     description: 'Permission denied',
   })
   @Put('/')
-  @UseGuards(AuthGuard)
-  async upsertUser(@Body() userDto: UserDto, @Res() res: Response) {
-    try {
-      await validate(userDto)
-    } catch (err) {
-      loggerService.error(err)
+  async updateUser(@Body() userDto: UserDto, @Res() res: Response) {
+    let validateError = await validate(new UserDto(userDto))
+
+    if (validateError.length > 0) {
+      loggerService.error(validateError)
       return res.status(400).json({
         message: 'Invalid request',
-        error: err,
+        error: validateError,
       })
     }
 
@@ -201,15 +200,19 @@ export class UserController {
     status: 200,
     description: 'Delete user success.',
   })
+  @ApiResponse({
+    status: 403,
+    description: 'Permission denied',
+  })
   @Delete('/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async deleteUserById(@Param() id: string, @Res() res: Response) {
     try {
       await this.userService.deleteUserById(id)
     } catch (err) {
       loggerService.error(err)
       return res.status(500).json({
-        message: 'Update user error',
+        message: 'Delete user error',
         error: err,
       })
     }

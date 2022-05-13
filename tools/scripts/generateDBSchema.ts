@@ -1,4 +1,4 @@
-import { dbService } from '../../libs/backend/service-db/src'
+import { dbService } from '@solomon/backend/service-db'
 import { Client } from 'pg'
 
 const run = async () => {

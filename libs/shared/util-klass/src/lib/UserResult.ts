@@ -18,6 +18,9 @@ export class UserResult implements Partial<IUser> {
   @IsEthAddress()
   ethAddress: string = ''
 
+  @IsBoolean()
+  isAdmin: boolean = false
+
   @IsDate()
   createDate: Date = null
 
@@ -30,5 +33,8 @@ export class UserResult implements Partial<IUser> {
         this[key] = props[key]
       }
     }
+
+    this.createDate = new Date(this.createDate)
+    this.updateDate = new Date(this.updateDate)
   }
 }

@@ -6,8 +6,9 @@ export class EvidenceDbService {
   async createEvidences(evidences: EvidenceDto[]) {
     for (const evidence of evidences) {
       const entity = dbService.evidenceRepository.create(evidence)
-      entity.createDate = new Date()
-      entity.updateDate = new Date()
+      const now = new Date()
+      entity.createDate = now
+      entity.updateDate = now
       await dbService.evidenceRepository.persist(entity)
     }
 

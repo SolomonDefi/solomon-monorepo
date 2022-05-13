@@ -99,6 +99,10 @@ class EnvStore {
       ? 3333
       : parseInt(process.env['API_PORT'])
   }
+
+  get jwtSecret(): string {
+    return process.env['S3_REGION'] ?? 'test'
+  }
 }
 
 export const envStore = new EnvStore()

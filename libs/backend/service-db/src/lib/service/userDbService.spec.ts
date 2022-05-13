@@ -39,6 +39,8 @@ describe('userDbService', () => {
     expect(res[1].createDate.getTime()).toBeGreaterThan(0)
     expect(res[0].updateDate.getTime()).toBeGreaterThan(0)
     expect(res[1].updateDate.getTime()).toBeGreaterThan(0)
+    expect(res[0].createDate).toEqual(res[0].updateDate)
+    expect(res[1].createDate).toEqual(res[1].updateDate)
   })
 
   it('createAdminUsers()', async () => {
@@ -61,6 +63,8 @@ describe('userDbService', () => {
     expect(res[1].createDate.getTime()).toBeGreaterThan(0)
     expect(res[0].updateDate.getTime()).toBeGreaterThan(0)
     expect(res[1].updateDate.getTime()).toBeGreaterThan(0)
+    expect(res[0].createDate).toEqual(res[0].updateDate)
+    expect(res[1].createDate).toEqual(res[1].updateDate)
   })
 
   it('getUserByIds()', async () => {
@@ -160,5 +164,38 @@ describe('userDbService', () => {
     expect(r3.isDeleted).toEqual(false)
     expect(r1.deleteDate.getTime()).toBeGreaterThanOrEqual(beforeDeleteTime)
     expect(r2.deleteDate.getTime()).toBeGreaterThanOrEqual(beforeDeleteTime)
+  })
+
+  it('getUserByAccountPassword()', async () => {
+    const user1 = new UserDto({
+      email: 'foo1@b.ar',
+      password: 'hash1',
+    })
+    const user2 = new UserDto({
+      email: 'foo2@b.ar',
+      password: 'hash2',
+    })
+    const user3 = new UserDto({
+      email: 'foo3@b.ar',
+      password: 'hash3',
+    })
+    const userEntity1 = dbService.userRepository.create(user1)
+    const userEntity2 = dbService.userRepository.create(user2)
+    const userEntity3 = dbService.userRepository.create(user3)
+    userEntity3.isDeleted = true
+
+    await dbService.userRepository.persistAndFlush([
+      userEntity1,
+      userEntity2,
+      userEntity3,
+    ])
+
+    const res1 = await userDbService.getUserByAccountPassword(user1.email, user1.password)
+    const res2 = await userDbService.getUserByAccountPassword(user1.email, 'bad')
+    const res3 = await userDbService.getUserByAccountPassword(user3.email, user3.password)
+
+    expect(res1).toMatchObject(userEntity1)
+    expect(res2).toEqual(null)
+    expect(res3).toEqual(null)
   })
 })
