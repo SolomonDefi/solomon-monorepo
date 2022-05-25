@@ -96,14 +96,13 @@ export class EvidenceController {
     @Res() res: Response,
   ) {
     const evidence = new EvidenceDto(body)
+    const validateErr = await validate(evidence)
 
-    try {
-      await validate(evidence)
-    } catch (err) {
-      loggerService.error(err)
+    if (validateErr.length > 0) {
+      loggerService.error(validateErr)
       return res.status(400).json({
         message: 'Invalid request',
-        error: err,
+        error: validateErr,
       })
     }
 
@@ -143,14 +142,13 @@ export class EvidenceController {
     @Res() res: Response,
   ) {
     const evidence = new EvidenceDto(body)
+    const validateErr = await validate(evidence)
 
-    try {
-      await validate(evidence)
-    } catch (err) {
-      loggerService.error(err)
+    if (validateErr.length > 0) {
+      loggerService.error(validateErr)
       return res.status(400).json({
         message: 'Invalid request',
-        error: err,
+        error: validateErr,
       })
     }
 

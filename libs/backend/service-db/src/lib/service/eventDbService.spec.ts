@@ -1,39 +1,34 @@
-import { Test } from '@nestjs/testing'
-import { EventService } from './event.service'
-import { dbService } from '@solomon/backend/service-db'
 import {
   DisputeCompleteEventDto,
   DisputeCreatedEventDto,
   EvidenceSubmittedEventDto,
   PaymentCreatedEventDto,
 } from '@solomon/shared/util-klass'
-import { v4 } from 'uuid'
-import { EnumEventType } from '@solomon/shared/util-enum'
 import { stringHelper } from '@solomon/shared/util-helper'
+import { EnumEventType } from '@solomon/shared/util-enum'
+import { v4 } from 'uuid'
 import _ from 'lodash'
+import { dbService } from './dbService'
+import { eventDbService, EventDbService } from './eventDbService'
 
-describe('EventService', () => {
-  let eventService: EventService
-
+describe('eventDbService', () => {
   beforeAll(async () => {
-    const app = await Test.createTestingModule({
-      providers: [EventService],
-    }).compile()
-
     await dbService.init()
-
-    eventService = app.get<EventService>(EventService)
-  })
-
-  afterAll(async () => {
-    await dbService.close(true)
   })
 
   beforeEach(async () => {
     await dbService.resetForTest()
   })
 
-  it('saveEventDto()', async () => {
+  afterAll(async () => {
+    await dbService.close(true)
+  })
+
+  test('constructor()', () => {
+    expect(eventDbService).toBeInstanceOf(EventDbService)
+  })
+
+  test('saveEvent()', async () => {
     const dto1 = new DisputeCompleteEventDto({
       id: v4(),
       type: EnumEventType.preorderDisputeComplete,
@@ -73,10 +68,7 @@ describe('EventService', () => {
       ethPaid: '0.01',
     })
 
-    await eventService.saveEvent(dto1)
-    await eventService.saveEvent(dto2)
-    await eventService.saveEvent(dto3)
-    await eventService.saveEvent(dto4)
+    await eventDbService.saveEvent([dto1, dto2, dto3, dto4])
 
     const res = await dbService.eventRepository.findAll()
     const r1 = _.find(res, (entity) => entity.id === dto1.id)

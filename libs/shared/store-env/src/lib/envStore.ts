@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import * as process from 'process'
 
 class EnvStore {
   get isTest(): boolean {
@@ -102,6 +103,10 @@ class EnvStore {
 
   get jwtSecret(): string {
     return process.env['S3_REGION'] ?? 'test'
+  }
+
+  get apiSecret(): string {
+    return process.env['MESSAGE_SECRET'] ?? 'test'
   }
 }
 

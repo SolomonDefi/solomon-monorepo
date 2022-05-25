@@ -1,15 +1,21 @@
 import supertest from 'supertest'
 import { v4 } from 'uuid'
 import { stringHelper } from '@solomon/shared/util-helper'
+import { envStore } from '@solomon/shared/store-env'
+import {
+  IBaseEvent,
+  IDisputeCompleteEvent,
+  IDisputeCreatedEvent,
+  IEvidenceSubmittedEvent,
+  IPaymentCreatedEvent,
+} from '@solomon/shared/util-interface'
+import { EnumEventType } from '@solomon/shared/util-enum'
 
 jest.setTimeout(60 * 1000)
 
-const generateSignature = (data: Record<string, unknown>): string => {
+const generateSignature = (data: unknown): string => {
   const body = JSON.stringify(data)
-  const signature = stringHelper.generateDisputeApiSignature(
-    'bpNL2QWDZwJhuF-kJCBnB_jIDDuZ4ODzBTPoaXSjVNU',
-    body,
-  )
+  const signature = stringHelper.generateApiSignature(envStore.apiSecret, body)
   return signature
 }
 
@@ -18,27 +24,30 @@ describe('api-dispute', () => {
   let apiSignature: string
 
   beforeAll(() => {
-    api = supertest('http://127.0.0.1:3000')
+    api = supertest('http://127.0.0.1:3333')
   })
 
-  it('Health check responds with 200 code', () => {
-    return api.get('/api/health/app').expect(200)
-  })
-
-  it('Ping response with 200 code', () => {
-    const payload = {}
+  it('/api/event Invalid type returns error response', () => {
+    const payload: IBaseEvent = {
+      id: v4(),
+      type: 'invalid_type' as any,
+      party1: stringHelper.generateRandomEthAddr(),
+      party2: stringHelper.generateRandomEthAddr(),
+      contract: stringHelper.generateRandomEthAddr(),
+    }
     apiSignature = generateSignature(payload)
+
     return api
-      .post('/api/events/ping')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(200)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.created returns 200', () => {
-    const payload = {
+  it('/api/event disputeCreated returns 200', () => {
+    const payload: IDisputeCreatedEvent = {
       id: v4(),
-      type: 'dispute.preorder.created',
+      type: EnumEventType.preorderDisputeCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -47,34 +56,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(200)
   })
 
-  it('/api/events Invalid type returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid party1 returns error response', () => {
+    const payload: IDisputeCreatedEvent = {
       id: v4(),
-      type: 'invalid_type',
-      party1: stringHelper.generateRandomEthAddr(),
-      party2: stringHelper.generateRandomEthAddr(),
-      contract: stringHelper.generateRandomEthAddr(),
-      judgeContract: stringHelper.generateRandomEthAddr(),
-    }
-    apiSignature = generateSignature(payload)
-
-    return api
-      .post('/api/events/dispute.preorder.created')
-      .set('X-Signature', apiSignature)
-      .send(payload)
-      .expect(422)
-  })
-
-  it('/api/events dispute.preorder.created invalid party1 returns error response', () => {
-    const payload = {
-      id: v4(),
-      type: 'dispute.preorder.created',
+      type: EnumEventType.preorderDisputeCreated,
       party1: 'Invalid address',
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -83,16 +74,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422) // TODO -- Should this be 400?
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.created invalid party2 returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid party2 returns error response', () => {
+    const payload: IDisputeCreatedEvent = {
       id: v4(),
-      type: 'dispute.preorder.created',
+      type: EnumEventType.preorderDisputeCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: 'Invalid address',
       contract: stringHelper.generateRandomEthAddr(),
@@ -101,16 +92,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.created invalid contract returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid contract returns error response', () => {
+    const payload: IDisputeCreatedEvent = {
       id: v4(),
-      type: 'dispute.preorder.created',
+      type: EnumEventType.preorderDisputeCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: 'Invalid address',
@@ -119,16 +110,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.created invalid judgeContract returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid judgeContract returns error response', () => {
+    const payload: IDisputeCreatedEvent = {
       id: v4(),
-      type: 'dispute.preorder.created',
+      type: EnumEventType.preorderDisputeCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -137,17 +128,17 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.completed returns 200 response', () => {
+  it('/api/event disputeCreated returns 200 response', () => {
     const party1 = stringHelper.generateRandomEthAddr()
-    const payload = {
+    const payload: IDisputeCompleteEvent = {
       id: v4(),
-      type: 'dispute.preorder.completed',
+      type: EnumEventType.preorderDisputeComplete,
       party1: party1,
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -157,16 +148,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.completed')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(200)
   })
 
-  it('/api/events dispute.preorder.completed invalid party1 returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid party1 returns error response', () => {
+    const payload: IDisputeCompleteEvent = {
       id: v4(),
-      type: 'dispute.preorder.completed',
+      type: EnumEventType.preorderDisputeComplete,
       party1: 'Invalid address',
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -176,16 +167,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.completed')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.completed invalid party2 returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid party2 returns error response', () => {
+    const payload: IDisputeCompleteEvent = {
       id: v4(),
-      type: 'dispute.preorder.completed',
+      type: EnumEventType.preorderDisputeComplete,
       party1: stringHelper.generateRandomEthAddr(),
       party2: 'Invalid address',
       contract: stringHelper.generateRandomEthAddr(),
@@ -195,16 +186,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.completed')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.completed invalid contract returns error response', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid contract returns error response', () => {
+    const payload: IDisputeCompleteEvent = {
       id: v4(),
-      type: 'dispute.preorder.completed',
+      type: EnumEventType.preorderDisputeComplete,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: 'Invalid address',
@@ -214,16 +205,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.completed')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.completed invalid judgeContract returns error message', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid judgeContract returns error message', () => {
+    const payload: IDisputeCompleteEvent = {
       id: v4(),
-      type: 'dispute.preorder.completed',
+      type: EnumEventType.preorderDisputeComplete,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -233,16 +224,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.completed')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events dispute.preorder.completed invalid awardedTo returns error message', () => {
-    const payload = {
+  it('/api/event disputeCreated invalid awardedTo returns error message', () => {
+    const payload: IDisputeCompleteEvent = {
       id: v4(),
-      type: 'dispute.preorder.completed',
+      type: EnumEventType.preorderDisputeComplete,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -252,132 +243,137 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/dispute.preorder.completed')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events evidence.preorder.submitted returns 200 response', () => {
+  it('/api/event evidenceSubmitted returns 200 response', () => {
     const party1 = stringHelper.generateRandomEthAddr()
-    const payload = {
+    const payload: IEvidenceSubmittedEvent = {
       id: v4(),
-      type: 'evidence.preorder.submitted',
+      type: EnumEventType.preorderEvidenceSubmitted,
       party1: party1,
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
-      evidenceUrl: '',
+      evidenceUrl: 'http://foo.bar',
       submitter: party1,
     }
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/evidence.preorder.submitted')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(200)
   })
 
-  it('/api/events evidence.preorder.submitted invalid party1 returns error message', () => {
-    const payload = {
+  it('/api/event evidenceSubmitted invalid party1 returns error message', () => {
+    const payload: IEvidenceSubmittedEvent = {
       id: v4(),
-      type: 'evidence.preorder.submitted',
+      type: EnumEventType.preorderEvidenceSubmitted,
       party1: 'Invalid address',
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
+      evidenceUrl: 'http://foo.bar',
       submitter: stringHelper.generateRandomEthAddr(),
     }
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/evidence.preorder.submitted')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events evidence.preorder.submitted invalid party2 returns error message', () => {
-    const payload = {
+  it('/api/event evidenceSubmitted invalid party2 returns error message', () => {
+    const payload: IEvidenceSubmittedEvent = {
       id: v4(),
-      type: 'evidence.preorder.submitted',
+      type: EnumEventType.preorderEvidenceSubmitted,
       party1: stringHelper.generateRandomEthAddr(),
       party2: 'Invalid address',
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
+      evidenceUrl: 'http://foo.bar',
       submitter: stringHelper.generateRandomEthAddr(),
     }
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/evidence.preorder.submitted')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events evidence.preorder.submitted invalid contract returns error message', () => {
-    const payload = {
+  it('/api/event evidenceSubmitted invalid contract returns error message', () => {
+    const payload: IEvidenceSubmittedEvent = {
       id: v4(),
-      type: 'evidence.preorder.submitted',
+      type: EnumEventType.preorderEvidenceSubmitted,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: 'Invalid address',
       judgeContract: stringHelper.generateRandomEthAddr(),
+      evidenceUrl: 'http://foo.bar',
       submitter: stringHelper.generateRandomEthAddr(),
     }
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/evidence.preorder.submitted')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events evidence.preorder.submitted invalid judgeContract returns error message', () => {
-    const payload = {
+  it('/api/event evidenceSubmitted invalid judgeContract returns error message', () => {
+    const payload: IEvidenceSubmittedEvent = {
       id: v4(),
-      type: 'evidence.preorder.submitted',
+      type: EnumEventType.preorderEvidenceSubmitted,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: 'Invalid address',
+      evidenceUrl: 'http://foo.bar',
       submitter: stringHelper.generateRandomEthAddr(),
     }
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/evidence.preorder.submitted')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events evidence.preorder.submitted invalid submitter returns error message', () => {
-    const payload = {
+  it('/api/event evidenceSubmitted invalid submitter returns error message', () => {
+    const payload: IEvidenceSubmittedEvent = {
       id: v4(),
-      type: 'evidence.preorder.submitted',
+      type: EnumEventType.preorderEvidenceSubmitted,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
+      evidenceUrl: 'http://foo.bar',
       submitter: 'Invalid address',
     }
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/evidence.preorder.submitted')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
-      .expect(422)
+      .expect(400)
   })
 
-  it('/api/events payment.preorder.created returns 200 response', () => {
-    const payload = {
+  it('/api/event paymentCreated returns 200 response', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -389,16 +385,16 @@ describe('api-dispute', () => {
     apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(200)
   })
 
-  it('/api/events payment.preorder.created invalid party1 returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid party1 returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: 'Invalid address',
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -407,18 +403,19 @@ describe('api-dispute', () => {
       discount: 40,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid party2 returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid party2 returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: 'Invalid address',
       contract: stringHelper.generateRandomEthAddr(),
@@ -427,18 +424,19 @@ describe('api-dispute', () => {
       discount: 40,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid contract returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid contract returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: 'Invalid address',
@@ -447,18 +445,19 @@ describe('api-dispute', () => {
       discount: 40,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid judgeContract returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid judgeContract returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -467,18 +466,19 @@ describe('api-dispute', () => {
       discount: 40,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid token returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid token returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -487,18 +487,19 @@ describe('api-dispute', () => {
       discount: 40,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid discount -1 returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid discount -1 returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -507,18 +508,19 @@ describe('api-dispute', () => {
       discount: -1,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid discount 101 returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid discount 101 returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
@@ -527,29 +529,31 @@ describe('api-dispute', () => {
       discount: 101,
       ethPaid: '1000000',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)
   })
 
-  it('/api/events payment.preorder.created invalid ethPaid -1 returns error message', () => {
-    const payload = {
+  it('/api/event paymentCreated invalid ethPaid abc returns error message', () => {
+    const payload: IPaymentCreatedEvent = {
       id: v4(),
-      type: 'payment.preorder.created',
+      type: EnumEventType.preorderPaymentCreated,
       party1: stringHelper.generateRandomEthAddr(),
       party2: stringHelper.generateRandomEthAddr(),
       contract: stringHelper.generateRandomEthAddr(),
       judgeContract: stringHelper.generateRandomEthAddr(),
       token: stringHelper.generateRandomEthAddr(),
-      discount: 101,
+      discount: 0,
       ethPaid: '-1',
     }
+    apiSignature = generateSignature(payload)
 
     return api
-      .post('/api/events/payment.preorder.created')
+      .post('/api/event')
       .set('X-Signature', apiSignature)
       .send(payload)
       .expect(400)

@@ -19,7 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["libs/web/ui-assets/src/*"],
-      "@solomon/shared/util-helper": ["libs/shared/util-helper/src/index.ts"],
+      "@solomon/shared/util-type": ["libs/shared/util-type/src/index.ts"],
       "@solomon/api/feature-app": ["libs/api/feature-app/src/index.ts"],
       "@solomon/apps/blockchain-watcher": ["apps/blockchain-watcher/src"],
       "@solomon/apps/developer-docs": ["apps/developer-docs/src"],
@@ -39,7 +39,9 @@
       ],
       "@solomon/shared/util-contract": ["libs/shared/util-contract/src/index.ts"],
       "@solomon/shared/util-core": ["libs/shared/util-core/src/index.ts"],
+      "@solomon/shared/util-enum": ["libs/shared/util-enum/src/index.ts"],
       "@solomon/shared/util-event": ["libs/shared/util-event/src/index.ts"],
+      "@solomon/shared/util-helper": ["libs/shared/util-helper/src/index.ts"],
       "@solomon/shared/util-i18n": ["libs/shared/util-i18n/src/index.ts"],
       "@solomon/shared/util-interface": ["libs/shared/util-interface/src/index.ts"],
       "@solomon/shared/util-klass": ["libs/shared/util-klass/src/index.ts"],

@@ -1,0 +1,23 @@
+{
+  "root": "libs/shared/util-enum",
+  "sourceRoot": "libs/shared/util-enum/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/util-enum/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/util-enum"],
+      "options": {
+        "jestConfig": "libs/shared/util-enum/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

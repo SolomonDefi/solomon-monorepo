@@ -2,7 +2,7 @@ import { IsEthAddress } from './IsEthAddress'
 import { validateSync } from 'class-validator'
 import { ethers } from 'ethers'
 
-describe('IsEthAddress decorator', () => {
+describe('IsEthAddress validator', () => {
   it('with valid prop', async () => {
     class C1 {
       @IsEthAddress()

@@ -4,6 +4,7 @@ import { ScanLogEntity } from '../entity/ScanLogEntity'
 import { EvidenceEntity } from '../entity/EvidenceEntity'
 import { envStore } from '@solomon/shared/store-env'
 import { UserEntity } from '../entity/UserEntity'
+import { EventEntity } from '../entity/EventEntity'
 
 export class DbService {
   orm: MikroORM = null as any
@@ -20,9 +21,13 @@ export class DbService {
     return this.orm.em.getRepository(UserEntity)
   }
 
+  get eventRepository() {
+    return this.orm.em.getRepository(EventEntity)
+  }
+
   async init() {
     const orm = await MikroORM.init({
-      entities: [ScanLogEntity, EvidenceEntity, UserEntity],
+      entities: [ScanLogEntity, EvidenceEntity, UserEntity, EventEntity],
       type: 'postgresql',
       dbName: envStore.dbName,
       user: envStore.dbUser,
