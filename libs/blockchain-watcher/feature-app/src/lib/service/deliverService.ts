@@ -8,7 +8,7 @@ import { stringHelper } from '@solomon/shared/util-helper'
 export class DeliverService {
   async sendEventToDisputeApi(event: PaymentCreatedEvent) {
     const body = JSON.stringify(event)
-    const signature = stringHelper.generateDisputeApiSignature(
+    const signature = stringHelper.generateApiSignature(
       envStore.disputeApiSecretKey,
       body,
     )

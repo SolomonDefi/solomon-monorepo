@@ -2,7 +2,7 @@ import { sha256 } from 'js-sha256'
 import { Base64 } from 'js-base64'
 
 export class StringHelper {
-  generateDisputeApiSignature(secretKey: string, value: string): string {
+  generateApiSignature(secretKey: string, value: string): string {
     let arr = sha256.hmac.digest(secretKey, value)
     return Base64.fromUint8Array(Uint8Array.from(arr))
   }
@@ -20,7 +20,19 @@ export class StringHelper {
   }
 
   isEthAddress(str: string): boolean {
+    if (typeof str != 'string') {
+      return false
+    }
+
     return /^0x[a-fA-F0-9]{40}$/.test(str)
+  }
+
+  isNumericString(str: string): boolean {
+    if (typeof str != 'string') {
+      return false
+    }
+
+    return !isNaN(str as any) && !isNaN(parseFloat(str))
   }
 }
 
