@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./library/SlmShared.sol";
 import "./library/SlmJudgement.sol";
@@ -74,9 +74,9 @@ contract SlmChargeback is SlmShared {
     function requestChargeback(string memory _evidenceURL) external {
         require(msg.sender == buyer(), "Only buyer can chargeback");
         require(!disputeInitiated, "Dispute has already been initiated");
+        disputeInitiated = true;
         super._initiateDispute();
         super._party1Evidence(_evidenceURL);
-        disputeInitiated = true;
     }
 
     /// Buyer evidence of completed transaction
@@ -115,8 +115,8 @@ contract SlmChargeback is SlmShared {
             state = TransactionState.CompleteParty1;
         }
         if (!buyerWithdrawalComplete) {
-            withdraw(buyer(), owner, isTie, finalWithdrawal);
             buyerWithdrawalComplete = true;
+            withdraw(buyer(), owner, isTie, finalWithdrawal);
         }
         finalWithdrawal = true;
     }
@@ -145,8 +145,8 @@ contract SlmChargeback is SlmShared {
         }
 
         if (!merchantWithdrawalComplete) {
-            withdraw(merchant(), owner, isTie, finalWithdrawal);
             merchantWithdrawalComplete = true;
+            withdraw(merchant(), owner, isTie, finalWithdrawal);
         }
         finalWithdrawal = true;
     }

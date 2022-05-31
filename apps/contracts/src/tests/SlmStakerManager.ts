@@ -35,6 +35,10 @@ describe('SLM Staker Manager', function () {
 
     // Check that the stake has been reflected in both the stakeManager and user wallet balances
     userId1 = 1
+    await chai
+      .expect(stake(token, manager, account1, userId1, 300))
+      .to.be.revertedWith('Insufficient balance')
+
     await stake(token, manager, account1, userId1, stakeAmount)
     chai.expect(await manager.getStake(account1.address)).to.equal(stakeAmount)
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
@@ -62,6 +66,7 @@ describe('SLM Staker Manager', function () {
 
     // Test unstaking and retrieval of unstake data & balance changes
     await unstake(manager, account1)
+
     chai.expect(await manager.getUnstakedAmount(account1.address, 0)).to.equal(100)
     chai.expect(await manager.getUnstakeCount(account1.address)).to.equal(1)
 

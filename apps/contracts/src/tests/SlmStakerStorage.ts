@@ -234,6 +234,11 @@ describe('SLM Staker Storage', function () {
     // Test sending of funds from staker storage contract
     chai.expect(await token.balanceOf(chargeback.address)).to.equal(300)
     chai.expect(await token.balanceOf(account1.address)).to.equal(100)
+    chai.expect(await token.balanceOf(storage.address)).to.equal(100)
+
+    await chai
+      .expect(storage.sendFunds(account1.address, 200))
+      .to.be.revertedWith('Insufficient balance')
 
     await storage.sendFunds(account1.address, 100)
     chai.expect(await token.balanceOf(account1.address)).to.equal(200)

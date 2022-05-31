@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./Ownable.sol";
 import "./IERC20.sol";
@@ -33,19 +33,19 @@ abstract contract SlmShared is Ownable {
     string internal _party2EvidenceURL;
 
     /// @dev Default discount percentage in whole numbers
-    uint8 public discount;
+    uint8 public discount = 0;
 
     /// @dev Start of dispute
     uint256 public disputeTime;
 
     /// @dev Default length of dispute voting period
-    uint256 public disputePeriod;
+    uint256 public disputePeriod = 0;
 
     /// @dev Default juror fees representing one hundredth of a percent in whole numbers
-    uint256 public jurorFees;
+    uint256 public jurorFees = 0;
 
     /// @dev Default upkeep fees representing one hundredth of a percent in whole numbers
-    uint256 public upkeepFees;
+    uint256 public upkeepFees = 0;
 
     /// @dev Tracks dispute state
     TransactionState public state = TransactionState.Inactive;
@@ -188,6 +188,7 @@ abstract contract SlmShared is Ownable {
         uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100);
         uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100);
         uint256 transferAmount = totalBalance - jurorFeeAmount - upkeepFeeAmount;
+        // TODO: Add tests to this
         if (address(token) == address(0)) {
             payable(recipient).transfer(transferAmount);
             payable(owner).transfer(upkeepFeeAmount);

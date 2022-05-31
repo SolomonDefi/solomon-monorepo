@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./library/Ownable.sol";
 import "./library/IERC20.sol";
 import "./library/SlmJudgement.sol";
 import "./SlmStakerStorage.sol";
-
-// TODO: Add back interest/reward sections + Unstaking mechanism
-// TODO: Add back functions related to voting
 
 /// @title SlmStakerManager allows users to stake SLM to become jurors and earn rewards
 contract SlmStakerManager is Ownable {
@@ -78,9 +75,10 @@ contract SlmStakerManager is Ownable {
     /// Allows users to stake Slm tokens
     /// @param beneficiary User wallet address
     /// @param amount Number of Slm tokens to stake
-    function stake(uint256 beneficiary, uint256 amount) public {
+    function stake(uint256 beneficiary, uint256 amount) external {
         require(amount > 0, "Invalid amount");
         address backer = msg.sender;
+        require(token.balanceOf(backer) >= amount, "Insufficient balance");
 
         uint256 unstakeCount = stakerStorage.getUnstakeCount(backer);
 
@@ -105,11 +103,12 @@ contract SlmStakerManager is Ownable {
     }
 
     /// Allows user to unstake all tokens
-    function unstake() public returns(uint256) {
+    function unstake() external returns(uint256) {
         address backer = msg.sender;
 
         uint256 userStake = stakerStorage.getStake(backer);
         require(userStake > 0, "No stake");
+        require(token.balanceOf(address(stakerStorage)) >= userStake, "Insufficient balance");
 
         stakerStorage.decreaseStakeAmount(backer, userStake);
 
@@ -120,14 +119,8 @@ contract SlmStakerManager is Ownable {
         for (uint256 i = 0; i < stakerPool.length; i += 1) {
             uint256 beneficiary = stakerStorage.getUserId(backer);
             if (stakerPool[i] == beneficiary) {
-                delete stakerPool[i];
-
-                if (stakerPool.length > 1 && i != (stakerPool.length - 1)) {
-                    stakerPool[i] = stakerPool[stakerPool.length - 1];
-                    stakerPool.pop();
-                }  else if (stakerPool.length > 1 && i == (stakerPool.length - 1)) {
-                    stakerPool.pop();
-                }
+                stakerPool[i] = stakerPool[stakerPool.length - 1];
+                stakerPool.pop();
             }
         }
         stakerStorage.updateStakerPool(stakerPool);
@@ -139,7 +132,7 @@ contract SlmStakerManager is Ownable {
     /// Sets details of dispute and assigns outstanding votes to assigned jurors
     /// @param disputeAddress Dispute contract address
     /// @param endTime Dispute vote end time
-    function setVoteDetails(address disputeAddress, uint256 endTime) public onlyOwnerOrJudgement {
+    function setVoteDetails(address disputeAddress, uint256 endTime) external onlyOwnerOrJudgement {
         require(disputeAddress != address(0), "Zero addr");
         require(endTime >= block.timestamp, "Invalid end time");
         uint256 prevEndTime = stakerStorage.getVoteEndTime(disputeAddress);
@@ -208,6 +201,7 @@ contract SlmStakerManager is Ownable {
         uint256 minWaitTime = stakerStorage.minWithdrawalWaitTime();
         require(block.timestamp > lastWithdrawalTime + minWaitTime, "Cannot withdraw yet");
         uint256 stakeRewards = _calculateStakeRewards(msg.sender);
+        require(token.balanceOf(address(stakerStorage)) >= stakeRewards, "Insufficient balance");
         if (stakeRewards > 0) {
             stakerStorage.sendFunds(msg.sender, stakeRewards);
             emit RewardWithdrawn(msg.sender, stakeRewards);
@@ -224,7 +218,7 @@ contract SlmStakerManager is Ownable {
         uint256 latestIndex = stakerStorage.getRewardPercentHistoryLength() - 1;
         uint256 rewardAmount = this.getRewardAmountHistory(latestIndex);
         uint256 stakerLatestIndex = stakerStorage.getLastRewardIndex(walletAddress);
-        uint256 stakeRewards;
+        uint256 stakeRewards = 0;
 
         // Calculate stake rewards and update latest reward withdrawal index and time
         if (block.timestamp > lastWithdrawal + stakerStorage.minWithdrawalWaitTime() && stakerLatestIndex < latestIndex) {
