@@ -34,7 +34,7 @@ contract SlmChargeback is SlmShared {
     function initializeChargeback(
         address _judge,
         address _token,
-        address _stakerStorage,
+        address payable _stakerStorage,
         address _owner,
         address _merchant,
         address _buyer,

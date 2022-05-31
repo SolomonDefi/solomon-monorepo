@@ -89,9 +89,9 @@ abstract contract SlmShared is Ownable {
     /// @param _owner The address of the contract owner
     /// @param _p1 The address of the first party
     /// @param _p2 The address of the second party
-    function initialize(address _judge, address _token, address _stakerStorage, address _owner, address _p1, address _p2) internal {
+    function initialize(address _judge, address _token, address payable _stakerStorage, address _owner, address _p1, address _p2) internal {
         require(_judge != address(0), "Zero addr");
-        require(_token != address(0), "Zero addr");
+        // require(_token != address(0), "Zero addr");
         require(_stakerStorage != address(0), "Zero addr");
         require(_owner != address(0), "Zero addr");
         require(_p1 != address(0), "Zero addr");
@@ -185,19 +185,22 @@ abstract contract SlmShared is Ownable {
     /// @param isTie Flag indicating whether result is a tie
     /// @param finalWithdrawal Flag indicating whether this is final withdrawal
     function _transferFunds(uint256 totalBalance, address recipient, address owner, bool isTie, bool finalWithdrawal) private {
-        uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100);
-        uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100);
+        uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100 * 100);
+        uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100 * 100);
         uint256 transferAmount = totalBalance - jurorFeeAmount - upkeepFeeAmount;
-        // TODO: Add tests to this
+
         if (address(token) == address(0)) {
+            // Ethereum transfers
             payable(recipient).transfer(transferAmount);
             payable(owner).transfer(upkeepFeeAmount);
+            // Allocate and transfer remaining allotted amount to jurors to prevent residual balances
             if (isTie && !finalWithdrawal) {
                 payable(address(stakerStorage)).transfer(jurorFeeAmount);
             } else {
                 payable(address(stakerStorage)).transfer(address(this).balance);
             }
         } else {
+            // Token transfers
             token.transfer(recipient, transferAmount);
             token.transfer(owner, upkeepFeeAmount);
             // Allocate and transfer remaining allotted amount to jurors to prevent residual balances

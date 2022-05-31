@@ -33,7 +33,7 @@ contract SlmPreorder is SlmShared {
     function initializePreorder(
         address _judge,
         address _token,
-        address _stakerStorage,
+        address payable _stakerStorage,
         address _owner,
         address _merchant,
         address _buyer,

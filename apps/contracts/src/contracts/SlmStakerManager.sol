@@ -52,7 +52,7 @@ contract SlmStakerManager is Ownable {
     /// @param stakerStorageAddress SlmStakerStorage address
     constructor(
         address tokenAddress,
-        address stakerStorageAddress
+        address payable stakerStorageAddress
     ) {
         require(tokenAddress != address(0), "Zero addr");
         require(stakerStorageAddress != address(0), "Zero addr");

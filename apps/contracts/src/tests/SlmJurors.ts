@@ -54,8 +54,8 @@ describe('SLM Jurors', function () {
     // Sets up constants
     latestBlock = await ethers.provider.getBlock('latest')
     currentTime = latestBlock.timestamp
-    jurorFeePercent = 3000 // 3%
-    upkeepFeesPercent = 2000 // 2%
+    jurorFeePercent = 300000 // 3%
+    upkeepFeesPercent = 600000 // 6%
     discount = 10 // 10%
     ;[token, manager, storage, jurors, slmFactory] = await deployContracts(
       100000000,
@@ -268,8 +268,8 @@ describe('SLM Jurors', function () {
     await escrow.connect(account8).withdrawFunds(encryptionKey)
 
     // Calculate fees and remaining value transferred to winning party
-    const jurorFees = Math.round((disputeBalance * jurorFeePercent) / 100000) // 3%
-    const upkeepFees = Math.round((disputeBalance * upkeepFeesPercent) / 100000) // 2%
+    const jurorFees = Math.round((disputeBalance * (jurorFeePercent / 100000)) / 100) // 3%
+    const upkeepFees = Math.round((disputeBalance * (upkeepFeesPercent / 100000)) / 100) // 2%
     const transferredAmount = disputeBalance - jurorFees - upkeepFees
     let expectedValue = account9Balance.add(ethers.BigNumber.from(transferredAmount))
 
@@ -289,7 +289,7 @@ describe('SLM Jurors', function () {
 
     // The winner can call the withdraw function afterwards, but nothing will happen
     await escrow.connect(account9).withdrawFunds(encryptionKey)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(195) // 100 (starting balance) + 95 (remaining funds)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(191) // 100 (starting balance) + 95 (remaining funds)
   })
 
   it('Checks tie behavior', async function () {
@@ -333,17 +333,27 @@ describe('SLM Jurors', function () {
     let storageBalance = await token.balanceOf(storage.address)
     let ownerBalance = await token.balanceOf(owner.address)
     chai.expect(account8Balance).to.equal(100)
-    chai.expect(await token.balanceOf(account9.address)).to.equal(195)
+    chai.expect(await token.balanceOf(account9.address)).to.equal(191)
 
     await chargeback.connect(account8).buyerWithdraw(encryptionKey)
 
     let jurorFees = Math.floor(
-      (firstHalf * jurorFeePercent * (100 - discount)) / (100000 * 100),
+      (firstHalf * jurorFeePercent * (100 - discount)) / (100000 * 100 * 100),
     )
     let upkeepFees = Math.floor(
-      (firstHalf * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
+      (firstHalf * upkeepFeesPercent * (100 - discount)) / (100000 * 100 * 100),
     )
     let transferredAmount = firstHalf - jurorFees - upkeepFees
+    console.log(
+      'first',
+      firstHalf,
+      'juror',
+      jurorFees,
+      'upkeep',
+      upkeepFees,
+      'transferred',
+      transferredAmount,
+    )
     const account8BalanceAfter = account8Balance.add(
       ethers.BigNumber.from(transferredAmount),
     )
@@ -372,16 +382,16 @@ describe('SLM Jurors', function () {
     const account9Balance = await token.balanceOf(account9.address)
     storageBalance = await token.balanceOf(storage.address)
     ownerBalance = await token.balanceOf(owner.address)
-    chai.expect(account9Balance).to.equal(195)
-    chai.expect(await token.balanceOf(account8.address)).to.equal(149)
+    chai.expect(account9Balance).to.equal(191)
+    chai.expect(await token.balanceOf(account8.address)).to.equal(147)
 
     await chargeback.connect(account9).merchantWithdraw(encryptionKey)
 
     jurorFees = Math.floor(
-      (disputeBalance * jurorFeePercent * (100 - discount)) / (100000 * 100),
+      (disputeBalance * jurorFeePercent * (100 - discount)) / (100000 * 100 * 100),
     ) // 3%
     upkeepFees = Math.floor(
-      (disputeBalance * upkeepFeesPercent * (100 - discount)) / (100000 * 100),
+      (disputeBalance * upkeepFeesPercent * (100 - discount)) / (100000 * 100 * 100),
     ) // 2%
     // Check that the transferred amount takes into account all juror and upkeep fees and were transferred to the merchant
     transferredAmount = disputeBalance - jurorFees - upkeepFees

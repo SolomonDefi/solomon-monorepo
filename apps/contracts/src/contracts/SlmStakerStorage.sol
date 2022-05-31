@@ -96,6 +96,9 @@ contract SlmStakerStorage is Ownable {
         minStake = minimumStake;
     }
 
+    // Receive function to receive ETH
+    receive() external payable { }
+
     /// Set SlmStakerManager contract
     /// @param newStakerManager SlmStakerManager contract
     function setStakerManager(address newStakerManager) external onlyOwner {

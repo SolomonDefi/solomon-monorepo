@@ -148,8 +148,8 @@ export async function deployContracts(
   unstakePeriod = 1,
   minimumStake = 1,
   minJurorCount = 3,
-  jurorFees = 0,
-  upkeepFees = 0,
+  jurorFees = 10,
+  upkeepFees = 10,
   discount = 10,
 ) {
   const [owner] = await ethers.getSigners()

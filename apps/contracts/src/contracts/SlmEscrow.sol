@@ -26,7 +26,7 @@ contract SlmEscrow is SlmShared {
     function initializeEscrow(
         address _judge,
         address _token,
-        address _stakerStorage,
+        address payable _stakerStorage,
         address _owner,
         address _p1,
         address _p2,

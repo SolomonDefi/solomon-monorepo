@@ -29,7 +29,7 @@ contract SlmFactory is CloneFactory, Ownable {
     address public slmToken;
 
     /// @dev Address of SlmJudgement address
-    address public stakerStorage;
+    address payable public stakerStorage;
 
     /// @dev Default discount percentage in whole numbers
     uint8 public slmDiscount;
@@ -74,7 +74,7 @@ contract SlmFactory is CloneFactory, Ownable {
     constructor(
         address _judge,
         address _slmToken,
-        address _stakerStorage,
+        address payable _stakerStorage,
         address _chargebackMasterContract,
         address _preorderMasterContract,
         address _escrowMasterContract,
@@ -148,7 +148,7 @@ contract SlmFactory is CloneFactory, Ownable {
     function createChargeback(uint256 disputeID, address merchant, address buyer, address paymentToken) external payable {
         require(merchant != address(0), "Zero addr");
         require(buyer != address(0), "Zero addr");
-        require(paymentToken != address(0), "Zero addr");
+        // require(paymentToken != address(0), "Zero addr");
         SlmChargeback chargeback = SlmChargeback(createClone(chargebackMasterContract));
         chargebackAddressList[disputeID] = address(chargeback);
         uint8 discount = 0;
@@ -177,7 +177,7 @@ contract SlmFactory is CloneFactory, Ownable {
     function createPreorder(uint256 disputeID, address merchant, address buyer, address paymentToken) external payable {
         require(merchant != address(0), "Zero addr");
         require(buyer != address(0), "Zero addr");
-        require(paymentToken != address(0), "Zero addr");
+        // require(paymentToken != address(0), "Zero addr");
         SlmPreorder preorder = SlmPreorder(createClone(preorderMasterContract));
         preorderAddressList[disputeID] = address(preorder);
         uint8 discount = 0;
@@ -194,7 +194,7 @@ contract SlmFactory is CloneFactory, Ownable {
         } else {
             require(msg.value > 0, "Payment not provided");
         }
-        preorder.initializePreorder{ value: msg.value }(judge, paymentToken, stakerStorage,owner, merchant, buyer, jurorFees, upkeepFees, discount);
+        preorder.initializePreorder{ value: msg.value }(judge, paymentToken, stakerStorage, owner, merchant, buyer, jurorFees, upkeepFees, discount);
         emit PreorderCreated(preorderAddressList[disputeID]);
     }
 
@@ -206,14 +206,14 @@ contract SlmFactory is CloneFactory, Ownable {
     function createEscrow(uint256 disputeID, address party1, address party2, address paymentToken) external payable {
         require(party1 != address(0), "Zero addr");
         require(party2 != address(0), "Zero addr");
-        require(paymentToken != address(0), "Zero addr");
+        // require(paymentToken != address(0), "Zero addr");
         SlmEscrow escrow = SlmEscrow(createClone(escrowMasterContract));
         escrowAddressList[disputeID] = address(escrow);
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
             require(IERC20(paymentToken).balanceOf(msg.sender) >= allowance, "Insufficient balance");
-            
+
             IERC20(paymentToken).transferFrom(msg.sender, address(escrow), allowance);
         } else {
             require(msg.value > 0, "Payment not provided");
