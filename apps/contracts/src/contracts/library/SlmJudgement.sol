@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./Ownable.sol";
 import "./IERC20.sol";
@@ -49,9 +49,6 @@ contract SlmJudgement is Ownable {
 
     /// List of user addresses to member role details
     mapping(address => Role) private disputeRoles;
-
-    /// Map of available voters
-    mapping(address => bool) private voters;
 
     /// Mapping of dispute address to staker address and juror status
     mapping(address => mapping(address => bool)) private jurorList;
@@ -198,7 +195,7 @@ contract SlmJudgement is Ownable {
 
     /// Tallies votes and returns the latest state of a contract dispute
     /// @param slmContract Contract to check dispute status
-    function voteStatus(address slmContract) public {
+    function voteStatus(address slmContract) external {
         require(slmContract != address(0), "Zero addr");
         require(!inactiveDispute[slmContract], "Dispute resolved");
         Dispute storage dispute = disputes[slmContract];

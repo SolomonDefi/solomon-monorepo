@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./Ownable.sol";
 import "./IERC20.sol";
@@ -33,19 +33,19 @@ abstract contract SlmShared is Ownable {
     string internal _party2EvidenceURL;
 
     /// @dev Default discount percentage in whole numbers
-    uint8 public discount;
+    uint8 public discount = 0;
 
     /// @dev Start of dispute
     uint256 public disputeTime;
 
     /// @dev Default length of dispute voting period
-    uint256 public disputePeriod;
+    uint256 public disputePeriod = 0;
 
     /// @dev Default juror fees representing one hundredth of a percent in whole numbers
-    uint256 public jurorFees;
+    uint256 public jurorFees = 0;
 
     /// @dev Default upkeep fees representing one hundredth of a percent in whole numbers
-    uint256 public upkeepFees;
+    uint256 public upkeepFees = 0;
 
     /// @dev Tracks dispute state
     TransactionState public state = TransactionState.Inactive;
@@ -89,9 +89,9 @@ abstract contract SlmShared is Ownable {
     /// @param _owner The address of the contract owner
     /// @param _p1 The address of the first party
     /// @param _p2 The address of the second party
-    function initialize(address _judge, address _token, address _stakerStorage, address _owner, address _p1, address _p2) internal {
+    function initialize(address _judge, address _token, address payable _stakerStorage, address _owner, address _p1, address _p2) internal {
         require(_judge != address(0), "Zero addr");
-        require(_token != address(0), "Zero addr");
+        // require(_token != address(0), "Zero addr");
         require(_stakerStorage != address(0), "Zero addr");
         require(_owner != address(0), "Zero addr");
         require(_p1 != address(0), "Zero addr");
@@ -185,18 +185,22 @@ abstract contract SlmShared is Ownable {
     /// @param isTie Flag indicating whether result is a tie
     /// @param finalWithdrawal Flag indicating whether this is final withdrawal
     function _transferFunds(uint256 totalBalance, address recipient, address owner, bool isTie, bool finalWithdrawal) private {
-        uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100);
-        uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100);
+        uint256 jurorFeeAmount = ((totalBalance * jurorFees) * (100 - discount)) / ( 100000 * 100 * 100);
+        uint256 upkeepFeeAmount = ((totalBalance * upkeepFees) * (100 - discount)) / ( 100000 * 100 * 100);
         uint256 transferAmount = totalBalance - jurorFeeAmount - upkeepFeeAmount;
+
         if (address(token) == address(0)) {
+            // Ethereum transfers
             payable(recipient).transfer(transferAmount);
             payable(owner).transfer(upkeepFeeAmount);
+            // Allocate and transfer remaining allotted amount to jurors to prevent residual balances
             if (isTie && !finalWithdrawal) {
                 payable(address(stakerStorage)).transfer(jurorFeeAmount);
             } else {
                 payable(address(stakerStorage)).transfer(address(this).balance);
             }
         } else {
+            // Token transfers
             token.transfer(recipient, transferAmount);
             token.transfer(owner, upkeepFeeAmount);
             // Allocate and transfer remaining allotted amount to jurors to prevent residual balances

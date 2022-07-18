@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./library/Ownable.sol";
 import "./library/IERC20.sol";
 import "./SlmStakerManager.sol";
-
-// TODO: Add back interest/reward sections
-// TODO: Update references to SLM Token
 
 /// @title SlmStakerStorage stores information related to the Stakers
 contract SlmStakerStorage is Ownable {
@@ -48,7 +45,7 @@ contract SlmStakerStorage is Ownable {
     mapping(address => uint256) private stakes;
 
     /// Mapping for staker wallet address and unstake history
-    mapping(address => unstakedInfo[]) private unstakedSLM;
+    mapping(address => UnstakedInfo[]) private unstakedSLM;
 
     /// Staker address to total outstanding dispute votes
     mapping(address => uint256) private outstandingVotes;
@@ -69,7 +66,7 @@ contract SlmStakerStorage is Ownable {
     uint256[] private rewardAmountHistory;
 
     /// @dev Unstake information structure
-    struct unstakedInfo {
+    struct UnstakedInfo {
         uint256 amount;
         uint256 time;
     }
@@ -99,6 +96,9 @@ contract SlmStakerStorage is Ownable {
         minStake = minimumStake;
     }
 
+    // Receive function to receive ETH
+    receive() external payable { }
+
     /// Set SlmStakerManager contract
     /// @param newStakerManager SlmStakerManager contract
     function setStakerManager(address newStakerManager) external onlyOwner {
@@ -123,7 +123,6 @@ contract SlmStakerStorage is Ownable {
     /// Set minimum wait times for withdrawals
     /// @param newWaitTime Minimum wait time for withdrawals in seconds
     function setMinWithdrawalWaitTime(uint256 newWaitTime) external onlyOwner {
-        require(newWaitTime >= 0, "Invalid wait time");
         minWithdrawalWaitTime = newWaitTime;
     }
 
@@ -179,6 +178,7 @@ contract SlmStakerStorage is Ownable {
     function increaseStakeAmount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require((amount + stakes[walletAddress]) > stakes[walletAddress], "Overflow amount");
         stakes[walletAddress] += amount;
         totalStaked += amount;
     }
@@ -189,6 +189,7 @@ contract SlmStakerStorage is Ownable {
     function decreaseStakeAmount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require(amount <= stakes[walletAddress], "Insufficient balance");
         stakes[walletAddress] -= amount;
         totalStaked -= amount;
     }
@@ -199,6 +200,7 @@ contract SlmStakerStorage is Ownable {
     function increaseOutstandingVotes(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require((amount + outstandingVotes[walletAddress]) > outstandingVotes[walletAddress], "Overflow amount");
         outstandingVotes[walletAddress] += amount;
     }
 
@@ -208,6 +210,7 @@ contract SlmStakerStorage is Ownable {
     function decreaseOutstandingVotes(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require(amount <= outstandingVotes[walletAddress], "Insufficient balance");
         outstandingVotes[walletAddress] -= amount;
     }
 
@@ -226,6 +229,7 @@ contract SlmStakerStorage is Ownable {
         require(walletAddress != address(0), "Zero addr");
         require(dispute != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require((amount + disputeVoteCount[dispute][walletAddress]) > disputeVoteCount[dispute][walletAddress], "Overflow amount");
         disputeVoteCount[dispute][walletAddress] += amount;
     }
 
@@ -237,6 +241,7 @@ contract SlmStakerStorage is Ownable {
         require(walletAddress != address(0), "Zero addr");
         require(dispute != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require(amount <= disputeVoteCount[dispute][walletAddress], "Insufficient balance");
         disputeVoteCount[dispute][walletAddress] -= amount;
     }
 
@@ -255,6 +260,7 @@ contract SlmStakerStorage is Ownable {
     function increaseVoteHistoryCount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require((amount + voteHistoryCount[walletAddress]) > voteHistoryCount[walletAddress], "Overflow amount");
         voteHistoryCount[walletAddress] += amount;
     }
 
@@ -264,6 +270,7 @@ contract SlmStakerStorage is Ownable {
     function decreaseVoteHistoryCount(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require(amount <= voteHistoryCount[walletAddress], "Insufficient balance");
         voteHistoryCount[walletAddress] -= amount;
     }
 
@@ -282,7 +289,7 @@ contract SlmStakerStorage is Ownable {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
         require(timestamp > 0, "Invalid time");
-        unstakedSLM[walletAddress].push(unstakedInfo({amount: amount, time: timestamp}));
+        unstakedSLM[walletAddress].push(UnstakedInfo({amount: amount, time: timestamp}));
     }
 
     /// Delete unstake info entry
@@ -302,7 +309,7 @@ contract SlmStakerStorage is Ownable {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
         require(timestamp > 0, "Invalid time");
-        unstakedSLM[walletAddress][index] = unstakedInfo({amount: amount, time: timestamp});
+        unstakedSLM[walletAddress][index] = UnstakedInfo({amount: amount, time: timestamp});
     }
 
     /// Get unstaked amount for specific unstake entry
@@ -361,6 +368,7 @@ contract SlmStakerStorage is Ownable {
     function sendFunds(address walletAddress, uint256 amount) external onlyOwnerOrManager {
         require(walletAddress != address(0), "Zero addr");
         require(amount > 0, "Invalid amount");
+        require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
         token.transfer(walletAddress, amount);
     }
 

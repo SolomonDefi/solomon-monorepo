@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./library/SlmShared.sol";
 import "./library/SlmJudgement.sol";
@@ -26,7 +26,7 @@ contract SlmEscrow is SlmShared {
     function initializeEscrow(
         address _judge,
         address _token,
-        address _stakerStorage,
+        address payable _stakerStorage,
         address _owner,
         address _p1,
         address _p2,
@@ -41,12 +41,12 @@ contract SlmEscrow is SlmShared {
     }
 
     /// Get party1 address
-    function party1() public view returns (address) {
+    function party1() external view returns (address) {
         return _party1;
     }
 
     /// Get party2 address
-    function party2() public view returns (address) {
+    function party2() external view returns (address) {
         return _party2;
     }
 
@@ -65,13 +65,13 @@ contract SlmEscrow is SlmShared {
     function initiateDispute(string memory _evidenceURL) external {
         require(msg.sender == _party1 || msg.sender == _party2, "Only parties can dispute");
         require(!disputeInitiated, "Dispute has already been initiated");
+        disputeInitiated = true;
         super._initiateDispute();
         if(msg.sender == _party1) {
             super._party1Evidence(_evidenceURL);
         } else {
             super._party2Evidence(_evidenceURL);
         }
-        disputeInitiated = true;
     }
 
     /// Submit URL for party1 escrow dispute evidence

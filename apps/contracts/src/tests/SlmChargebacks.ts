@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat'
 import chai from 'chai'
 import { solidity } from 'ethereum-waffle'
+
 chai.use(solidity)
 import {
   increaseTime,
@@ -242,5 +243,69 @@ describe('SLM Chargebacks', function () {
     // Test that subsequent withdrawals will result in nothing
     await chargeback2.connect(account1).merchantWithdraw(encryptionKey)
     chai.expect(await token.balanceOf(account1.address)).to.equal(200)
+  })
+
+  it('Test withdrawals of Ethereum', async function () {
+    const disputeID = 127
+    const chargebackAmount = ethers.utils.parseEther('100')
+
+    // Create new chargeback contract
+    await slmFactory.createChargeback(
+      disputeID,
+      account1.address,
+      account2.address,
+      '0x0000000000000000000000000000000000000000',
+      { value: chargebackAmount },
+    )
+
+    // Get chargeback contract object
+    const chargebackAddress = await slmFactory.getChargebackAddress(disputeID)
+    const chargeback3 = await ethers.getContractAt('SlmChargeback', chargebackAddress)
+
+    chai
+      .expect(await ethers.provider.getBalance(chargeback3.address))
+      .to.equal(chargebackAmount)
+
+    // Set up constants
+    latestBlock = await ethers.provider.getBlock('latest')
+    currentTime = latestBlock.timestamp
+    const endTime = currentTime + 259200 // 3 days later
+    disputeAddress = chargeback3.address
+
+    // Go through voting process and have merchant win the vote
+    const quorum = 2
+    await jurors.initializeDispute(disputeAddress, quorum, endTime)
+
+    const roleArray = [2, 1, 3, 3, 3]
+    const userArray = [account2, account1, account3, account4, account5]
+    await setAccess(jurors, disputeAddress, roleArray, userArray, encryptionKey)
+
+    let voteResult = await jurors
+      .connect(account1)
+      .getVoteResults(disputeAddress, encryptionKey)
+    chai.expect(voteResult).to.equal(0)
+
+    await sendVote(jurors, account3, disputeAddress, encryptionKey, 1)
+    await sendVote(jurors, account4, disputeAddress, encryptionKey, 2)
+    await sendVote(jurors, account5, disputeAddress, encryptionKey, 2)
+
+    await jurors.voteStatus(disputeAddress)
+    currentTime = await increaseTime(50, currentTime)
+    await ethers.provider.send('evm_mine', [])
+
+    // Merchant withdrawal and check balances
+    const account1EthBalance = await ethers.provider.getBalance(account1.address)
+
+    const totalBalance = await ethers.provider.getBalance(chargeback3.address)
+    const jurorFee = (Number(totalBalance) * 10 * 100) / (100000 * 100 * 100)
+    const upKeepFee = (Number(totalBalance) * 10 * 100) / (100000 * 100 * 100)
+    const gasFees = 96654000652288 //adjustment made for gas fees
+    const transferAmount = Number(chargebackAmount) - jurorFee - upKeepFee - gasFees
+    const expectedBalance = Number(account1EthBalance) + transferAmount
+    await chargeback3.connect(account1).merchantWithdraw(encryptionKey)
+
+    chai
+      .expect(Number(await ethers.provider.getBalance(account1.address)))
+      .to.equal(expectedBalance)
   })
 })

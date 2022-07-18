@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity 0.8.9;
+pragma solidity ^0.8.7;
 
 import "./library/Ownable.sol";
 import "./library/CloneFactory.sol";
@@ -29,7 +29,7 @@ contract SlmFactory is CloneFactory, Ownable {
     address public slmToken;
 
     /// @dev Address of SlmJudgement address
-    address public stakerStorage;
+    address payable public stakerStorage;
 
     /// @dev Default discount percentage in whole numbers
     uint8 public slmDiscount;
@@ -74,7 +74,7 @@ contract SlmFactory is CloneFactory, Ownable {
     constructor(
         address _judge,
         address _slmToken,
-        address _stakerStorage,
+        address payable _stakerStorage,
         address _chargebackMasterContract,
         address _preorderMasterContract,
         address _escrowMasterContract,
@@ -148,12 +148,14 @@ contract SlmFactory is CloneFactory, Ownable {
     function createChargeback(uint256 disputeID, address merchant, address buyer, address paymentToken) external payable {
         require(merchant != address(0), "Zero addr");
         require(buyer != address(0), "Zero addr");
-        require(paymentToken != address(0), "Zero addr");
+        // require(paymentToken != address(0), "Zero addr");
         SlmChargeback chargeback = SlmChargeback(createClone(chargebackMasterContract));
+        chargebackAddressList[disputeID] = address(chargeback);
         uint8 discount = 0;
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
+            require(IERC20(paymentToken).balanceOf(msg.sender) >= allowance, "Insufficient balance");
 
             // Incentivize payments using SlmToken with discounts
             if(paymentToken == slmToken) {
@@ -164,7 +166,6 @@ contract SlmFactory is CloneFactory, Ownable {
             require(msg.value > 0, "Payment not provided");
         }
         chargeback.initializeChargeback{ value: msg.value }(judge, paymentToken, stakerStorage, owner, merchant, buyer, jurorFees, upkeepFees, discount);
-        chargebackAddressList[disputeID] = address(chargeback);
         emit ChargebackCreated(chargebackAddressList[disputeID]);
     }
 
@@ -176,12 +177,14 @@ contract SlmFactory is CloneFactory, Ownable {
     function createPreorder(uint256 disputeID, address merchant, address buyer, address paymentToken) external payable {
         require(merchant != address(0), "Zero addr");
         require(buyer != address(0), "Zero addr");
-        require(paymentToken != address(0), "Zero addr");
+        // require(paymentToken != address(0), "Zero addr");
         SlmPreorder preorder = SlmPreorder(createClone(preorderMasterContract));
+        preorderAddressList[disputeID] = address(preorder);
         uint8 discount = 0;
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
+            require(IERC20(paymentToken).balanceOf(msg.sender) >= allowance, "Insufficient balance");
 
             // Incentivize payments using SlmToken with discounts
             if(paymentToken == slmToken) {
@@ -191,8 +194,7 @@ contract SlmFactory is CloneFactory, Ownable {
         } else {
             require(msg.value > 0, "Payment not provided");
         }
-        preorder.initializePreorder{ value: msg.value }(judge, paymentToken, stakerStorage,owner, merchant, buyer, jurorFees, upkeepFees, discount);
-        preorderAddressList[disputeID] = address(preorder);
+        preorder.initializePreorder{ value: msg.value }(judge, paymentToken, stakerStorage, owner, merchant, buyer, jurorFees, upkeepFees, discount);
         emit PreorderCreated(preorderAddressList[disputeID]);
     }
 
@@ -204,17 +206,19 @@ contract SlmFactory is CloneFactory, Ownable {
     function createEscrow(uint256 disputeID, address party1, address party2, address paymentToken) external payable {
         require(party1 != address(0), "Zero addr");
         require(party2 != address(0), "Zero addr");
-        require(paymentToken != address(0), "Zero addr");
+        // require(paymentToken != address(0), "Zero addr");
         SlmEscrow escrow = SlmEscrow(createClone(escrowMasterContract));
+        escrowAddressList[disputeID] = address(escrow);
         if(paymentToken != address(0)) {
             uint256 allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
             require(allowance > 0, "Allowance missing");
+            require(IERC20(paymentToken).balanceOf(msg.sender) >= allowance, "Insufficient balance");
+
             IERC20(paymentToken).transferFrom(msg.sender, address(escrow), allowance);
         } else {
             require(msg.value > 0, "Payment not provided");
         }
         escrow.initializeEscrow{ value: msg.value }(judge, paymentToken, stakerStorage, owner, party1, party2, jurorFees, upkeepFees);
-        escrowAddressList[disputeID] = address(escrow);
         emit EscrowCreated(escrowAddressList[disputeID]);
     }
 
